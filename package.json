@@ -1,0 +1,23 @@
+{
+  "name": "fantasy-football-suite",
+  "version": "1.0.0",
+  "description": "Full-Stack Fantasy Football Strategy, Draft War Room & Weekly Matchup Suite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "sync:news": "node scripts/sync_news.js"
+  },
+  "keywords": [
+    "fantasy-football",
+    "draft-war-room",
+    "vorp-calculator",
+    "snake-draft",
+    "half-ppr",
+    "start-sit-optimizer"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "@libsql/client": "^0.14.0"
+  }
+}
