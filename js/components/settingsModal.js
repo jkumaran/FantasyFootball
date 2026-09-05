@@ -1,7 +1,5 @@
-/**
- * Settings & Import/Export Modal Component
- */
 import { store } from '../store.js';
+import { renderAuthModal } from './authModal.js';
 
 export function renderSettingsModal() {
   const container = document.getElementById('modal-container');
@@ -14,12 +12,11 @@ export function renderSettingsModal() {
     <div class="modal-backdrop open" id="settings-backdrop">
       <div class="modal-content">
         <div class="modal-header">
-          <div class="modal-title">⚙️ League Settings & Data Backup</div>
+          <div class="modal-title">⚙️ League Settings & Backup</div>
           <button class="btn-icon" id="btn-close-modal">✕</button>
         </div>
 
         <div class="modal-body">
-          <!-- League Settings Form -->
           <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
             <div style="font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 0.75rem;">League Configuration</div>
             
@@ -44,7 +41,6 @@ export function renderSettingsModal() {
             </div>
           </div>
 
-          <!-- Import / Export Section -->
           <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
             <div style="font-weight: 700; font-size: 0.9rem; color: #fff; margin-bottom: 0.5rem;">Export / Backup Suite Data</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
@@ -54,10 +50,6 @@ export function renderSettingsModal() {
               <button class="btn-secondary" id="btn-export-data">
                 📥 Export Backup (JSON)
               </button>
-              <label class="btn-secondary" style="cursor: pointer;">
-                📤 Import Backup (JSON)
-                <input type="file" id="input-import-file" accept=".json" style="display: none;">
-              </label>
             </div>
           </div>
 
@@ -71,16 +63,12 @@ export function renderSettingsModal() {
     </div>
   `;
 
-  // Attach event listeners
   const backdrop = container.querySelector('#settings-backdrop');
   const closeBtn = container.querySelector('#btn-close-modal');
   const saveBtn = container.querySelector('#btn-save-settings');
   const exportBtn = container.querySelector('#btn-export-data');
-  const importInput = container.querySelector('#input-import-file');
 
-  const closeModal = () => {
-    container.innerHTML = '';
-  };
+  const closeModal = () => { container.innerHTML = ''; };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (backdrop) {
@@ -91,6 +79,11 @@ export function renderSettingsModal() {
 
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        closeModal();
+        renderAuthModal();
+        return;
+      }
       const teamsCount = parseInt(container.querySelector('#setting-teams').value, 10);
       const userSlot = parseInt(container.querySelector('#setting-slot').value, 10);
       store.updateLeagueSettings({ teamsCount, userSlot });
@@ -103,30 +96,10 @@ export function renderSettingsModal() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(store.getState(), null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `fantasy_football_suite_backup_${new Date().toISOString().slice(0, 10)}.json`);
+      downloadAnchor.setAttribute("download", `fantasy_football_suite_backup.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
-    });
-  }
-
-  if (importInput) {
-    importInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const success = store.importData(event.target.result);
-          if (success) {
-            alert('Backup successfully imported!');
-            closeModal();
-            location.reload();
-          } else {
-            alert('Invalid backup file format.');
-          }
-        };
-        reader.readAsText(file);
-      }
     });
   }
 }

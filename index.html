@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fantasy Football Strategy & Draft Suite</title>
-  <meta name="description" content="Ultimate Fantasy Football Suite: Pre-draft Tiers, Live Snake Draft War Room, and Weekly Start/Sit Lineup Optimizer.">
+  <meta name="description" content="Full-Stack Fantasy Football Suite: Pre-draft Tiers, Live Snake Draft War Room, and Weekly Start/Sit Lineup Optimizer.">
   <link rel="stylesheet" href="./css/styles.css">
-  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -42,6 +41,13 @@
 
     <!-- Header Controls -->
     <div class="header-controls">
+      <button class="header-auth-btn locked" id="btn-open-auth" title="Authentication status (click to unlock or manage)">
+        <span class="auth-icon">🔒</span>
+        <span class="auth-label">Locked</span>
+      </button>
+      <button class="btn-secondary" id="btn-sync-news" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" title="Sync Live NFL News via SerpAPI">
+        📡 Sync News
+      </button>
       <button class="btn-icon" id="btn-open-settings" title="League Settings & Backup">
         ⚙️
       </button>

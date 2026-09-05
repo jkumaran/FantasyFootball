@@ -1,5 +1,6 @@
 import { store } from '../store.js';
 import { api } from '../api.js';
+import { renderAuthModal } from './authModal.js';
 
 function downloadFile(content, filename, mimeType = 'text/yaml;charset=utf-8;') {
   const blob = new Blob([content], { type: mimeType });
@@ -19,6 +20,7 @@ export function renderPreDraftView() {
 
   const state = store.getState();
   const { players } = state;
+  const isAuthed = Boolean(state.isAuthenticated);
 
   // Position columns: TE is positioned directly to the right of WR
   const positions = ['RB', 'WR', 'TE', 'QB', 'DST', 'K'];
@@ -28,6 +30,35 @@ export function renderPreDraftView() {
 
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <!-- Auth Status Banner -->
+      <div class="glass-card board-auth-banner ${isAuthed ? 'banner-unlocked' : 'banner-locked'}" style="padding: 0.75rem 1.25rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <span style="font-size: 1.15rem;">${isAuthed ? '🔓' : '🔒'}</span>
+            <div>
+              <div style="font-weight: 800; font-size: 0.85rem; color: #fff;">
+                ${isAuthed ? 'Board Editing Unlocked (Session Active)' : 'View-Only Mode'}
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">
+                ${isAuthed ? 'All changes to tiers, gaps, rankings, and drafted status will automatically persist across refreshes.' : 'Anyone with this link can view. Passcode required to modify tiers, drag players, adjust gaps, and save.'}
+              </div>
+            </div>
+          </div>
+          <div>
+            ${!isAuthed ? `
+              <button class="btn-primary" id="btn-banner-unlock" style="padding: 0.35rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                🔑 Unlock Editing
+              </button>
+            ` : `
+              <button class="btn-secondary" id="btn-banner-lock" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);">
+                <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #34d399;"></span>
+                <span>Unlocked (Manage)</span>
+              </button>
+            `}
+          </div>
+        </div>
+      </div>
+
       <!-- Control Bar -->
       <div class="glass-card" style="padding: 1rem 1.25rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -207,6 +238,23 @@ export function renderPreDraftView() {
 
   // --- ATTACH EVENT LISTENERS ---
 
+  // --- ATTACH EVENT LISTENERS ---
+
+  // Auth Banner buttons
+  const btnBannerUnlock = container.querySelector('#btn-banner-unlock');
+  if (btnBannerUnlock) {
+    btnBannerUnlock.addEventListener('click', () => {
+      renderAuthModal();
+    });
+  }
+
+  const btnBannerLock = container.querySelector('#btn-banner-lock');
+  if (btnBannerLock) {
+    btnBannerLock.addEventListener('click', () => {
+      renderAuthModal();
+    });
+  }
+
   // Search Filter
   const searchInput = container.querySelector('#board-search');
   if (searchInput) {
@@ -221,6 +269,10 @@ export function renderPreDraftView() {
   const fileInput = container.querySelector('#file-import-yaml');
   if (btnImport && fileInput) {
     btnImport.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       fileInput.value = '';
       fileInput.click();
     });
@@ -257,6 +309,10 @@ export function renderPreDraftView() {
 
   // Quick Add Player
   const handleAddPlayer = (pos, inputEl) => {
+    if (!store.getState().isAuthenticated) {
+      renderAuthModal();
+      return;
+    }
     const name = inputEl.value;
     if (name && name.trim()) {
       store.addCustomPlayer(name, pos, 'FA', 1);
@@ -284,9 +340,22 @@ export function renderPreDraftView() {
   // Player Draft Checkboxes (Mark Drafted / Kept in Place)
   container.querySelectorAll('.player-draft-chk').forEach(chk => {
     chk.addEventListener('mousedown', (e) => e.stopPropagation());
-    chk.addEventListener('click', (e) => e.stopPropagation());
+    chk.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!store.getState().isAuthenticated) {
+        e.preventDefault();
+        renderAuthModal();
+        return;
+      }
+    });
     chk.addEventListener('change', async (e) => {
       e.stopPropagation();
+      if (!store.getState().isAuthenticated) {
+        e.preventDefault();
+        e.target.checked = !e.target.checked;
+        renderAuthModal();
+        return;
+      }
       const playerId = e.target.dataset.id;
       await store.togglePlayerDrafted(playerId);
       renderPreDraftView();
@@ -297,6 +366,10 @@ export function renderPreDraftView() {
   container.querySelectorAll('.btn-add-tier').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       const pos = btn.dataset.pos;
       if (!pos) return;
       store.addTier(pos);
@@ -309,6 +382,12 @@ export function renderPreDraftView() {
     handle.addEventListener('pointerdown', (e) => {
       // Ignore clicks on player cards, checkboxes, buttons, or inputs
       if (e.target.closest('.draggable-player-card, input, button, .player-draft-chk')) return;
+
+      if (!store.getState().isAuthenticated) {
+        e.preventDefault();
+        renderAuthModal();
+        return;
+      }
 
       const targetEl = handle.closest('.tier-gap-spacer, .tier-box');
       if (!targetEl) return;
@@ -397,6 +476,11 @@ export function renderPreDraftView() {
     card.addEventListener('dragstart', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.classList.contains('player-draft-chk')) {
         e.preventDefault();
+        return;
+      }
+      if (!store.getState().isAuthenticated) {
+        e.preventDefault();
+        renderAuthModal();
         return;
       }
       draggedPlayerId = card.dataset.id;

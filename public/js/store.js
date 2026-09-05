@@ -140,6 +140,7 @@ class Store {
   }
 
   loadInitialState() {
+    const isAuthedLocal = localStorage.getItem('auth_unlocked_v1') === 'true';
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -155,6 +156,7 @@ class Store {
           opponentProjected: 115.0,
           tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
           ...parsed,
+          isAuthenticated: isAuthedLocal,
           tierGaps: {
             ...DEFAULT_TIER_GAPS,
             ...(parsed.tierGaps || {})
@@ -173,11 +175,15 @@ class Store {
       userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
       opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
       opponentProjected: 115.0,
-      tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS))
+      tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
+      isAuthenticated: isAuthedLocal
     };
   }
 
   async syncFromBackend() {
+    // 0. Verify auth session cookie with backend
+    await this.checkAuth();
+
     try {
       // 1. By default, load from fixed YAML file on the server if it exists
       const yamlResult = await api.getBoardYaml();
@@ -459,8 +465,9 @@ class Store {
     }
     this.notify();
 
-    if (!skipBackendSave) {
-      // Auto-sync YAML to backend so fixed tier_board.yaml stays preserved across refreshes
+    // Auto-sync YAML to backend so fixed tier_board.yaml stays preserved across refreshes
+    // Only attempt backend sync if authenticated
+    if (!skipBackendSave && this.state.isAuthenticated) {
       if (this._syncTimer) clearTimeout(this._syncTimer);
       this._syncTimer = setTimeout(() => {
         try {
@@ -735,6 +742,62 @@ class Store {
     this.state.league = { ...this.state.league, ...newSettings };
     this.saveState();
     await api.saveSettings(newSettings);
+  }
+
+  // --- AUTHENTICATION METHODS ---
+
+  async checkAuth() {
+    try {
+      const res = await api.checkAuthStatus();
+      const authed = Boolean(res && res.authenticated);
+      if (this.state.isAuthenticated !== authed) {
+        this.state.isAuthenticated = authed;
+        if (authed) {
+          localStorage.setItem('auth_unlocked_v1', 'true');
+        } else {
+          localStorage.removeItem('auth_unlocked_v1');
+        }
+        this.notify();
+      }
+      return authed;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async login(password, durationDays = 30) {
+    const result = await api.login(password, durationDays);
+    if (result && result.success && result.authenticated) {
+      this.state.isAuthenticated = true;
+      localStorage.setItem('auth_unlocked_v1', 'true');
+      this.notify();
+
+      // Immediately sync current YAML to backend now that we have write permission
+      try {
+        const yamlStr = this.exportYaml();
+        await api.saveBoardYaml(yamlStr);
+      } catch (e) {}
+
+      return { success: true, durationDays: result.durationDays };
+    }
+    return { success: false, error: (result && result.error) || 'Invalid passcode. Please try again.' };
+  }
+
+  async logout() {
+    await api.logout();
+    this.state.isAuthenticated = false;
+    localStorage.removeItem('auth_unlocked_v1');
+    this.notify();
+  }
+
+  requireAuth() {
+    if (!this.state.isAuthenticated) {
+      if (typeof window.openAuthModal === 'function') {
+        window.openAuthModal();
+      }
+      return false;
+    }
+    return true;
   }
 }
 

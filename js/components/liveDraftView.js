@@ -1,9 +1,6 @@
-/**
- * Live Draft War Room Component
- * Snake Draft Board, Real-Time AI Pick Recommender, VORP Metrics & Availability Predictor.
- */
 import { store } from '../store.js';
 import { getDraftRecommendations } from '../engine/draftAssistant.js';
+import { renderAuthModal } from './authModal.js';
 
 export function renderLiveDraftView() {
   const container = document.getElementById('view-livedraft');
@@ -14,33 +11,26 @@ export function renderLiveDraftView() {
   const teamsCount = league.teamsCount || 12;
   const userSlot = league.userSlot || 1;
 
-  // Run Draft Assistant Engine
   const assistantData = getDraftRecommendations(state);
   const { topRecommendations, picksUntilNextUserPick, isUserTurn, scarcityAlert, availabilityMap } = assistantData;
 
-  // Drafted player IDs set
   const draftedIds = new Set(draftPicks.map(dp => dp.player.id));
   const availablePlayers = players
     .filter(p => !draftedIds.has(p.id))
     .sort((a, b) => (a.customRank || a.ecr) - (b.customRank || b.ecr));
 
-  // Current round & pick info
   const round = Math.ceil(currentPick / teamsCount);
   const pickInRound = ((currentPick - 1) % teamsCount) + 1;
 
-  // Build 16 rounds x 12 teams Draft Grid matrix
   const totalRounds = 16;
   const gridCells = [];
 
   for (let r = 1; r <= totalRounds; r++) {
     for (let t = 1; t <= teamsCount; t++) {
-      // Calculate overall pick number for round r, team t (Snake draft)
       let pickNum;
       if (r % 2 === 1) {
-        // Odd round: Team 1 to N
         pickNum = (r - 1) * teamsCount + t;
       } else {
-        // Even round: Team N to 1
         pickNum = (r - 1) * teamsCount + (teamsCount - t + 1);
       }
 
@@ -56,14 +46,12 @@ export function renderLiveDraftView() {
     }
   }
 
-  // User roster breakdown
   const userTeamPlayers = players.filter(p => userRoster.includes(p.id));
 
   container.innerHTML = `
     <div class="warroom-layout">
       <!-- Left Column: Real-Time AI Draft Assistant -->
       <div class="assistant-panel">
-        <!-- Turn Status Banner -->
         <div class="glass-card" style="border-color: ${isUserTurn ? 'var(--accent-primary)' : 'var(--border-color)'};">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
@@ -92,7 +80,6 @@ export function renderLiveDraftView() {
           </div>
         </div>
 
-        <!-- Scarcity / Strategic Alert -->
         ${scarcityAlert ? `
           <div class="glass-card" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
             <div style="font-size: 0.85rem; font-weight: 700; color: #fbbf24;">
@@ -101,7 +88,6 @@ export function renderLiveDraftView() {
           </div>
         ` : ''}
 
-        <!-- Recommendation Card -->
         <div class="glass-card">
           <div class="card-title">
             <span>🤖 AI Draft Recommender</span>
@@ -140,7 +126,7 @@ export function renderLiveDraftView() {
                       Next Round Survival Odds:
                     </div>
                     <span class="survival-badge ${oddsClass}">
-                      ${odds}% Chance to survive to pick #${currentPick + picksUntilNextUserPick}
+                      ${odds}% Chance to survive
                     </span>
                   </div>
                 </div>
@@ -152,7 +138,6 @@ export function renderLiveDraftView() {
 
       <!-- Center Column: Available Pool & Live Board -->
       <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-        <!-- Available Players List -->
         <div class="glass-card">
           <div class="card-title">
             <span>⚡ Available Players Pool</span>
@@ -200,7 +185,6 @@ export function renderLiveDraftView() {
           </div>
         </div>
 
-        <!-- Snake Draft Board Grid (12 Teams x 16 Rounds) -->
         <div class="glass-card">
           <div class="card-title">
             <span>📋 Draft Board (12 Teams • Snake)</span>
@@ -208,7 +192,6 @@ export function renderLiveDraftView() {
           </div>
 
           <div class="draft-board-container">
-            <!-- Team Headers -->
             <div class="draft-grid" style="margin-bottom: 0.4rem;">
               ${Array.from({ length: teamsCount }, (_, i) => i + 1).map(t => `
                 <div style="font-weight: 800; font-size: 0.75rem; text-align: center; color: ${t === userSlot ? '#34d399' : 'var(--text-muted)'}; background: rgba(255,255,255,0.03); padding: 0.3rem; border-radius: var(--radius-sm);">
@@ -217,7 +200,6 @@ export function renderLiveDraftView() {
               `).join('')}
             </div>
 
-            <!-- Draft Picks Grid -->
             <div class="draft-grid">
               ${gridCells.map(cell => `
                 <div class="draft-cell ${cell.isCurrent ? 'current-pick' : ''} ${cell.isUserTeam ? 'user-pick' : ''}">
@@ -279,29 +261,37 @@ export function renderLiveDraftView() {
     </div>
   `;
 
-  // Attach event listeners
   container.querySelectorAll('.btn-draft-player').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       const pid = e.currentTarget.dataset.id;
       store.draftPlayer(pid);
-      renderLiveDraftView();
     });
   });
 
   const btnUndo = container.querySelector('#btn-undo-pick');
   if (btnUndo) {
     btnUndo.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       store.undoLastPick();
-      renderLiveDraftView();
     });
   }
 
   const btnReset = container.querySelector('#btn-reset-draft');
   if (btnReset) {
     btnReset.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       if (confirm('Are you sure you want to reset the draft board?')) {
         store.resetDraft();
-        renderLiveDraftView();
       }
     });
   }

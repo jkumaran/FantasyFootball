@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { renderAuthModal } from './authModal.js';
 
 export function renderSettingsModal() {
   const container = document.getElementById('modal-container');
@@ -78,6 +79,11 @@ export function renderSettingsModal() {
 
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        closeModal();
+        renderAuthModal();
+        return;
+      }
       const teamsCount = parseInt(container.querySelector('#setting-teams').value, 10);
       const userSlot = parseInt(container.querySelector('#setting-slot').value, 10);
       store.updateLeagueSettings({ teamsCount, userSlot });

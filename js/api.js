@@ -3,9 +3,50 @@
  */
 
 export const api = {
+  async checkAuthStatus() {
+    try {
+      const res = await fetch('/api/auth/status', {
+        credentials: 'include'
+      });
+      if (!res.ok) return { authenticated: false };
+      const data = await res.json();
+      return { authenticated: Boolean(data && data.authenticated) };
+    } catch (e) {
+      return { authenticated: false };
+    }
+  },
+
+  async login(password, durationDays = 30) {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password, durationDays })
+      });
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      return { success: false, error: e.message || 'Login failed' };
+    }
+  },
+
+  async logout() {
+    try {
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
   async getPlayers() {
     try {
-      const res = await fetch('/api/players');
+      const res = await fetch('/api/players', { credentials: 'include' });
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
       return data.players;
@@ -17,11 +58,15 @@ export const api = {
 
   async updateTier(id, tier) {
     try {
-      await fetch('/api/players/tier', {
+      const res = await fetch('/api/players/tier', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ id, tier })
       });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+      }
     } catch (e) {
       console.warn('Backend tier sync failed:', e);
     }
@@ -29,11 +74,15 @@ export const api = {
 
   async updateRank(id, rank) {
     try {
-      await fetch('/api/players/rank', {
+      const res = await fetch('/api/players/rank', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ id, rank })
       });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+      }
     } catch (e) {
       console.warn('Backend rank sync failed:', e);
     }
@@ -44,8 +93,13 @@ export const api = {
       const res = await fetch('/api/draft/pick', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ playerId })
       });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+        return { success: false, error: 'Authentication required' };
+      }
       return await res.json();
     } catch (e) {
       console.warn('Backend draft pick sync failed:', e);
@@ -55,7 +109,13 @@ export const api = {
 
   async undoPick() {
     try {
-      const res = await fetch('/api/draft/undo', { method: 'POST' });
+      const res = await fetch('/api/draft/undo', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+      }
       return await res.json();
     } catch (e) {
       console.warn('Backend undo failed:', e);
@@ -65,7 +125,13 @@ export const api = {
 
   async resetDraft() {
     try {
-      await fetch('/api/draft/reset', { method: 'POST' });
+      const res = await fetch('/api/draft/reset', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+      }
     } catch (e) {
       console.warn('Backend reset failed:', e);
     }
@@ -73,7 +139,13 @@ export const api = {
 
   async syncNews() {
     try {
-      const res = await fetch('/api/sync/news', { method: 'POST' });
+      const res = await fetch('/api/sync/news', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+      }
       return await res.json();
     } catch (e) {
       console.warn('Backend news sync failed:', e);
@@ -83,11 +155,15 @@ export const api = {
 
   async saveSettings(settings) {
     try {
-      await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(settings)
       });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+      }
     } catch (e) {
       console.warn('Backend settings sync failed:', e);
     }
@@ -105,7 +181,7 @@ export const api = {
 
   async getBoardYaml() {
     try {
-      const res = await fetch('/api/board/yaml');
+      const res = await fetch('/api/board/yaml', { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         if (data && data.success && data.yaml) return data;
@@ -130,13 +206,20 @@ export const api = {
 
   async saveBoardYaml(yaml) {
     try {
-      await fetch('/api/board/yaml', {
+      const res = await fetch('/api/board/yaml', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ yaml })
       });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+        return { success: false, error: 'Authentication required' };
+      }
+      return await res.json();
     } catch (e) {
       console.warn('YAML sync to server failed:', e);
+      return { success: false, error: e.message };
     }
   }
 };

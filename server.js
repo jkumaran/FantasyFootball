@@ -1,5 +1,6 @@
 const http = require('node:http');
 const https = require('node:https');
+const crypto = require('node:crypto');
 const path = require('node:path');
 const fs = require('node:fs');
 const url = require('node:url');
@@ -92,12 +93,77 @@ const MIME_TYPES = {
   '.svg': 'image/svg+xml'
 };
 
-function sendJson(res, data, statusCode = 200) {
+const APP_PASSWORD = process.env.APP_PASSWORD || process.env.AUTH_PASSWORD || 'fantasy2025';
+const AUTH_SECRET = process.env.AUTH_SECRET || 'gridiron-strategy-suite-auth-secret-key-42';
+
+function parseCookies(req) {
+  const list = {};
+  const rc = req.headers.cookie;
+  if (rc) {
+    rc.split(';').forEach(cookie => {
+      const parts = cookie.split('=');
+      const key = parts.shift().trim();
+      if (key) {
+        try {
+          list[key] = decodeURIComponent(parts.join('=').trim());
+        } catch (e) {
+          list[key] = parts.join('=').trim();
+        }
+      }
+    });
+  }
+  return list;
+}
+
+function createAuthToken(durationDays = 30) {
+  const expiresAt = Date.now() + (durationDays * 24 * 60 * 60 * 1000);
+  const payload = `${expiresAt}`;
+  const hmac = crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex');
+  return `${payload}.${hmac}`;
+}
+
+function verifyAuthToken(token) {
+  if (!token || typeof token !== 'string') return false;
+  const parts = token.split('.');
+  if (parts.length !== 2) return false;
+  const [expiresAtStr, signature] = parts;
+  const expiresAt = parseInt(expiresAtStr, 10);
+  if (isNaN(expiresAt) || Date.now() > expiresAt) return false;
+
+  const expectedHmac = crypto.createHmac('sha256', AUTH_SECRET).update(expiresAtStr).digest('hex');
+  try {
+    return crypto.timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expectedHmac, 'hex'));
+  } catch (e) {
+    return false;
+  }
+}
+
+function isAuthenticated(req) {
+  // 1. Check Cookie
+  const cookies = parseCookies(req);
+  if (cookies.auth_session && verifyAuthToken(cookies.auth_session)) {
+    return true;
+  }
+  // 2. Check Authorization header
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.slice(7).trim();
+    if (verifyAuthToken(token) || token === APP_PASSWORD) return true;
+  }
+  // 3. Check X-App-Password header
+  const xPass = req.headers['x-app-password'];
+  if (xPass && xPass === APP_PASSWORD) return true;
+
+  return false;
+}
+
+function sendJson(res, data, statusCode = 200, extraHeaders = {}) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-App-Password',
+    ...extraHeaders
   });
   res.end(JSON.stringify(data));
 }
@@ -127,9 +193,65 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-App-Password'
     });
     return res.end();
+  }
+
+  // --- AUTH ROUTES ---
+
+  // GET /api/auth/status
+  if (method === 'GET' && pathname === '/api/auth/status') {
+    const authed = isAuthenticated(req);
+    return sendJson(res, { success: true, authenticated: authed });
+  }
+
+  // POST /api/auth/login
+  if (method === 'POST' && pathname === '/api/auth/login') {
+    try {
+      const body = await parseRequestBody(req);
+      const { password, durationDays } = body;
+      if (password && password.trim() === APP_PASSWORD.trim()) {
+        const days = (durationDays === 1 || durationDays === '1' || durationDays === '1d') ? 1 : 30;
+        const token = createAuthToken(days);
+        const maxAge = days * 24 * 60 * 60; // seconds
+        const isHttps = req.headers['x-forwarded-proto'] === 'https';
+        const secureFlag = isHttps ? '; Secure' : '';
+        const cookieHeader = `auth_session=${token}; Path=/; Max-Age=${maxAge}; HttpOnly; SameSite=Lax${secureFlag}`;
+        return sendJson(res, { success: true, authenticated: true, durationDays: days }, 200, { 'Set-Cookie': cookieHeader });
+      } else {
+        return sendJson(res, { success: false, error: 'Incorrect password. Please try again.' }, 401);
+      }
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // POST /api/auth/logout
+  if (method === 'POST' && pathname === '/api/auth/logout') {
+    const cookieHeader = 'auth_session=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax';
+    return sendJson(res, { success: true, authenticated: false }, 200, { 'Set-Cookie': cookieHeader });
+  }
+
+  // --- MUTATING ENDPOINT PROTECTION ---
+  const mutatingRoutes = [
+    { method: 'POST', path: '/api/board/yaml' },
+    { method: 'PUT', path: '/api/players/tier' },
+    { method: 'PUT', path: '/api/players/rank' },
+    { method: 'POST', path: '/api/draft/pick' },
+    { method: 'POST', path: '/api/draft/undo' },
+    { method: 'POST', path: '/api/draft/reset' },
+    { method: 'POST', path: '/api/sync/news' },
+    { method: 'POST', path: '/api/settings' }
+  ];
+
+  const isMutating = mutatingRoutes.some(r => r.method === method && r.path === pathname);
+  if (isMutating && !isAuthenticated(req)) {
+    return sendJson(res, {
+      success: false,
+      error: 'Authentication required. Please unlock with your access password to edit.',
+      code: 'UNAUTHORIZED'
+    }, 401);
   }
 
   // --- API ROUTES ---

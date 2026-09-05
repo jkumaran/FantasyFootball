@@ -4,8 +4,24 @@ import { renderPreDraftView } from './components/preDraftView.js';
 import { renderLiveDraftView } from './components/liveDraftView.js';
 import { renderWeeklyView } from './components/weeklyView.js';
 import { renderSettingsModal } from './components/settingsModal.js';
+import { renderAuthModal } from './components/authModal.js';
 
 let currentTab = 'predraft';
+
+function updateAuthHeaderButton() {
+  const btnAuth = document.getElementById('btn-open-auth');
+  if (!btnAuth) return;
+  const isAuthed = Boolean(store.getState().isAuthenticated);
+  if (isAuthed) {
+    btnAuth.className = 'header-auth-btn unlocked';
+    btnAuth.innerHTML = '<span class="auth-icon">🔓</span><span class="auth-label">Unlocked</span>';
+    btnAuth.title = 'Board editing is unlocked (session active). Click to lock or manage.';
+  } else {
+    btnAuth.className = 'header-auth-btn locked';
+    btnAuth.innerHTML = '<span class="auth-icon">🔒</span><span class="auth-label">Locked</span>';
+    btnAuth.title = 'View-only mode. Click to enter passcode and unlock editing.';
+  }
+}
 
 function renderCurrentView() {
   const sections = document.querySelectorAll('.view-section');
@@ -23,6 +39,8 @@ function renderCurrentView() {
     }
   });
 
+  updateAuthHeaderButton();
+
   if (currentTab === 'predraft') renderPreDraftView();
   else if (currentTab === 'livedraft') renderLiveDraftView();
   else if (currentTab === 'weekly') renderWeeklyView();
@@ -36,6 +54,13 @@ function initApp() {
       renderCurrentView();
     });
   });
+
+  const btnAuth = document.getElementById('btn-open-auth');
+  if (btnAuth) {
+    btnAuth.addEventListener('click', () => {
+      renderAuthModal();
+    });
+  }
 
   const btnSettings = document.getElementById('btn-open-settings');
   if (btnSettings) {

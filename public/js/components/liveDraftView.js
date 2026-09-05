@@ -1,5 +1,6 @@
 import { store } from '../store.js';
 import { getDraftRecommendations } from '../engine/draftAssistant.js';
+import { renderAuthModal } from './authModal.js';
 
 export function renderLiveDraftView() {
   const container = document.getElementById('view-livedraft');
@@ -262,6 +263,10 @@ export function renderLiveDraftView() {
 
   container.querySelectorAll('.btn-draft-player').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       const pid = e.currentTarget.dataset.id;
       store.draftPlayer(pid);
     });
@@ -270,6 +275,10 @@ export function renderLiveDraftView() {
   const btnUndo = container.querySelector('#btn-undo-pick');
   if (btnUndo) {
     btnUndo.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       store.undoLastPick();
     });
   }
@@ -277,6 +286,10 @@ export function renderLiveDraftView() {
   const btnReset = container.querySelector('#btn-reset-draft');
   if (btnReset) {
     btnReset.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
       if (confirm('Are you sure you want to reset the draft board?')) {
         store.resetDraft();
       }
