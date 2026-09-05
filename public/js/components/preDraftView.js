@@ -1,4 +1,5 @@
 import { store } from '../store.js';
+import { api } from '../api.js';
 
 function downloadFile(content, filename, mimeType = 'text/yaml;charset=utf-8;') {
   const blob = new Blob([content], { type: mimeType });
@@ -10,140 +11,6 @@ function downloadFile(content, filename, mimeType = 'text/yaml;charset=utf-8;') 
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-}
-
-function generateBoardYaml(state, positions, availableTiers) {
-  const { players, league } = state;
-  const colWidth = 24;
-  const separator = ' | ';
-  const now = new Date().toISOString();
-
-  // 1. Build Visual ASCII Alignment Matrix
-  const colLines = {};
-  positions.forEach(pos => {
-    colLines[pos] = [];
-    availableTiers.forEach(t => {
-      const gapPx = store.getTierGap(pos, t);
-      const numBlankLines = Math.max(0, Math.round(gapPx / 28));
-      for (let b = 0; b < numBlankLines; b++) {
-        colLines[pos].push(' '.repeat(colWidth));
-      }
-
-      // Tier Header Line
-      const tierHeader = `=== TIER ${t} ===`;
-      colLines[pos].push(tierHeader.padEnd(colWidth));
-
-      // Players in this tier
-      const tierPlayers = players.filter(p => p.pos === pos && (p.tier || 1) === t);
-      if (tierPlayers.length === 0) {
-        colLines[pos].push('(No players)'.padEnd(colWidth));
-      } else {
-        tierPlayers.forEach(p => {
-          const isDrafted = store.isPlayerDrafted(p.id);
-          const chk = isDrafted ? '[X]' : '[ ]';
-          const parts = p.name.split(' ');
-          const shortName = parts.length > 1 ? `${parts[0][0]}. ${parts.slice(1).join(' ')}` : p.name;
-          const label = `${chk} ${shortName} (${p.team})`;
-          const truncated = label.length > colWidth ? label.slice(0, colWidth - 1) + '…' : label;
-          colLines[pos].push(truncated.padEnd(colWidth));
-        });
-      }
-
-      // 1 spacing line after tier block
-      colLines[pos].push(' '.repeat(colWidth));
-    });
-  });
-
-  const maxLines = Math.max(...positions.map(pos => colLines[pos].length));
-
-  // ASCII column header line
-  const headerCols = positions.map(pos => {
-    const topGap = store.getTierGap(pos, 1);
-    const title = `${pos} (T1 Gap:${topGap}px)`;
-    return title.padEnd(colWidth);
-  }).join(separator);
-
-  const divider = positions.map(() => '-'.repeat(colWidth)).join('-+-');
-
-  const asciiMatrixRows = [];
-  for (let i = 0; i < maxLines; i++) {
-    const row = positions.map(pos => {
-      const line = colLines[pos][i] || ' '.repeat(colWidth);
-      return line.padEnd(colWidth);
-    }).join(separator);
-    asciiMatrixRows.push(`# ${row}`);
-  }
-
-  // 2. Structured YAML section
-  const lines = [
-    '# ========================================================================================================================',
-    '#                                      🏈 FANTASY FOOTBALL POSITIONAL TIER BOARD                                          ',
-    '# ========================================================================================================================',
-    `# Exported: ${now}`,
-    `# Format: ${league.scoring || 'Half-PPR'} ${league.format || 'Snake'} Draft (${league.teamsCount || 12} Teams)`,
-    `# Column Order: ${positions.join(' -> ')}`,
-    '# Legend: [ ] = Available, [X] = Drafted',
-    '# ------------------------------------------------------------------------------------------------------------------------',
-    '# VISUAL TIER BOARD MATRIX (Vertical Spacing & Alignment by Pixel Offsets)',
-    '# ------------------------------------------------------------------------------------------------------------------------',
-    `# ${headerCols}`,
-    `# ${divider}`,
-    ...asciiMatrixRows,
-    '# ========================================================================================================================',
-    '',
-    'metadata:',
-    '  version: "1.0"',
-    `  exported_at: "${now}"`,
-    `  scoring_format: "${league.scoring || 'Half-PPR'}"`,
-    `  draft_type: "${league.format || 'Snake'}"`,
-    `  teams_count: ${league.teamsCount || 12}`,
-    `  user_draft_slot: ${league.userSlot || 1}`,
-    '  column_order:'
-  ];
-
-  positions.forEach(pos => {
-    lines.push(`    - ${pos}`);
-  });
-
-  lines.push('');
-  lines.push('vertical_tier_gaps_px:');
-  positions.forEach(pos => {
-    lines.push(`  ${pos}:`);
-    availableTiers.forEach(t => {
-      lines.push(`    tier_${t}: ${store.getTierGap(pos, t)}`);
-    });
-  });
-
-  lines.push('');
-  lines.push('positions:');
-  positions.forEach(pos => {
-    lines.push(`  ${pos}:`);
-    availableTiers.forEach(t => {
-      const tierPlayers = players.filter(p => p.pos === pos && (p.tier || 1) === t);
-      const gapPx = store.getTierGap(pos, t);
-      lines.push(`    tier_${t}:`);
-      lines.push(`      offset_gap_px: ${gapPx}`);
-      lines.push(`      player_count: ${tierPlayers.length}`);
-      lines.push('      players:');
-      if (tierPlayers.length === 0) {
-        lines.push('        []');
-      } else {
-        tierPlayers.forEach((p, idx) => {
-          const isDrafted = store.isPlayerDrafted(p.id);
-          const safeName = p.name.replace(/"/g, '\\"');
-          lines.push(`        - rank_in_tier: ${idx + 1}`);
-          lines.push(`          name: "${safeName}"`);
-          lines.push(`          team: "${p.team}"`);
-          lines.push(`          bye: ${p.bye}`);
-          lines.push(`          drafted: ${isDrafted}`);
-          lines.push(`          projected_pts: ${p.projectedPts}`);
-          lines.push(`          ecr: ${p.ecr}`);
-        });
-      }
-    });
-  });
-
-  return lines.join(String.fromCharCode(10)) + String.fromCharCode(10);
 }
 
 export function renderPreDraftView() {
@@ -167,12 +34,17 @@ export function renderPreDraftView() {
           <div>
             <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff;">🏆 Positional Tier Board</h2>
             <p style="font-size: 0.8rem; color: var(--text-muted);">
-              Check boxes to mark players drafted during live draft. Drag players to reorder within a tier. Adjust vertical gaps between tier blocks using the <strong>↕ Gap Handles</strong> or <strong>+/-</strong> buttons.
+              Check boxes to mark players drafted. Drag players to reorder within a tier. Adjust vertical gaps using <strong>↕ Gap Handles</strong>. Your board preserves across refreshes from YAML!
             </p>
           </div>
 
           <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
             <input type="text" class="search-input" id="board-search" placeholder="🔍 Search player..." value="${searchQuery}">
+            
+            <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
+            <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Load tier board from a local YAML file">
+              📂 Load YAML
+            </button>
             <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
               📥 Export Board (YAML)
             </button>
@@ -339,11 +211,40 @@ export function renderPreDraftView() {
     });
   }
 
+  // Import / Load YAML Button
+  const btnImport = container.querySelector('#btn-import-board');
+  const fileInput = container.querySelector('#file-import-yaml');
+  if (btnImport && fileInput) {
+    btnImport.addEventListener('click', () => {
+      fileInput.value = '';
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const yamlText = event.target.result;
+        const success = store.loadFromYaml(yamlText);
+        if (success) {
+          await api.saveBoardYaml(yamlText);
+          alert(`✅ Successfully loaded tier board from "${file.name}"! Tiers, gaps, and rankings are preserved across refreshes.`);
+          renderPreDraftView();
+        } else {
+          alert('⚠️ Could not parse the selected YAML file. Please make sure it is a valid tier board file.');
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
   // Export Board (YAML) Button
   const btnExport = container.querySelector('#btn-export-board');
   if (btnExport) {
     btnExport.addEventListener('click', () => {
-      const yamlContent = generateBoardYaml(store.getState(), positions, availableTiers);
+      const yamlContent = store.exportYaml();
       const dateStr = new Date().toISOString().split('T')[0];
       downloadFile(yamlContent, `fantasy_tier_board_${dateStr}.yaml`, 'text/yaml;charset=utf-8;');
     });

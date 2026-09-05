@@ -154,6 +154,43 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // GET /api/board/yaml
+  if (method === 'GET' && pathname === '/api/board/yaml') {
+    try {
+      const yamlPath = path.join(__dirname, 'data', 'tier_board.yaml');
+      const publicYamlPath = path.join(__dirname, 'public', 'data', 'tier_board.yaml');
+      if (fs.existsSync(yamlPath)) {
+        const yamlContent = fs.readFileSync(yamlPath, 'utf8');
+        return sendJson(res, { success: true, yaml: yamlContent });
+      } else if (fs.existsSync(publicYamlPath)) {
+        const yamlContent = fs.readFileSync(publicYamlPath, 'utf8');
+        return sendJson(res, { success: true, yaml: yamlContent });
+      }
+      return sendJson(res, { success: false, message: 'No YAML file found' });
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // POST /api/board/yaml
+  if (method === 'POST' && pathname === '/api/board/yaml') {
+    try {
+      const body = await parseRequestBody(req);
+      if (body && body.yaml) {
+        const yamlPath = path.join(__dirname, 'data', 'tier_board.yaml');
+        const publicYamlPath = path.join(__dirname, 'public', 'data', 'tier_board.yaml');
+        fs.mkdirSync(path.dirname(yamlPath), { recursive: true });
+        fs.mkdirSync(path.dirname(publicYamlPath), { recursive: true });
+        fs.writeFileSync(yamlPath, body.yaml, 'utf8');
+        fs.writeFileSync(publicYamlPath, body.yaml, 'utf8');
+        return sendJson(res, { success: true });
+      }
+      return sendJson(res, { success: false, error: 'Missing yaml content' }, 400);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
   // GET /api/players
   if (method === 'GET' && pathname === '/api/players') {
     try {

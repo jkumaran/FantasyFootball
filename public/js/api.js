@@ -101,5 +101,27 @@ export const api = {
     } catch (e) {
       return null;
     }
+  },
+
+  async getBoardYaml() {
+    try {
+      const res = await fetch('/api/board/yaml');
+      if (!res.ok) throw new Error('Failed to fetch board yaml');
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async saveBoardYaml(yaml) {
+    try {
+      await fetch('/api/board/yaml', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ yaml })
+      });
+    } catch (e) {
+      console.warn('YAML sync to server failed:', e);
+    }
   }
 };
