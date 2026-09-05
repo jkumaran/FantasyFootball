@@ -87,7 +87,7 @@ export function renderPreDraftView() {
           <input type="text" class="search-input" id="predraft-search" placeholder="Search player or team..." value="${searchQuery}">
           
           <div style="display: flex; gap: 0.25rem;">
-            {['ALL', 'QB', 'RB', 'WR', 'TE', 'DST', 'K'].map(pos => `
+            ${['ALL', 'QB', 'RB', 'WR', 'TE', 'DST', 'K'].map(pos => `
               <button class="filter-btn ${activePos === pos ? 'active' : ''}" data-pos="${pos}">${pos}</button>
             `).join('')}
           </div>

@@ -224,7 +224,7 @@ export function renderLiveDraftView() {
         </div>
 
         <div class="roster-list">
-          {['QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'DST', 'K'].map((slot, idx) => {
+          ${['QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'DST', 'K'].map((slot, idx) => {
             let player = null;
             if (slot === 'QB') player = userTeamPlayers.find(p => p.pos === 'QB');
             else if (slot === 'RB') {
