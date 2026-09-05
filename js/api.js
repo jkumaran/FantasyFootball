@@ -106,11 +106,26 @@ export const api = {
   async getBoardYaml() {
     try {
       const res = await fetch('/api/board/yaml');
-      if (!res.ok) throw new Error('Failed to fetch board yaml');
-      return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.yaml) return data;
+      }
     } catch (e) {
-      return null;
+      console.warn('API getBoardYaml failed:', e);
     }
+    // Fallback: fetch static file /data/tier_board.yaml
+    try {
+      const res2 = await fetch('/data/tier_board.yaml');
+      if (res2.ok) {
+        const text = await res2.text();
+        if (text && text.includes('positions:')) {
+          return { success: true, yaml: text, file: 'data/tier_board.yaml (static)' };
+        }
+      }
+    } catch (e) {
+      console.warn('Static getBoardYaml fallback failed:', e);
+    }
+    return null;
   },
 
   async saveBoardYaml(yaml) {

@@ -85,6 +85,8 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=UTF-8',
   '.js': 'application/javascript; charset=UTF-8',
   '.json': 'application/json',
+  '.yaml': 'text/yaml; charset=UTF-8',
+  '.yml': 'text/yaml; charset=UTF-8',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml'
@@ -157,16 +159,18 @@ const server = http.createServer(async (req, res) => {
   // GET /api/board/yaml
   if (method === 'GET' && pathname === '/api/board/yaml') {
     try {
-      const yamlPath = path.join(__dirname, 'data', 'tier_board.yaml');
-      const publicYamlPath = path.join(__dirname, 'public', 'data', 'tier_board.yaml');
-      if (fs.existsSync(yamlPath)) {
-        const yamlContent = fs.readFileSync(yamlPath, 'utf8');
-        return sendJson(res, { success: true, yaml: yamlContent });
-      } else if (fs.existsSync(publicYamlPath)) {
-        const yamlContent = fs.readFileSync(publicYamlPath, 'utf8');
-        return sendJson(res, { success: true, yaml: yamlContent });
+      const candidates = [
+        path.join(__dirname, 'tier_board.yaml'),
+        path.join(__dirname, 'data', 'tier_board.yaml'),
+        path.join(__dirname, 'public', 'data', 'tier_board.yaml')
+      ];
+      for (const filePath of candidates) {
+        if (fs.existsSync(filePath)) {
+          const yamlContent = fs.readFileSync(filePath, 'utf8');
+          return sendJson(res, { success: true, yaml: yamlContent, file: path.basename(filePath) });
+        }
       }
-      return sendJson(res, { success: false, message: 'No YAML file found' });
+      return sendJson(res, { success: false, message: 'No fixed YAML file found' });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }
@@ -177,12 +181,17 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await parseRequestBody(req);
       if (body && body.yaml) {
-        const yamlPath = path.join(__dirname, 'data', 'tier_board.yaml');
-        const publicYamlPath = path.join(__dirname, 'public', 'data', 'tier_board.yaml');
-        fs.mkdirSync(path.dirname(yamlPath), { recursive: true });
-        fs.mkdirSync(path.dirname(publicYamlPath), { recursive: true });
-        fs.writeFileSync(yamlPath, body.yaml, 'utf8');
-        fs.writeFileSync(publicYamlPath, body.yaml, 'utf8');
+        const paths = [
+          path.join(__dirname, 'tier_board.yaml'),
+          path.join(__dirname, 'data', 'tier_board.yaml'),
+          path.join(__dirname, 'public', 'data', 'tier_board.yaml')
+        ];
+        paths.forEach(p => {
+          try {
+            fs.mkdirSync(path.dirname(p), { recursive: true });
+            fs.writeFileSync(p, body.yaml, 'utf8');
+          } catch (e) {}
+        });
         return sendJson(res, { success: true });
       }
       return sendJson(res, { success: false, error: 'Missing yaml content' }, 400);

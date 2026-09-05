@@ -21,6 +21,15 @@ export function parseBoardYaml(yamlText) {
     positions: []
   };
 
+  function extractYamlString(str) {
+    if (!str) return '';
+    const s = str.trim();
+    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+      return s.slice(1, -1).replace(/\\"/g, '"');
+    }
+    return s;
+  }
+
   const lines = yamlText.split(/\r?\n/);
   let currentSection = null;
   let currentPos = null;
@@ -45,9 +54,9 @@ export function parseBoardYaml(yamlText) {
     }
 
     if (currentSection === 'gaps') {
-      const posMatch = rawLine.match(/^  ([A-Z]+):/);
+      const posMatch = rawLine.match(/^  ([A-Za-z]+):/);
       if (posMatch) {
-        currentPos = posMatch[1];
+        currentPos = posMatch[1].toUpperCase();
         if (!result.tierGaps[currentPos]) result.tierGaps[currentPos] = {};
         continue;
       }
@@ -58,9 +67,9 @@ export function parseBoardYaml(yamlText) {
         result.tierGaps[currentPos][tNum] = gapVal;
       }
     } else if (currentSection === 'positions') {
-      const posMatch = rawLine.match(/^  ([A-Z]+):/);
+      const posMatch = rawLine.match(/^  ([A-Za-z]+):/);
       if (posMatch) {
-        currentPos = posMatch[1];
+        currentPos = posMatch[1].toUpperCase();
         if (!result.positions.includes(currentPos)) result.positions.push(currentPos);
         continue;
       }
@@ -89,17 +98,17 @@ export function parseBoardYaml(yamlText) {
         };
         const rankMatch = trimmed.match(/- rank_in_tier:\s*(\d+)/);
         if (rankMatch) currentPlayer.rankInTier = parseInt(rankMatch[1], 10);
-        const nameMatch = trimmed.match(/- name:\s*"([^"]+)"/);
-        if (nameMatch) currentPlayer.name = nameMatch[1];
+        const nameMatch = trimmed.match(/- name:\s*(.*)$/);
+        if (nameMatch) currentPlayer.name = extractYamlString(nameMatch[1]);
         continue;
       }
 
       if (currentPlayer) {
-        const nameMatch = trimmed.match(/^name:\s*"([^"]+)"/);
-        if (nameMatch) currentPlayer.name = nameMatch[1];
+        const nameMatch = trimmed.match(/^name:\s*(.*)$/);
+        if (nameMatch) currentPlayer.name = extractYamlString(nameMatch[1]);
 
-        const teamMatch = trimmed.match(/^team:\s*"([^"]+)"/);
-        if (teamMatch) currentPlayer.team = teamMatch[1];
+        const teamMatch = trimmed.match(/^team:\s*(.*)$/);
+        if (teamMatch) currentPlayer.team = extractYamlString(teamMatch[1]);
 
         const byeMatch = trimmed.match(/^bye:\s*(\d+)/);
         if (byeMatch) currentPlayer.bye = parseInt(byeMatch[1], 10);
@@ -153,9 +162,8 @@ class Store {
         };
       }
     } catch (e) {
-      console.warn('LocalStorage error:', e);
+      console.warn('Load local state error:', e);
     }
-
     return {
       league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
       players: INITIAL_PLAYERS,
@@ -171,10 +179,10 @@ class Store {
 
   async syncFromBackend() {
     try {
-      // 1. Prioritize loading from YAML file on the server if it exists
+      // 1. By default, load from fixed YAML file on the server if it exists
       const yamlResult = await api.getBoardYaml();
       if (yamlResult && yamlResult.success && yamlResult.yaml) {
-        this.loadFromYaml(yamlResult.yaml);
+        this.loadFromYaml(yamlResult.yaml, true);
         return;
       }
     } catch (e) {
@@ -193,48 +201,64 @@ class Store {
     }
   }
 
-  loadFromYaml(yamlText) {
+  loadFromYaml(yamlText, skipBackendSave = false) {
     const parsed = parseBoardYaml(yamlText);
     if (!parsed) return false;
 
-    // 1. Apply tier gaps if present
-    if (parsed.tierGaps && Object.keys(parsed.tierGaps).length > 0) {
-      this.state.tierGaps = {
-        ...this.state.tierGaps,
-        ...parsed.tierGaps
-      };
+    // 1. Apply tier gaps if present (deep-merge by position)
+    if (parsed.tierGaps && typeof parsed.tierGaps === 'object') {
+      if (!this.state.tierGaps) this.state.tierGaps = {};
+      Object.keys(parsed.tierGaps).forEach(pos => {
+        this.state.tierGaps[pos] = {
+          ...(this.state.tierGaps[pos] || {}),
+          ...parsed.tierGaps[pos]
+        };
+      });
     }
 
-    // 2. Apply player tiers, positions, custom ranks, and draft statuses
+    // 2. Apply player tiers, positions, custom ranks, and draft statuses in YAML sequence
     if (parsed.players && parsed.players.length > 0) {
-      const updatedPlayers = [...this.state.players];
-      const newlyDraftedIds = [];
+      const orderedPlayers = [];
+      const usedIds = new Set();
+      const yamlDraftedMap = new Map(); // playerId -> boolean
 
       parsed.players.forEach((yp, index) => {
-        let match = updatedPlayers.find(p => p.name.toLowerCase() === yp.name.toLowerCase() && p.pos === yp.pos);
+        let match = this.state.players.find(p => p.name.toLowerCase() === yp.name.toLowerCase() && p.pos.toUpperCase() === yp.pos.toUpperCase());
         if (!match) {
-          match = updatedPlayers.find(p => p.name.toLowerCase() === yp.name.toLowerCase());
+          match = this.state.players.find(p => p.name.toLowerCase() === yp.name.toLowerCase());
+        }
+
+        const slug = (yp.name || 'player').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const deterministicId = `${yp.pos.toLowerCase()}-${slug}`;
+
+        if (!match) {
+          match = this.state.players.find(p => p.id === deterministicId);
         }
 
         if (match) {
-          match.tier = yp.tier || match.tier;
+          match.tier = yp.tier || match.tier || 1;
           match.pos = yp.pos || match.pos;
           match.customRank = index + 1;
-          if (yp.projectedPts) match.projectedPts = yp.projectedPts;
-          if (yp.ecr) match.ecr = yp.ecr;
-          if (yp.bye) match.bye = yp.bye;
+          if (yp.projectedPts !== undefined) match.projectedPts = yp.projectedPts;
+          if (yp.ecr !== undefined) match.ecr = yp.ecr;
+          if (yp.bye !== undefined) match.bye = yp.bye;
           if (yp.team) match.team = yp.team;
-          if (yp.drafted) newlyDraftedIds.push(match.id);
+
+          if (!usedIds.has(match.id)) {
+            orderedPlayers.push(match);
+            usedIds.add(match.id);
+          }
+          yamlDraftedMap.set(match.id, !!yp.drafted);
         } else {
-          // Custom player in YAML
+          // New player from YAML
           const newPlayer = {
-            id: `${yp.pos.toLowerCase()}-yaml-${Date.now()}-${index}`,
+            id: deterministicId,
             name: yp.name,
             pos: yp.pos,
             team: yp.team || 'FA',
             bye: yp.bye || 8,
             tier: yp.tier || 1,
-            ecr: yp.ecr || 50,
+            ecr: yp.ecr || (index + 1),
             customRank: index + 1,
             projectedPts: yp.projectedPts || 200,
             floorPts: 10,
@@ -249,33 +273,53 @@ class Store {
             notes: 'Loaded from YAML',
             sleeperTag: null
           };
-          updatedPlayers.push(newPlayer);
-          if (yp.drafted) newlyDraftedIds.push(newPlayer.id);
+          orderedPlayers.push(newPlayer);
+          usedIds.add(newPlayer.id);
+          yamlDraftedMap.set(newPlayer.id, !!yp.drafted);
         }
       });
 
-      this.state.players = updatedPlayers;
+      // Retain any remaining players in state that were not explicitly listed in YAML
+      this.state.players.forEach(p => {
+        if (!usedIds.has(p.id)) {
+          orderedPlayers.push(p);
+        }
+      });
 
-      // Update drafted state
-      if (newlyDraftedIds.length > 0) {
-        newlyDraftedIds.forEach(id => {
-          if (!this.isPlayerDrafted(id)) {
-            const player = this.state.players.find(p => p.id === id);
-            if (player) {
-              const pickNum = this.state.draftPicks.length + 1;
-              const teamsCount = this.state.league.teamsCount || 12;
-              const round = Math.ceil(pickNum / teamsCount);
-              const pickInRound = ((pickNum - 1) % teamsCount) + 1;
-              const teamId = (round % 2 === 1) ? pickInRound : (teamsCount - pickInRound + 1);
-              this.state.draftPicks.push({ pickNum, round, teamId, player });
-            }
+      this.state.players = orderedPlayers;
+
+      // 3. Synchronize draft picks with YAML drafted status
+      this.state.draftPicks = this.state.draftPicks.filter(dp => {
+        if (!dp.player) return false;
+        if (yamlDraftedMap.has(dp.player.id)) {
+          return yamlDraftedMap.get(dp.player.id) === true;
+        }
+        return true;
+      });
+
+      yamlDraftedMap.forEach((isDrafted, playerId) => {
+        if (isDrafted && !this.isPlayerDrafted(playerId)) {
+          const player = this.state.players.find(p => p.id === playerId);
+          if (player) {
+            const pickNum = this.state.draftPicks.length + 1;
+            const teamsCount = this.state.league.teamsCount || 12;
+            const round = Math.ceil(pickNum / teamsCount);
+            const pickInRound = ((pickNum - 1) % teamsCount) + 1;
+            const teamId = (round % 2 === 1) ? pickInRound : (teamsCount - pickInRound + 1);
+            this.state.draftPicks.push({ pickNum, round, teamId, player });
           }
-        });
-        this.state.currentPick = this.state.draftPicks.length + 1;
-      }
+        }
+      });
+
+      this.state.draftPicks.forEach((dp, i) => {
+        dp.pickNum = i + 1;
+        const teamsCount = this.state.league.teamsCount || 12;
+        dp.round = Math.ceil(dp.pickNum / teamsCount);
+      });
+      this.state.currentPick = this.state.draftPicks.length + 1;
     }
 
-    this.saveState();
+    this.saveState(skipBackendSave);
     return true;
   }
 
@@ -405,7 +449,7 @@ class Store {
     return lines.join(String.fromCharCode(10)) + String.fromCharCode(10);
   }
 
-  saveState() {
+  saveState(skipBackendSave = false) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
     } catch (e) {
@@ -413,14 +457,16 @@ class Store {
     }
     this.notify();
 
-    // Auto-sync YAML to backend so data/tier_board.yaml stays preserved across refreshes
-    if (this._syncTimer) clearTimeout(this._syncTimer);
-    this._syncTimer = setTimeout(() => {
-      try {
-        const yamlStr = this.exportYaml();
-        api.saveBoardYaml(yamlStr);
-      } catch (e) {}
-    }, 1500);
+    if (!skipBackendSave) {
+      // Auto-sync YAML to backend so fixed tier_board.yaml stays preserved across refreshes
+      if (this._syncTimer) clearTimeout(this._syncTimer);
+      this._syncTimer = setTimeout(() => {
+        try {
+          const yamlStr = this.exportYaml();
+          api.saveBoardYaml(yamlStr);
+        } catch (e) {}
+      }, 1500);
+    }
   }
 
   subscribe(listener) {
