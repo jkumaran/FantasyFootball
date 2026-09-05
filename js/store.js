@@ -4,12 +4,12 @@ import { api } from './api.js';
 const STORAGE_KEY = 'fantasy_suite_state_v1';
 
 export const DEFAULT_TIER_GAPS = {
-  RB: { 1: 0, 2: 30, 3: 30, 4: 30, 5: 30 },
-  WR: { 1: 45, 2: 30, 3: 30, 4: 30, 5: 30 },
-  TE: { 1: 180, 2: 30, 3: 30, 4: 30, 5: 30 },
-  QB: { 1: 240, 2: 35, 3: 30, 4: 30, 5: 30 },
-  DST: { 1: 450, 2: 30, 3: 30, 4: 30, 5: 30 },
-  K: { 1: 500, 2: 30, 3: 30, 4: 30, 5: 30 }
+  RB: { 1: 0, 2: 30 },
+  WR: { 1: 45 },
+  TE: { 1: 180 },
+  QB: { 1: 240 },
+  DST: { 1: 450 },
+  K: { 1: 500 }
 };
 
 export function parseBoardYaml(yamlText) {
@@ -139,13 +139,40 @@ class Store {
     this.syncFromBackend();
   }
 
+  cleanEmptyTiersFromState(targetState = this.state) {
+    if (!targetState || !targetState.players) return;
+    const positions = ['RB', 'WR', 'TE', 'QB', 'DST', 'K'];
+    positions.forEach(pos => {
+      const activeTiers = new Set();
+      targetState.players.filter(p => p.pos === pos).forEach(p => {
+        if (p.tier) activeTiers.add(Number(p.tier));
+      });
+      if (targetState.customAddedTiers && targetState.customAddedTiers[pos]) {
+        targetState.customAddedTiers[pos].forEach(t => activeTiers.add(Number(t)));
+      }
+      if (activeTiers.size === 0) activeTiers.add(1);
+
+      if (targetState.tierGaps && targetState.tierGaps[pos]) {
+        Object.keys(targetState.tierGaps[pos]).forEach(t => {
+          if (!activeTiers.has(Number(t))) {
+            delete targetState.tierGaps[pos][t];
+          }
+        });
+      }
+      if (targetState.positionTiers && targetState.positionTiers[pos]) {
+        targetState.positionTiers[pos] = targetState.positionTiers[pos].filter(t => activeTiers.has(Number(t)));
+      }
+    });
+  }
+
   loadInitialState() {
     const isAuthedLocal = localStorage.getItem('auth_unlocked_v1') === 'true';
+    let state = null;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return {
+        state = {
           league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
           players: INITIAL_PLAYERS,
           draftPicks: [],
@@ -155,6 +182,7 @@ class Store {
           opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
           opponentProjected: 115.0,
           tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
+          customAddedTiers: {},
           ...parsed,
           isAuthenticated: isAuthedLocal,
           tierGaps: {
@@ -166,18 +194,23 @@ class Store {
     } catch (e) {
       console.warn('Load local state error:', e);
     }
-    return {
-      league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
-      players: INITIAL_PLAYERS,
-      draftPicks: [],
-      currentPick: 1,
-      weeklyStrategy: 'CONSERVATIVE',
-      userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
-      opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
-      opponentProjected: 115.0,
-      tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
-      isAuthenticated: isAuthedLocal
-    };
+    if (!state) {
+      state = {
+        league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
+        players: INITIAL_PLAYERS,
+        draftPicks: [],
+        currentPick: 1,
+        weeklyStrategy: 'CONSERVATIVE',
+        userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
+        opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
+        opponentProjected: 115.0,
+        tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
+        customAddedTiers: {},
+        isAuthenticated: isAuthedLocal
+      };
+    }
+    this.cleanEmptyTiersFromState(state);
+    return state;
   }
 
   async syncFromBackend() {
@@ -328,6 +361,7 @@ class Store {
       this.state.currentPick = this.state.draftPicks.length + 1;
     }
 
+    this.cleanEmptyTiersFromState();
     this.saveState(skipBackendSave);
     return true;
   }
@@ -497,36 +531,61 @@ class Store {
   }
 
   getTiersForPos(pos) {
-    const set = new Set([1, 2, 3, 4, 5]);
-    if (this.state.positionTiers && this.state.positionTiers[pos]) {
-      this.state.positionTiers[pos].forEach(t => set.add(Number(t)));
-    }
-    if (this.state.tierGaps && this.state.tierGaps[pos]) {
-      Object.keys(this.state.tierGaps[pos]).forEach(t => set.add(Number(t)));
-    }
+    const set = new Set();
     if (this.state.players) {
       this.state.players.filter(p => p.pos === pos).forEach(p => {
         if (p.tier) set.add(Number(p.tier));
       });
     }
+    if (this.state.customAddedTiers && this.state.customAddedTiers[pos]) {
+      this.state.customAddedTiers[pos].forEach(t => set.add(Number(t)));
+    }
+    if (set.size === 0) set.add(1);
     return Array.from(set).sort((a, b) => a - b);
   }
 
   addTier(pos) {
     const currentTiers = this.getTiersForPos(pos);
     const nextTier = (currentTiers.length > 0 ? Math.max(...currentTiers) : 0) + 1;
-    if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
+    if (!this.state.tierGaps) this.state.tierGaps = {};
     if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
     this.state.tierGaps[pos][nextTier] = 30;
 
-    if (!this.state.positionTiers) this.state.positionTiers = {};
-    if (!this.state.positionTiers[pos]) this.state.positionTiers[pos] = [...currentTiers];
-    if (!this.state.positionTiers[pos].includes(nextTier)) {
-      this.state.positionTiers[pos].push(nextTier);
+    if (!this.state.customAddedTiers) this.state.customAddedTiers = {};
+    if (!this.state.customAddedTiers[pos]) this.state.customAddedTiers[pos] = [];
+    if (!this.state.customAddedTiers[pos].includes(nextTier)) {
+      this.state.customAddedTiers[pos].push(nextTier);
     }
 
     this.saveState();
     return nextTier;
+  }
+
+  deleteTier(pos, tierNum) {
+    tierNum = Number(tierNum);
+    // Move any players in this tier to previous tier or tier 1
+    if (this.state.players) {
+      const fallbackTier = Math.max(1, tierNum - 1);
+      this.state.players.forEach(p => {
+        if (p.pos === pos && Number(p.tier) === tierNum) {
+          p.tier = fallbackTier;
+        }
+      });
+    }
+    if (this.state.customAddedTiers && this.state.customAddedTiers[pos]) {
+      this.state.customAddedTiers[pos] = this.state.customAddedTiers[pos].filter(t => Number(t) !== tierNum);
+    }
+    if (this.state.tierGaps && this.state.tierGaps[pos]) {
+      delete this.state.tierGaps[pos][tierNum];
+    }
+    this.cleanEmptyTiersFromState();
+    this.saveState();
+  }
+
+  removeEmptyTiers() {
+    this.state.customAddedTiers = {};
+    this.cleanEmptyTiersFromState();
+    this.saveState();
   }
 
   getTierGap(pos, tierNum) {

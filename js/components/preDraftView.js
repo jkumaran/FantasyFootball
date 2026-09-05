@@ -47,6 +47,9 @@ export function renderPreDraftView() {
             <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Load tier board from a local YAML file">
               📂 Load YAML
             </button>
+            <button class="btn-secondary" id="btn-clean-empty-tiers" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Remove all tiers with no players">
+              🗑️ Remove Empty Tiers
+            </button>
             <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
               📥 Export Board (YAML)
             </button>
@@ -115,7 +118,10 @@ export function renderPreDraftView() {
                           <span class="tier-drag-handle" title="Drag up/down">↕</span>
                           <span style="font-weight: 800; font-size: 0.76rem; color: var(--accent-primary);">TIER ${tierNum}</span>
                         </div>
-                        <span class="tier-badge" style="font-size: 0.65rem;">${tierPlayers.length}</span>
+                        <div style="display: flex; align-items: center; gap: 0.35rem;">
+                          <span class="tier-badge" style="font-size: 0.65rem;">${tierPlayers.length}</span>
+                          <button class="btn-remove-tier" data-pos="${pos}" data-tier="${tierNum}" title="Remove Tier ${tierNum}" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.75rem; padding: 0.1rem 0.25rem; border-radius: 3px; line-height: 1;">✕</button>
+                        </div>
                       </div>
 
                       <!-- Player Cards Drop Zone -->
@@ -261,6 +267,19 @@ export function renderPreDraftView() {
     });
   }
 
+  // Remove Empty Tiers Button
+  const btnCleanEmpty = container.querySelector('#btn-clean-empty-tiers');
+  if (btnCleanEmpty) {
+    btnCleanEmpty.addEventListener('click', () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
+      store.removeEmptyTiers();
+      renderPreDraftView();
+    });
+  }
+
   // Quick Add Player
   const handleAddPlayer = (pos, inputEl) => {
     if (!store.getState().isAuthenticated) {
@@ -328,6 +347,23 @@ export function renderPreDraftView() {
       if (!pos) return;
       store.addTier(pos);
       renderPreDraftView();
+    });
+  });
+
+  // --- DELETE TIER ---
+  container.querySelectorAll('.btn-remove-tier').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
+      const pos = btn.dataset.pos;
+      const tierNum = parseInt(btn.dataset.tier, 10);
+      if (pos && !isNaN(tierNum)) {
+        store.deleteTier(pos, tierNum);
+        renderPreDraftView();
+      }
     });
   });
 

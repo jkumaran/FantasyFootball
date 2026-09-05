@@ -1,6 +1,7 @@
 # ========================================================================================================================
 #                                      🏈 FANTASY FOOTBALL POSITIONAL TIER BOARD                                          
 # ========================================================================================================================
+# Exported: 2026-09-05T13:38:19.106Z
 # Format: Half-PPR Snake Draft (12 Teams)
 # Column Order: RB -> WR -> TE -> QB -> DST -> K
 # Legend: [ ] = Available, [X] = Drafted
@@ -18,38 +19,24 @@
 #                          | [ ] J. Jefferson (MIN)   | === TIER 1 ===           |                          |                          |                         
 # === TIER 2 ===           | [ ] A. St. Brown (DET)   | [ ] T. Kelce (KC)        |                          |                          |                         
 # [ ] J. Taylor (IND)      |                          | [ ] S. LaPorta (DET)     |                          |                          |                         
-# [ ] J. Gibbs (DET)       |                          |                          | === TIER 1 ===           |                          |                         
-#                          | === TIER 2 ===           |                          | [ ] J. Allen (BUF)       |                          |                         
-#                          | (No players)             | === TIER 2 ===           | [ ] J. Hurts (PHI)       |                          |                         
-# === TIER 3 ===           |                          | (No players)             |                          |                          |                         
-# (No players)             |                          |                          |                          |                          |                         
-#                          | === TIER 3 ===           |                          | === TIER 2 ===           |                          |                         
-#                          | (No players)             | === TIER 3 ===           | (No players)             |                          |                         
-# === TIER 4 ===           |                          | (No players)             |                          | === TIER 1 ===           |                         
-# (No players)             |                          |                          |                          | [ ] S. Francisco 49ers ( |                         
-#                          | === TIER 4 ===           |                          | === TIER 3 ===           |                          | === TIER 1 ===          
-#                          | (No players)             | === TIER 4 ===           | (No players)             |                          | [ ] J. Tucker (BAL)     
-# === TIER 5 ===           |                          | (No players)             |                          | === TIER 2 ===           |                         
-# (No players)             |                          |                          |                          | (No players)             |                         
-#                          | === TIER 5 ===           |                          | === TIER 4 ===           |                          | === TIER 2 ===          
-#                          | (No players)             | === TIER 5 ===           | (No players)             |                          | (No players)            
-#                          |                          | (No players)             |                          | === TIER 3 ===           |                         
-#                          |                          |                          |                          | (No players)             |                         
-#                          |                          |                          | === TIER 5 ===           |                          | === TIER 3 ===          
-#                          |                          |                          | (No players)             |                          | (No players)            
-#                          |                          |                          |                          | === TIER 4 ===           |                         
-#                          |                          |                          |                          | (No players)             |                         
-#                          |                          |                          |                          |                          | === TIER 4 ===          
-#                          |                          |                          |                          |                          | (No players)            
-#                          |                          |                          |                          | === TIER 5 ===           |                         
-#                          |                          |                          |                          | (No players)             |                         
-#                          |                          |                          |                          |                          | === TIER 5 ===          
-#                          |                          |                          |                          |                          | (No players)            
+# [ ] J. Gibbs (DET)       |                          | [ ] T. McBride (ARI)     | === TIER 1 ===           |                          |                         
+# [ ] K. Williams (LAR)    | === TIER 2 ===           |                          | [ ] J. Allen (BUF)       |                          |                         
+# [ ] D. Henry (BAL)       | [ ] A. Brown (PHI)       |                          | [ ] J. Hurts (PHI)       |                          |                         
+#                          | [ ] P. Nacua (LAR)       | === TIER 2 ===           | [ ] L. Jackson (BAL)     |                          |                         
+#                          | [ ] M. Harrison Jr. (AR… | [ ] M. Andrews (BAL)     |                          |                          |                         
+# === TIER 3 ===           | [ ] G. Wilson (NYJ)      |                          |                          |                          |                         
+# [ ] D. Achane (MIA)      |                          |                          | === TIER 2 ===           |                          |                         
+# [ ] I. Pacheco (KC)      |                          |                          | [ ] P. Mahomes (KC)      | === TIER 1 ===           |                         
+#                          | === TIER 3 ===           |                          |                          | [ ] S. Francisco 49ers … |                         
+#                          | [ ] N. Collins (HOU)     |                          |                          | [ ] B. Ravens (BAL)      | === TIER 1 ===          
+#                          |                          |                          |                          |                          | [ ] J. Tucker (BAL)     
+#                          |                          |                          |                          |                          | [ ] B. Aubrey (DAL)     
 #                          |                          |                          |                          |                          |                         
 # ========================================================================================================================
 
 metadata:
   version: "1.0"
+  exported_at: "2026-09-05T13:38:19.106Z"
   scoring_format: "Half-PPR"
   draft_type: "Snake"
   teams_count: 12
@@ -66,39 +53,21 @@ vertical_tier_gaps_px:
   RB:
     tier_1: 0
     tier_2: 30
-    tier_3: 30
-    tier_4: 30
-    tier_5: 30
+    tier_3: 25
   WR:
     tier_1: 45
-    tier_2: 30
-    tier_3: 30
-    tier_4: 30
-    tier_5: 30
+    tier_2: 25
+    tier_3: 25
   TE:
     tier_1: 180
-    tier_2: 30
-    tier_3: 30
-    tier_4: 30
-    tier_5: 30
+    tier_2: 25
   QB:
     tier_1: 240
-    tier_2: 35
-    tier_3: 30
-    tier_4: 30
-    tier_5: 30
+    tier_2: 25
   DST:
     tier_1: 450
-    tier_2: 30
-    tier_3: 30
-    tier_4: 30
-    tier_5: 30
   K:
     tier_1: 500
-    tier_2: 30
-    tier_3: 30
-    tier_4: 30
-    tier_5: 30
 
 positions:
   RB:
@@ -125,7 +94,7 @@ positions:
           team: "ATL"
           bye: 12
           drafted: false
-          projected_pts: 272.0
+          projected_pts: 272
           ecr: 4
         - rank_in_tier: 4
           name: "Saquon Barkley"
@@ -136,7 +105,7 @@ positions:
           ecr: 6
     tier_2:
       offset_gap_px: 30
-      player_count: 2
+      player_count: 4
       players:
         - rank_in_tier: 1
           name: "Jonathan Taylor"
@@ -152,21 +121,38 @@ positions:
           drafted: false
           projected_pts: 240.1
           ecr: 12
+        - rank_in_tier: 3
+          name: "Kyren Williams"
+          team: "LAR"
+          bye: 6
+          drafted: false
+          projected_pts: 232
+          ecr: 15
+        - rank_in_tier: 4
+          name: "Derrick Henry"
+          team: "BAL"
+          bye: 14
+          drafted: false
+          projected_pts: 228.4
+          ecr: 16
     tier_3:
-      offset_gap_px: 30
-      player_count: 0
+      offset_gap_px: 25
+      player_count: 2
       players:
-        []
-    tier_4:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_5:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
+        - rank_in_tier: 1
+          name: "De'Von Achane"
+          team: "MIA"
+          bye: 6
+          drafted: false
+          projected_pts: 215
+          ecr: 22
+        - rank_in_tier: 2
+          name: "Isiah Pacheco"
+          team: "KC"
+          bye: 6
+          drafted: false
+          projected_pts: 210.2
+          ecr: 24
   WR:
     tier_1:
       offset_gap_px: 45
@@ -177,7 +163,7 @@ positions:
           team: "DAL"
           bye: 7
           drafted: false
-          projected_pts: 305.0
+          projected_pts: 305
           ecr: 2
         - rank_in_tier: 2
           name: "Tyreek Hill"
@@ -191,7 +177,7 @@ positions:
           team: "CIN"
           bye: 12
           drafted: false
-          projected_pts: 288.0
+          projected_pts: 288
           ecr: 7
         - rank_in_tier: 4
           name: "Justin Jefferson"
@@ -208,36 +194,59 @@ positions:
           projected_pts: 280.2
           ecr: 9
     tier_2:
-      offset_gap_px: 30
-      player_count: 0
+      offset_gap_px: 25
+      player_count: 4
       players:
-        []
+        - rank_in_tier: 1
+          name: "A.J. Brown"
+          team: "PHI"
+          bye: 5
+          drafted: false
+          projected_pts: 260
+          ecr: 11
+        - rank_in_tier: 2
+          name: "Puka Nacua"
+          team: "LAR"
+          bye: 6
+          drafted: false
+          projected_pts: 255.4
+          ecr: 13
+        - rank_in_tier: 3
+          name: "Marvin Harrison Jr."
+          team: "ARI"
+          bye: 11
+          drafted: false
+          projected_pts: 245
+          ecr: 14
+        - rank_in_tier: 4
+          name: "Garrett Wilson"
+          team: "NYJ"
+          bye: 12
+          drafted: false
+          projected_pts: 242
+          ecr: 17
     tier_3:
-      offset_gap_px: 30
-      player_count: 0
+      offset_gap_px: 25
+      player_count: 1
       players:
-        []
-    tier_4:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_5:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
+        - rank_in_tier: 1
+          name: "Nico Collins"
+          team: "HOU"
+          bye: 14
+          drafted: false
+          projected_pts: 238.5
+          ecr: 18
   TE:
     tier_1:
       offset_gap_px: 180
-      player_count: 2
+      player_count: 3
       players:
         - rank_in_tier: 1
           name: "Travis Kelce"
           team: "KC"
           bye: 6
           drafted: false
-          projected_pts: 210.0
+          projected_pts: 210
           ecr: 20
         - rank_in_tier: 2
           name: "Sam LaPorta"
@@ -246,126 +255,97 @@ positions:
           drafted: false
           projected_pts: 202.4
           ecr: 25
+        - rank_in_tier: 3
+          name: "Trey McBride"
+          team: "ARI"
+          bye: 11
+          drafted: false
+          projected_pts: 195
+          ecr: 29
     tier_2:
-      offset_gap_px: 30
-      player_count: 0
+      offset_gap_px: 25
+      player_count: 1
       players:
-        []
-    tier_3:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_4:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_5:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
+        - rank_in_tier: 1
+          name: "Mark Andrews"
+          team: "BAL"
+          bye: 14
+          drafted: false
+          projected_pts: 185
+          ecr: 32
   QB:
     tier_1:
       offset_gap_px: 240
-      player_count: 2
+      player_count: 3
       players:
         - rank_in_tier: 1
           name: "Josh Allen"
           team: "BUF"
           bye: 12
           drafted: false
-          projected_pts: 375.0
+          projected_pts: 375
           ecr: 19
         - rank_in_tier: 2
           name: "Jalen Hurts"
           team: "PHI"
           bye: 5
           drafted: false
-          projected_pts: 362.0
+          projected_pts: 362
           ecr: 21
+        - rank_in_tier: 3
+          name: "Lamar Jackson"
+          team: "BAL"
+          bye: 14
+          drafted: false
+          projected_pts: 355.8
+          ecr: 23
     tier_2:
-      offset_gap_px: 35
-      player_count: 0
+      offset_gap_px: 25
+      player_count: 1
       players:
-        []
-    tier_3:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_4:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_5:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
+        - rank_in_tier: 1
+          name: "Patrick Mahomes"
+          team: "KC"
+          bye: 6
+          drafted: false
+          projected_pts: 340
+          ecr: 28
   DST:
     tier_1:
       offset_gap_px: 450
-      player_count: 1
+      player_count: 2
       players:
         - rank_in_tier: 1
           name: "San Francisco 49ers"
           team: "SF"
           bye: 9
           drafted: false
-          projected_pts: 135.0
+          projected_pts: 135
           ecr: 110
-    tier_2:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_3:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_4:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_5:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
+        - rank_in_tier: 2
+          name: "Baltimore Ravens"
+          team: "BAL"
+          bye: 14
+          drafted: false
+          projected_pts: 132
+          ecr: 112
   K:
     tier_1:
       offset_gap_px: 500
-      player_count: 1
+      player_count: 2
       players:
         - rank_in_tier: 1
           name: "Justin Tucker"
           team: "BAL"
           bye: 14
           drafted: false
-          projected_pts: 150.0
+          projected_pts: 150
           ecr: 130
-    tier_2:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_3:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_4:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
-    tier_5:
-      offset_gap_px: 30
-      player_count: 0
-      players:
-        []
+        - rank_in_tier: 2
+          name: "Brandon Aubrey"
+          team: "DAL"
+          bye: 7
+          drafted: false
+          projected_pts: 148
+          ecr: 132
+
