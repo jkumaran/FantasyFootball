@@ -303,6 +303,99 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // GET /api/board/sharplineup-yaml
+  if (method === 'GET' && pathname === '/api/board/sharplineup-yaml') {
+    try {
+      const candidates = [
+        path.join(__dirname, 'sharplineup_tier_board.yaml'),
+        path.join(__dirname, 'default_tier_board.yaml'),
+        path.join(__dirname, 'data', 'sharplineup_tier_board.yaml'),
+        path.join(__dirname, 'data', 'default_tier_board.yaml'),
+        path.join(__dirname, 'public', 'data', 'sharplineup_tier_board.yaml')
+      ];
+      for (const filePath of candidates) {
+        if (fs.existsSync(filePath)) {
+          const yamlContent = fs.readFileSync(filePath, 'utf8');
+          return sendJson(res, { success: true, yaml: yamlContent, file: path.basename(filePath) });
+        }
+      }
+      return sendJson(res, { success: false, message: 'SharpLineup YAML file not found' }, 404);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // GET /api/board/jody-koerner-yaml
+  if (method === 'GET' && pathname === '/api/board/jody-koerner-yaml') {
+    try {
+      const candidates = [
+        path.join(__dirname, 'jody_koerner_tier_board.yaml'),
+        path.join(__dirname, 'data', 'jody_koerner_tier_board.yaml'),
+        path.join(__dirname, 'public', 'data', 'jody_koerner_tier_board.yaml')
+      ];
+      for (const filePath of candidates) {
+        if (fs.existsSync(filePath)) {
+          const yamlContent = fs.readFileSync(filePath, 'utf8');
+          return sendJson(res, { success: true, yaml: yamlContent, file: path.basename(filePath) });
+        }
+      }
+      return sendJson(res, { success: false, message: 'Jody/Koerner YAML file not found' }, 404);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // POST /api/board/load-preset
+  if (method === 'POST' && pathname === '/api/board/load-preset') {
+    try {
+      const body = await parseRequestBody(req);
+      const preset = (body && body.preset) || 'sharplineup';
+      let candidateNames = [];
+      if (preset === 'jody_koerner' || preset === 'jody' || preset === 'koerner') {
+        candidateNames = ['jody_koerner_tier_board.yaml', 'data/jody_koerner_tier_board.yaml'];
+      } else {
+        candidateNames = ['sharplineup_tier_board.yaml', 'default_tier_board.yaml', 'data/default_tier_board.yaml'];
+      }
+
+      let presetYaml = null;
+      for (const relPath of candidateNames) {
+        const fullPath = path.join(__dirname, relPath);
+        if (fs.existsSync(fullPath)) {
+          presetYaml = fs.readFileSync(fullPath, 'utf8');
+          break;
+        }
+      }
+
+      if (!presetYaml) {
+        return sendJson(res, { success: false, error: `Preset YAML file for "${preset}" not found` }, 404);
+      }
+
+      // Overwrite active tier board files
+      const paths = [
+        path.join(__dirname, 'tier_board.yaml'),
+        path.join(__dirname, 'data', 'tier_board.yaml'),
+        path.join(__dirname, 'public', 'data', 'tier_board.yaml')
+      ];
+      paths.forEach(p => {
+        try {
+          fs.mkdirSync(path.dirname(p), { recursive: true });
+          fs.writeFileSync(p, presetYaml, 'utf8');
+        } catch (e) {}
+      });
+
+      // Overwrite DB active board
+      try {
+        await db.saveBoardYaml(presetYaml);
+      } catch (dbErr) {
+        console.warn('DB load-preset saveBoardYaml error:', dbErr);
+      }
+
+      return sendJson(res, { success: true, yaml: presetYaml, preset });
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
   // GET /api/board/default-yaml
   if (method === 'GET' && pathname === '/api/board/default-yaml') {
     try {

@@ -597,24 +597,35 @@ class Store {
   }
 
   async resetToDefaultRankings() {
-    try {
-      const res = await api.getDefaultBoardYaml();
-      if (res && res.success && res.yaml) {
-        try {
-          localStorage.removeItem(BOARD_CUSTOM_FLAG);
-        } catch (e) {}
-        this.loadFromYaml(res.yaml, true, false);
-        if (this.isAutosaveEnabled && this.state.isAuthenticated) {
-          await api.saveBoardYaml(res.yaml);
-          this.hasUnsavedChanges = false;
-        } else {
-          this.hasUnsavedChanges = true;
-        }
-        this.notify();
-        return true;
+    return this.loadPreset('sharplineup');
+  }
+
+  async loadPreset(presetName) {
+    let res = null;
+    if (presetName === 'jody_koerner' || presetName === 'jody' || presetName === 'koerner') {
+      res = await api.getJodyKoernerYaml();
+    } else {
+      res = await api.getSharpLineupYaml();
+    }
+
+    if (res && res.success && res.yaml) {
+      try {
+        localStorage.setItem(BOARD_CUSTOM_FLAG, 'true');
+      } catch (e) {}
+
+      // Load into client state (skipBackendSave = true initially)
+      this.loadFromYaml(res.yaml, true, false);
+
+      // If autosave is enabled and user is authenticated, save directly to server
+      if (this.isAutosaveEnabled && this.state.isAuthenticated) {
+        await api.saveBoardYaml(res.yaml);
+        this.hasUnsavedChanges = false;
+      } else {
+        this.hasUnsavedChanges = true;
       }
-    } catch (e) {
-      console.error('resetToDefaultRankings error:', e);
+
+      this.notify();
+      return true;
     }
     return false;
   }

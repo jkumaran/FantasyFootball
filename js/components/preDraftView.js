@@ -152,34 +152,42 @@ export function renderPreDraftView() {
             </p>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
             <input type="text" class="search-input" id="board-search" placeholder="🔍 Search player..." value="${searchQuery}">
             
-            <button class="btn-secondary" id="btn-view-sharplineup" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="View SharpLineup Top 300 rankings & tiers (does not overwrite your board)">
-              👁️ View SharpLineup
+            <button class="btn-secondary" id="btn-load-sharplineup" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Load SharpLineup Market Implied Top 300 rankings">
+              🏈 Load SharpLineup
             </button>
 
-            <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
+            <button class="btn-secondary" id="btn-load-jody-koerner" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Load Jody Smith & Sean Koerner consensus expert rankings">
+              📊 Load Jody/Koerner
+            </button>
+
+            <button class="btn-secondary" id="btn-view-rankings" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="View and compare SharpLineup and Jody/Koerner rankings without modifying board">
+              👁️ View Rankings
+            </button>
+
+            <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
               💾 Save Board ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
             </button>
 
-            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
+            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
               <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
               <span>Autosave</span>
             </label>
 
-            <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Jump down to DST & K tiers">
+            <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Jump down to DST & K tiers">
               🛡️ DST & K ↓
             </button>
             <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
-            <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Load tier board from a local YAML file">
+            <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Load tier board from a local YAML file">
               📂 Load YAML
             </button>
-            <button class="btn-secondary" id="btn-clean-empty-tiers" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Remove all tiers with no players">
-              🗑️ Remove Empty Tiers
+            <button class="btn-secondary" id="btn-clean-empty-tiers" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Remove all tiers with no players">
+              🗑️ Remove Empty
             </button>
-            <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
-              📥 Export Board (YAML)
+            <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
+              📥 Export YAML
             </button>
           </div>
         </div>
@@ -283,11 +291,71 @@ export function renderPreDraftView() {
     });
   }
 
-  // View SharpLineup Modal
-  const btnViewSL = container.querySelector('#btn-view-sharplineup');
-  if (btnViewSL) {
-    btnViewSL.addEventListener('click', () => {
-      openSharpLineupModal();
+  // Load SharpLineup Button
+  const btnLoadSL = container.querySelector('#btn-load-sharplineup');
+  if (btnLoadSL) {
+    btnLoadSL.addEventListener('click', async () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
+      const confirmed = confirm(
+        'Load SharpLineup Top 300 rankings into your tier board?\n\nThis will update your board with the SharpLineup market-implied dataset.'
+      );
+      if (!confirmed) return;
+
+      btnLoadSL.disabled = true;
+      btnLoadSL.innerHTML = '⏳ Loading...';
+      const ok = await store.loadPreset('sharplineup');
+      if (ok) {
+        btnLoadSL.innerHTML = '✅ Loaded!';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 800);
+      } else {
+        btnLoadSL.innerHTML = '❌ Failed';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 1200);
+      }
+    });
+  }
+
+  // Load Jody/Koerner Button
+  const btnLoadJK = container.querySelector('#btn-load-jody-koerner');
+  if (btnLoadJK) {
+    btnLoadJK.addEventListener('click', async () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
+      const confirmed = confirm(
+        'Load Jody Smith & Sean Koerner consensus rankings into your tier board?\n\nThis will update your board with the Jody/Koerner tier dataset.'
+      );
+      if (!confirmed) return;
+
+      btnLoadJK.disabled = true;
+      btnLoadJK.innerHTML = '⏳ Loading...';
+      const ok = await store.loadPreset('jody_koerner');
+      if (ok) {
+        btnLoadJK.innerHTML = '✅ Loaded!';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 800);
+      } else {
+        btnLoadJK.innerHTML = '❌ Failed';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 1200);
+      }
+    });
+  }
+
+  // View Rankings Modal
+  const btnViewRankings = container.querySelector('#btn-view-rankings');
+  if (btnViewRankings) {
+    btnViewRankings.addEventListener('click', () => {
+      openSharpLineupModal('sharplineup');
     });
   }
 

@@ -248,6 +248,69 @@ export const api = {
     return null;
   },
 
+  async getSharpLineupYaml() {
+    try {
+      const res = await fetch('/api/board/sharplineup-yaml', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.yaml) return data;
+      }
+    } catch (e) {
+      console.warn('API getSharpLineupYaml failed:', e);
+    }
+    try {
+      const res2 = await fetch('/data/sharplineup_tier_board.yaml');
+      if (res2.ok) {
+        const text = await res2.text();
+        if (text && text.includes('positions:')) {
+          return { success: true, yaml: text, file: 'data/sharplineup_tier_board.yaml' };
+        }
+      }
+    } catch (e) {}
+    return this.getDefaultBoardYaml();
+  },
+
+  async getJodyKoernerYaml() {
+    try {
+      const res = await fetch('/api/board/jody-koerner-yaml', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.yaml) return data;
+      }
+    } catch (e) {
+      console.warn('API getJodyKoernerYaml failed:', e);
+    }
+    try {
+      const res2 = await fetch('/data/jody_koerner_tier_board.yaml');
+      if (res2.ok) {
+        const text = await res2.text();
+        if (text && text.includes('positions:')) {
+          return { success: true, yaml: text, file: 'data/jody_koerner_tier_board.yaml' };
+        }
+      }
+    } catch (e) {}
+    return null;
+  },
+
+  async loadPresetBoard(preset) {
+    try {
+      const res = await fetch('/api/board/load-preset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ preset })
+      });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+        return { success: false, error: 'Authentication required' };
+      }
+      return await res.json();
+    } catch (e) {
+      console.warn('API loadPresetBoard failed:', e);
+      return { success: false, error: e.message };
+    }
+  },
+
   async resetToDefaultBoard() {
     try {
       const res = await fetch('/api/board/reset-default', {
