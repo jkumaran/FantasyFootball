@@ -346,11 +346,19 @@ body {
 /* --- Multi-Column Positional Tier Board Styles --- */
 .position-columns-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(140px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 0.6rem;
   overflow-x: auto;
   align-items: flex-start;
-  padding-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+}
+
+.specialists-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(200px, 1fr));
+  gap: 0.75rem;
+  overflow-x: auto;
+  align-items: flex-start;
 }
 
 .pos-column {
@@ -1020,9 +1028,21 @@ body {
   .weekly-layout { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .position-columns-grid {
-    grid-template-columns: repeat(6, minmax(130px, 1fr));
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+  }
+  .specialists-grid {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .position-columns-grid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+  .specialists-grid {
+    grid-template-columns: 1fr;
   }
 }
 

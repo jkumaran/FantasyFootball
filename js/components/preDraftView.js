@@ -22,11 +22,122 @@ export function renderPreDraftView() {
   const { players } = state;
   const isAuthed = Boolean(state.isAuthenticated);
 
-  // Position columns: TE is positioned directly to the right of WR
-  const positions = ['RB', 'WR', 'TE', 'QB', 'DST', 'K'];
+  // Primary offensive positions: 4 columns side-by-side (RB, WR, TE, QB)
+  const primaryPositions = ['RB', 'WR', 'TE', 'QB'];
+  // Specialist positions rendered separately at the bottom (DST, K)
+  const bottomPositions = ['DST', 'K'];
   const availableTiers = [1, 2, 3, 4, 5];
 
   let searchQuery = container.dataset.searchQuery || '';
+
+  const renderPosColumn = (pos) => {
+    const posPlayers = players.filter(p => {
+      const matchesPos = p.pos === pos;
+      const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.team.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesPos && matchesSearch;
+    });
+
+    const posTiers = store.getTiersForPos(pos);
+    const nextTier = (posTiers.length > 0 ? Math.max(...posTiers) : 0) + 1;
+
+    // Group players by tier while maintaining exact array order
+    const tiersMap = {};
+    posTiers.forEach(t => { tiersMap[t] = []; });
+    
+    posPlayers.forEach(p => {
+      const t = p.tier || 1;
+      if (!tiersMap[t]) tiersMap[t] = [];
+      tiersMap[t].push(p);
+    });
+
+    return `
+      <div class="pos-column glass-card" data-pos="${pos}">
+        <!-- Column Header -->
+        <div class="pos-column-header">
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <span class="pos-badge pos-${pos.toLowerCase()}" style="font-size: 0.78rem; padding: 0.2rem 0.5rem;">${pos}</span>
+            <span style="font-weight: 800; font-size: 0.9rem; color: #fff;">${pos}</span>
+          </div>
+          <span class="tier-badge" style="font-size: 0.7rem;">${posPlayers.length}</span>
+        </div>
+
+        <!-- Quick Enter Player Name -->
+        <div class="quick-add-box">
+          <input type="text" class="search-input input-add-player" style="font-size: 0.75rem; padding: 0.3rem 0.5rem; width: 100%;" placeholder="+ Add ${pos}..." data-pos="${pos}">
+          <button class="btn-primary btn-add-player" data-pos="${pos}" style="padding: 0.3rem 0.5rem; font-size: 0.72rem;">Add</button>
+        </div>
+
+        <!-- Tier Blocks Container with Adjustable Gaps -->
+        <div class="tier-blocks-column" data-pos="${pos}">
+          ${posTiers.map(tierNum => {
+            const gap = store.getTierGap(pos, tierNum);
+            const tierPlayers = tiersMap[tierNum] || [];
+
+            return `
+              <!-- Adjustable Vertical Gap Spacer -->
+              <div class="tier-gap-spacer ${tierNum === 1 ? 'tier-top-spacer' : ''}" data-pos="${pos}" data-tier="${tierNum}" style="height: ${gap}px;" title="Drag up or down to adjust gap">
+                <div class="gap-control-bar" title="Drag up or down to adjust gap">
+                  <span class="gap-drag-handle">↕</span>
+                  <span class="gap-label">${gap}px</span>
+                </div>
+              </div>
+
+              <!-- Tier Block Card -->
+              <div class="tier-box" data-pos="${pos}" data-tier="${tierNum}">
+                <div class="tier-box-header" data-pos="${pos}" data-tier="${tierNum}" title="Drag up or down to adjust tier position">
+                  <div style="display: flex; align-items: center; gap: 0.3rem;">
+                    <span class="tier-drag-handle" title="Drag up/down">↕</span>
+                    <span style="font-weight: 800; font-size: 0.76rem; color: var(--accent-primary);">TIER ${tierNum}</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.35rem;">
+                    <span class="tier-badge" style="font-size: 0.65rem;">${tierPlayers.length}</span>
+                    <button class="btn-remove-tier" data-pos="${pos}" data-tier="${tierNum}" title="Remove Tier ${tierNum}" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.75rem; padding: 0.1rem 0.25rem; border-radius: 3px; line-height: 1;">✕</button>
+                  </div>
+                </div>
+
+                <!-- Player Cards Drop Zone -->
+                <div class="player-drop-zone" data-pos="${pos}" data-tier="${tierNum}">
+                  ${tierPlayers.length === 0 ? `
+                    <div class="empty-tier-msg">Drop player here</div>
+                  ` : ''}
+
+                  ${tierPlayers.map((p, idx) => {
+                    const isDrafted = store.isPlayerDrafted(p.id);
+                    return `
+                      <div class="draggable-player-card ${isDrafted ? 'card-drafted' : ''}" draggable="true" data-id="${p.id}" data-pos="${pos}" data-tier="${tierNum}" data-index="${idx}">
+                        <div class="player-card-left">
+                          <input type="checkbox" class="player-draft-chk" data-id="${p.id}" ${isDrafted ? 'checked' : ''} title="${isDrafted ? 'Drafted (click to unmark)' : 'Mark Drafted'}">
+                          <div class="player-info" style="min-width: 0; overflow: hidden;">
+                            <span class="player-drag-dots" title="Drag to reorder">⋮⋮</span>
+                            <div style="min-width: 0; overflow: hidden;">
+                              <div class="player-name ${isDrafted ? 'name-drafted' : ''}" title="${p.name}">
+                                ${p.name}
+                                ${isDrafted ? '<span class="drafted-badge">DRAFTED</span>' : ''}
+                              </div>
+                              <div class="player-team">${p.team} • Bye ${p.bye}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <span style="font-size: 0.65rem; font-weight: 700; color: ${isDrafted ? '#64748b' : '#34d399'}; flex-shrink: 0;"><span style="opacity:0.6;">#</span>${idx + 1}</span>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- Option to Add Tier at Bottom of Column -->
+        <div class="column-footer" style="margin-top: 0.4rem; padding-top: 0.25rem;">
+          <button class="btn-add-tier" data-pos="${pos}" title="Add Tier ${nextTier} at the bottom of ${pos}">
+            + Add Tier ${nextTier}
+          </button>
+        </div>
+      </div>
+    `;
+  };
 
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
@@ -43,6 +154,9 @@ export function renderPreDraftView() {
           <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
             <input type="text" class="search-input" id="board-search" placeholder="🔍 Search player..." value="${searchQuery}">
             
+            <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Jump down to DST & K tiers">
+              🛡️ DST & K ↓
+            </button>
             <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
             <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Load tier board from a local YAML file">
               📂 Load YAML
@@ -57,116 +171,29 @@ export function renderPreDraftView() {
         </div>
       </div>
 
-      <!-- Multi-Column Board with Adjustable Gaps -->
+      <!-- Primary 4-Column Offense Board (RB, WR, TE, QB) -->
       <div class="position-columns-grid">
-        ${positions.map(pos => {
-          const posPlayers = players.filter(p => {
-            const matchesPos = p.pos === pos;
-            const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.team.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchesPos && matchesSearch;
-          });
+        ${primaryPositions.map(renderPosColumn).join('')}
+      </div>
 
-          const posTiers = store.getTiersForPos(pos);
-          const nextTier = (posTiers.length > 0 ? Math.max(...posTiers) : 0) + 1;
-
-          // Group players by tier while maintaining exact array order
-          const tiersMap = {};
-          posTiers.forEach(t => { tiersMap[t] = []; });
-          
-          posPlayers.forEach(p => {
-            const t = p.tier || 1;
-            if (!tiersMap[t]) tiersMap[t] = [];
-            tiersMap[t].push(p);
-          });
-
-          return `
-            <div class="pos-column glass-card" data-pos="${pos}">
-              <!-- Column Header -->
-              <div class="pos-column-header">
-                <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <span class="pos-badge pos-${pos.toLowerCase()}" style="font-size: 0.78rem; padding: 0.2rem 0.5rem;">${pos}</span>
-                  <span style="font-weight: 800; font-size: 0.9rem; color: #fff;">${pos}</span>
-                </div>
-                <span class="tier-badge" style="font-size: 0.7rem;">${posPlayers.length}</span>
-              </div>
-
-              <!-- Quick Enter Player Name -->
-              <div class="quick-add-box">
-                <input type="text" class="search-input input-add-player" style="font-size: 0.75rem; padding: 0.3rem 0.5rem; width: 100%;" placeholder="+ Add ${pos}..." data-pos="${pos}">
-                <button class="btn-primary btn-add-player" data-pos="${pos}" style="padding: 0.3rem 0.5rem; font-size: 0.72rem;">Add</button>
-              </div>
-
-              <!-- Tier Blocks Container with Adjustable Gaps -->
-              <div class="tier-blocks-column" data-pos="${pos}">
-                ${posTiers.map(tierNum => {
-                  const gap = store.getTierGap(pos, tierNum);
-                  const tierPlayers = tiersMap[tierNum] || [];
-
-                  return `
-                    <!-- Adjustable Vertical Gap Spacer -->
-                    <div class="tier-gap-spacer ${tierNum === 1 ? 'tier-top-spacer' : ''}" data-pos="${pos}" data-tier="${tierNum}" style="height: ${gap}px;" title="Drag up or down to adjust gap">
-                      <div class="gap-control-bar" title="Drag up or down to adjust gap">
-                        <span class="gap-drag-handle">↕</span>
-                        <span class="gap-label">${gap}px</span>
-                      </div>
-                    </div>
-
-                    <!-- Tier Block Card -->
-                    <div class="tier-box" data-pos="${pos}" data-tier="${tierNum}">
-                      <div class="tier-box-header" data-pos="${pos}" data-tier="${tierNum}" title="Drag up or down to adjust tier position">
-                        <div style="display: flex; align-items: center; gap: 0.3rem;">
-                          <span class="tier-drag-handle" title="Drag up/down">↕</span>
-                          <span style="font-weight: 800; font-size: 0.76rem; color: var(--accent-primary);">TIER ${tierNum}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.35rem;">
-                          <span class="tier-badge" style="font-size: 0.65rem;">${tierPlayers.length}</span>
-                          <button class="btn-remove-tier" data-pos="${pos}" data-tier="${tierNum}" title="Remove Tier ${tierNum}" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.75rem; padding: 0.1rem 0.25rem; border-radius: 3px; line-height: 1;">✕</button>
-                        </div>
-                      </div>
-
-                      <!-- Player Cards Drop Zone -->
-                      <div class="player-drop-zone" data-pos="${pos}" data-tier="${tierNum}">
-                        ${tierPlayers.length === 0 ? `
-                          <div class="empty-tier-msg">Drop player here</div>
-                        ` : ''}
-
-                        ${tierPlayers.map((p, idx) => {
-                          const isDrafted = store.isPlayerDrafted(p.id);
-                          return `
-                            <div class="draggable-player-card ${isDrafted ? 'card-drafted' : ''}" draggable="true" data-id="${p.id}" data-pos="${pos}" data-tier="${tierNum}" data-index="${idx}">
-                              <div class="player-card-left">
-                                <input type="checkbox" class="player-draft-chk" data-id="${p.id}" ${isDrafted ? 'checked' : ''} title="${isDrafted ? 'Drafted (click to unmark)' : 'Mark Drafted'}">
-                                <div class="player-info" style="min-width: 0; overflow: hidden;">
-                                  <span class="player-drag-dots" title="Drag to reorder">⋮⋮</span>
-                                  <div style="min-width: 0; overflow: hidden;">
-                                    <div class="player-name ${isDrafted ? 'name-drafted' : ''}" title="${p.name}">
-                                      ${p.name}
-                                      ${isDrafted ? '<span class="drafted-badge">DRAFTED</span>' : ''}
-                                    </div>
-                                    <div class="player-team">${p.team} • Bye ${p.bye}</div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <span style="font-size: 0.65rem; font-weight: 700; color: ${isDrafted ? '#64748b' : '#34d399'}; flex-shrink: 0;"><span style="opacity:0.6;">#</span>${idx + 1}</span>
-                            </div>
-                          `;
-                        }).join('')}
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-
-              <!-- Option to Add Tier at Bottom of Column -->
-              <div class="column-footer" style="margin-top: 0.4rem; padding-top: 0.25rem;">
-                <button class="btn-add-tier" data-pos="${pos}" title="Add Tier ${nextTier} at the bottom of ${pos}">
-                  + Add Tier ${nextTier}
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('')}
+      <!-- Dedicated Specialists Section at Bottom (DST & K) -->
+      <div id="section-dst-k" class="glass-card" style="padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🛡️ Defense & Kicker Tiers (DST & K)</span>
+            </h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Specialist positions kept separate for late-round drafting. Full tier dragging, gap adjustments, and drafting features enabled.
+            </p>
+          </div>
+          <button id="btn-jump-top" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; cursor: pointer;">
+            ↑ Back to Top Board
+          </button>
+        </div>
+        <div class="specialists-grid">
+          ${bottomPositions.map(renderPosColumn).join('')}
+        </div>
       </div>
 
       <!-- Stat Table Section -->
@@ -221,6 +248,24 @@ export function renderPreDraftView() {
     searchInput.addEventListener('input', (e) => {
       container.dataset.searchQuery = e.target.value;
       renderPreDraftView();
+    });
+  }
+
+  // Jump to DST & K and Back to Top
+  const btnJumpDstK = container.querySelector('#btn-jump-dst-k');
+  if (btnJumpDstK) {
+    btnJumpDstK.addEventListener('click', () => {
+      const target = document.getElementById('section-dst-k');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  const btnJumpTop = container.querySelector('#btn-jump-top');
+  if (btnJumpTop) {
+    btnJumpTop.addEventListener('click', () => {
+      container.scrollIntoView({ behavior: 'smooth' });
     });
   }
 
