@@ -74,6 +74,38 @@ class Store {
     return this.state;
   }
 
+  async addCustomPlayer(name, pos, team = 'FA', tier = 1) {
+    if (!name || !name.trim()) return;
+    const newId = `${pos.toLowerCase()}-custom-${Date.now()}`;
+    const maxRank = Math.max(...this.state.players.map(p => p.customRank || p.ecr || 50), 0) + 1;
+    
+    const newPlayer = {
+      id: newId,
+      name: name.trim(),
+      pos,
+      team: team.trim().toUpperCase() || 'FA',
+      bye: 10,
+      ecr: maxRank,
+      customRank: maxRank,
+      tier: parseInt(tier, 10) || 1,
+      projectedPts: 150.0,
+      floorPts: 8.0,
+      ceilingPts: 18.0,
+      targetShare: 15.0,
+      redzoneTouches: 20,
+      airYardsShare: 15.0,
+      pastPts: 140.0,
+      opponent: 'TBD',
+      opponentRank: 16,
+      matchupGrade: 'B',
+      notes: 'Custom added player.',
+      sleeperTag: null
+    };
+
+    this.state.players.push(newPlayer);
+    this.saveState();
+  }
+
   async updatePlayerTier(playerId, newTier) {
     const p = this.state.players.find(x => x.id === playerId);
     if (p) {
@@ -81,6 +113,39 @@ class Store {
       this.saveState();
       await api.updateTier(playerId, newTier);
     }
+  }
+
+  async movePlayerToTier(playerId, targetTier, targetIndex = null) {
+    const p = this.state.players.find(x => x.id === playerId);
+    if (!p) return;
+    p.tier = parseInt(targetTier, 10);
+
+    if (targetIndex !== null) {
+      // Reorder array list to match index
+      const posPlayers = this.state.players.filter(x => x.pos === p.pos && x.tier === p.tier);
+      const otherPlayers = this.state.players.filter(x => x.pos !== p.pos || x.tier !== p.tier);
+      
+      const filteredPos = posPlayers.filter(x => x.id !== playerId);
+      filteredPos.splice(targetIndex, 0, p);
+      
+      this.state.players = [...otherPlayers, ...filteredPos];
+    }
+
+    this.saveState();
+    await api.updateTier(playerId, targetTier);
+  }
+
+  async reorderTiers(pos, fromTier, toTier) {
+    if (fromTier === toTier) return;
+    const posPlayers = this.state.players.filter(x => x.pos === pos);
+    
+    // Swap tier numbers between fromTier and toTier
+    posPlayers.forEach(p => {
+      if (p.tier === fromTier) p.tier = toTier;
+      else if (p.tier === toTier) p.tier = fromTier;
+    });
+
+    this.saveState();
   }
 
   async updatePlayerCustomRank(playerId, newRank) {

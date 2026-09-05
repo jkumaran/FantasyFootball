@@ -1,7 +1,5 @@
-/**
- * Central State Store with LocalStorage Persistence
- */
 import { INITIAL_PLAYERS } from './data/players.js';
+import { api } from './api.js';
 
 const STORAGE_KEY = 'fantasy_suite_state_v1';
 
@@ -9,60 +7,54 @@ class Store {
   constructor() {
     this.listeners = [];
     this.state = this.loadInitialState();
+    this.syncFromBackend();
   }
 
   loadInitialState() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        // Ensure standard defaults merged
         return {
-          league: {
-            teamsCount: 12,
-            format: 'Snake',
-            scoring: 'Half-PPR',
-            userSlot: 1, // 1st pick by default
-            rosterSlots: { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1, BENCH: 6 }
-          },
+          league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
           players: INITIAL_PLAYERS,
-          draftPicks: [], // { pickNum, teamId, player }
+          draftPicks: [],
           currentPick: 1,
           weeklyStrategy: 'CONSERVATIVE',
-          userRoster: [], // player IDs
-          opponentRoster: [], // player IDs
-          opponentProjected: 112.5,
-          ...parsed
+          userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
+          opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
+          opponentProjected: 115.0,
+          ...JSON.parse(saved)
         };
       }
     } catch (e) {
-      console.warn('Failed to parse state from localStorage, falling back to default:', e);
+      console.warn('LocalStorage error:', e);
     }
 
-    // Default Initial State
     return {
-      league: {
-        teamsCount: 12,
-        format: 'Snake',
-        scoring: 'Half-PPR',
-        userSlot: 1,
-        rosterSlots: { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1, BENCH: 6 }
-      },
+      league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
       players: INITIAL_PLAYERS,
       draftPicks: [],
       currentPick: 1,
       weeklyStrategy: 'CONSERVATIVE',
-      userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'], // Default initial starters
+      userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
       opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
       opponentProjected: 115.0
     };
+  }
+
+  async syncFromBackend() {
+    const remotePlayers = await api.getPlayers();
+    if (remotePlayers && remotePlayers.length > 0) {
+      this.state.players = remotePlayers;
+      this.saveState();
+    }
   }
 
   saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
     } catch (e) {
-      console.error('Error saving state:', e);
+      console.error('Save state error:', e);
     }
     this.notify();
   }
@@ -82,122 +74,139 @@ class Store {
     return this.state;
   }
 
-  // --- ACTIONS ---
+  async addCustomPlayer(name, pos, team = 'FA', tier = 1) {
+    if (!name || !name.trim()) return;
+    const newId = `${pos.toLowerCase()}-custom-${Date.now()}`;
+    const maxRank = Math.max(...this.state.players.map(p => p.customRank || p.ecr || 50), 0) + 1;
+    
+    const newPlayer = {
+      id: newId,
+      name: name.trim(),
+      pos,
+      team: team.trim().toUpperCase() || 'FA',
+      bye: 10,
+      ecr: maxRank,
+      customRank: maxRank,
+      tier: parseInt(tier, 10) || 1,
+      projectedPts: 150.0,
+      floorPts: 8.0,
+      ceilingPts: 18.0,
+      targetShare: 15.0,
+      redzoneTouches: 20,
+      airYardsShare: 15.0,
+      pastPts: 140.0,
+      opponent: 'TBD',
+      opponentRank: 16,
+      matchupGrade: 'B',
+      notes: 'Custom added player.',
+      sleeperTag: null
+    };
 
-  // Update Tier of a player
-  updatePlayerTier(playerId, newTier) {
+    this.state.players.push(newPlayer);
+    this.saveState();
+  }
+
+  async updatePlayerTier(playerId, newTier) {
     const p = this.state.players.find(x => x.id === playerId);
     if (p) {
       p.tier = parseInt(newTier, 10);
       this.saveState();
+      await api.updateTier(playerId, newTier);
     }
   }
 
-  // Update Custom Rank
-  updatePlayerCustomRank(playerId, newRank) {
+  async movePlayerToTier(playerId, targetTier, targetIndex = null) {
+    const p = this.state.players.find(x => x.id === playerId);
+    if (!p) return;
+    p.tier = parseInt(targetTier, 10);
+
+    if (targetIndex !== null) {
+      const posPlayers = this.state.players.filter(x => x.pos === p.pos && x.tier === p.tier);
+      const otherPlayers = this.state.players.filter(x => x.pos !== p.pos || x.tier !== p.tier);
+      
+      const filteredPos = posPlayers.filter(x => x.id !== playerId);
+      filteredPos.splice(targetIndex, 0, p);
+      
+      this.state.players = [...otherPlayers, ...filteredPos];
+    }
+
+    this.saveState();
+    await api.updateTier(playerId, targetTier);
+  }
+
+  async reorderTiers(pos, fromTier, toTier) {
+    if (fromTier === toTier) return;
+    const posPlayers = this.state.players.filter(x => x.pos === pos);
+    
+    posPlayers.forEach(p => {
+      if (p.tier === fromTier) p.tier = toTier;
+      else if (p.tier === toTier) p.tier = fromTier;
+    });
+
+    this.saveState();
+  }
+
+  async updatePlayerCustomRank(playerId, newRank) {
     const p = this.state.players.find(x => x.id === playerId);
     if (p) {
       p.customRank = parseInt(newRank, 10);
       this.saveState();
+      await api.updateRank(playerId, newRank);
     }
   }
 
-  // Draft a player in War Room
-  draftPlayer(playerId) {
+  async draftPlayer(playerId) {
     const player = this.state.players.find(p => p.id === playerId);
     if (!player) return;
 
-    // Determine current pick team ID (1 to teamsCount in snake order)
     const pickNum = this.state.currentPick;
-    const teamsCount = this.state.league.teamsCount;
+    const teamsCount = this.state.league.teamsCount || 12;
     const round = Math.ceil(pickNum / teamsCount);
     const pickInRound = ((pickNum - 1) % teamsCount) + 1;
-    
-    let teamId;
-    if (round % 2 === 1) {
-      // Odd round: 1 to N
-      teamId = pickInRound;
-    } else {
-      // Even round (Snake): N to 1
-      teamId = teamsCount - pickInRound + 1;
-    }
+    const teamId = (round % 2 === 1) ? pickInRound : (teamsCount - pickInRound + 1);
 
-    const draftRecord = {
-      pickNum,
-      round,
-      teamId,
-      player
-    };
-
-    this.state.draftPicks.push(draftRecord);
+    this.state.draftPicks.push({ pickNum, round, teamId, player });
     this.state.currentPick += 1;
 
-    // If teamId is userSlot, add to userRoster
-    if (teamId === this.state.league.userSlot) {
+    if (teamId === (this.state.league.userSlot || 1)) {
       if (!this.state.userRoster.includes(playerId)) {
         this.state.userRoster.push(playerId);
       }
     }
 
     this.saveState();
+    await api.draftPick(playerId);
   }
 
-  // Undo Last Draft Pick
-  undoLastPick() {
+  async undoLastPick() {
     if (this.state.draftPicks.length === 0) return;
     const lastPick = this.state.draftPicks.pop();
     this.state.currentPick = Math.max(1, this.state.currentPick - 1);
 
-    // Remove from user roster if it was user's pick
-    if (lastPick.teamId === this.state.league.userSlot) {
+    if (lastPick.teamId === (this.state.league.userSlot || 1)) {
       this.state.userRoster = this.state.userRoster.filter(id => id !== lastPick.player.id);
     }
 
     this.saveState();
+    await api.undoPick();
   }
 
-  // Reset Draft
-  resetDraft() {
+  async resetDraft() {
     this.state.draftPicks = [];
     this.state.currentPick = 1;
     this.saveState();
+    await api.resetDraft();
   }
 
-  // Set Weekly Strategy Mode (CONSERVATIVE vs AGGRESSIVE)
   setWeeklyStrategy(mode) {
     this.state.weeklyStrategy = mode;
     this.saveState();
   }
 
-  // Toggle user roster starting lineup
-  toggleUserRosterPlayer(playerId) {
-    if (this.state.userRoster.includes(playerId)) {
-      this.state.userRoster = this.state.userRoster.filter(id => id !== playerId);
-    } else {
-      this.state.userRoster.push(playerId);
-    }
-    this.saveState();
-  }
-
-  // Update League Settings
-  updateLeagueSettings(newSettings) {
+  async updateLeagueSettings(newSettings) {
     this.state.league = { ...this.state.league, ...newSettings };
     this.saveState();
-  }
-
-  // Import custom JSON state
-  importData(jsonString) {
-    try {
-      const data = JSON.parse(jsonString);
-      if (data.players && Array.isArray(data.players)) {
-        this.state = { ...this.state, ...data };
-        this.saveState();
-        return true;
-      }
-    } catch (e) {
-      console.error('Failed to import json:', e);
-    }
-    return false;
+    await api.saveSettings(newSettings);
   }
 }
 
