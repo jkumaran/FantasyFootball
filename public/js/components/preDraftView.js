@@ -24,7 +24,6 @@ function generateBoardYaml(state, positions, availableTiers) {
     colLines[pos] = [];
     availableTiers.forEach(t => {
       const gapPx = store.getTierGap(pos, t);
-      // Translate pixel gap into vertical blank line slots (approx 1 line per 28px)
       const numBlankLines = Math.max(0, Math.round(gapPx / 28));
       for (let b = 0; b < numBlankLines; b++) {
         colLines[pos].push(' '.repeat(colWidth));
@@ -76,114 +75,75 @@ function generateBoardYaml(state, positions, availableTiers) {
   }
 
   // 2. Structured YAML section
-  let yaml = '';
-  yaml += `# ========================================================================================================================
-`;
-  yaml += `#                                      🏈 FANTASY FOOTBALL POSITIONAL TIER BOARD                                          
-`;
-  yaml += `# ========================================================================================================================
-`;
-  yaml += `# Exported: ${now}
-`;
-  yaml += `# Format: ${league.scoring || 'Half-PPR'} ${league.format || 'Snake'} Draft (${league.teamsCount || 12} Teams)
-`;
-  yaml += `# Column Order: ${positions.join(' -> ')}
-`;
-  yaml += `# Legend: [ ] = Available, [X] = Drafted
-`;
-  yaml += `# ------------------------------------------------------------------------------------------------------------------------
-`;
-  yaml += `# VISUAL TIER BOARD MATRIX (Vertical Spacing & Alignment by Pixel Offsets)
-`;
-  yaml += `# ------------------------------------------------------------------------------------------------------------------------
-`;
-  yaml += `# ${headerCols}
-`;
-  yaml += `# ${divider}
-`;
-  yaml += asciiMatrixRows.join('
-') + '
-';
-  yaml += `# ========================================================================================================================
+  const lines = [
+    '# ========================================================================================================================',
+    '#                                      🏈 FANTASY FOOTBALL POSITIONAL TIER BOARD                                          ',
+    '# ========================================================================================================================',
+    `# Exported: ${now}`,
+    `# Format: ${league.scoring || 'Half-PPR'} ${league.format || 'Snake'} Draft (${league.teamsCount || 12} Teams)`,
+    `# Column Order: ${positions.join(' -> ')}`,
+    '# Legend: [ ] = Available, [X] = Drafted',
+    '# ------------------------------------------------------------------------------------------------------------------------',
+    '# VISUAL TIER BOARD MATRIX (Vertical Spacing & Alignment by Pixel Offsets)',
+    '# ------------------------------------------------------------------------------------------------------------------------',
+    `# ${headerCols}`,
+    `# ${divider}`,
+    ...asciiMatrixRows,
+    '# ========================================================================================================================',
+    '',
+    'metadata:',
+    '  version: "1.0"',
+    `  exported_at: "${now}"`,
+    `  scoring_format: "${league.scoring || 'Half-PPR'}"`,
+    `  draft_type: "${league.format || 'Snake'}"`,
+    `  teams_count: ${league.teamsCount || 12}`,
+    `  user_draft_slot: ${league.userSlot || 1}`,
+    '  column_order:'
+  ];
 
-`;
-
-  yaml += `metadata:
-`;
-  yaml += `  version: "1.0"
-`;
-  yaml += `  exported_at: "${now}"
-`;
-  yaml += `  scoring_format: "${league.scoring || 'Half-PPR'}"
-`;
-  yaml += `  draft_type: "${league.format || 'Snake'}"
-`;
-  yaml += `  teams_count: ${league.teamsCount || 12}
-`;
-  yaml += `  user_draft_slot: ${league.userSlot || 1}
-`;
-  yaml += `  column_order:
-`;
   positions.forEach(pos => {
-    yaml += `    - ${pos}
-`;
+    lines.push(`    - ${pos}`);
   });
 
-  yaml += `
-vertical_tier_gaps_px:
-`;
+  lines.push('');
+  lines.push('vertical_tier_gaps_px:');
   positions.forEach(pos => {
-    yaml += `  ${pos}:
-`;
+    lines.push(`  ${pos}:`);
     availableTiers.forEach(t => {
-      yaml += `    tier_${t}: ${store.getTierGap(pos, t)}
-`;
+      lines.push(`    tier_${t}: ${store.getTierGap(pos, t)}`);
     });
   });
 
-  yaml += `
-positions:
-`;
+  lines.push('');
+  lines.push('positions:');
   positions.forEach(pos => {
-    yaml += `  ${pos}:
-`;
+    lines.push(`  ${pos}:`);
     availableTiers.forEach(t => {
       const tierPlayers = players.filter(p => p.pos === pos && (p.tier || 1) === t);
       const gapPx = store.getTierGap(pos, t);
-      yaml += `    tier_${t}:
-`;
-      yaml += `      offset_gap_px: ${gapPx}
-`;
-      yaml += `      player_count: ${tierPlayers.length}
-`;
-      yaml += `      players:
-`;
+      lines.push(`    tier_${t}:`);
+      lines.push(`      offset_gap_px: ${gapPx}`);
+      lines.push(`      player_count: ${tierPlayers.length}`);
+      lines.push('      players:');
       if (tierPlayers.length === 0) {
-        yaml += `        []
-`;
+        lines.push('        []');
       } else {
         tierPlayers.forEach((p, idx) => {
           const isDrafted = store.isPlayerDrafted(p.id);
-          yaml += `        - rank_in_tier: ${idx + 1}
-`;
-          yaml += `          name: "${p.name.replace(/"/g, '\"')}"
-`;
-          yaml += `          team: "${p.team}"
-`;
-          yaml += `          bye: ${p.bye}
-`;
-          yaml += `          drafted: ${isDrafted}
-`;
-          yaml += `          projected_pts: ${p.projectedPts}
-`;
-          yaml += `          ecr: ${p.ecr}
-`;
+          const safeName = p.name.replace(/"/g, '\\"');
+          lines.push(`        - rank_in_tier: ${idx + 1}`);
+          lines.push(`          name: "${safeName}"`);
+          lines.push(`          team: "${p.team}"`);
+          lines.push(`          bye: ${p.bye}`);
+          lines.push(`          drafted: ${isDrafted}`);
+          lines.push(`          projected_pts: ${p.projectedPts}`);
+          lines.push(`          ecr: ${p.ecr}`);
         });
       }
     });
   });
 
-  return yaml;
+  return lines.join(String.fromCharCode(10)) + String.fromCharCode(10);
 }
 
 export function renderPreDraftView() {
