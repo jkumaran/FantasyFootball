@@ -3,6 +3,15 @@ import { api } from './api.js';
 
 const STORAGE_KEY = 'fantasy_suite_state_v1';
 
+export const DEFAULT_TIER_GAPS = {
+  RB: { 1: 0, 2: 30, 3: 30, 4: 30, 5: 30 },
+  WR: { 1: 45, 2: 30, 3: 30, 4: 30, 5: 30 },
+  QB: { 1: 240, 2: 35, 3: 30, 4: 30, 5: 30 },
+  TE: { 1: 180, 2: 30, 3: 30, 4: 30, 5: 30 },
+  DST: { 1: 450, 2: 30, 3: 30, 4: 30, 5: 30 },
+  K: { 1: 500, 2: 30, 3: 30, 4: 30, 5: 30 }
+};
+
 class Store {
   constructor() {
     this.listeners = [];
@@ -14,6 +23,7 @@ class Store {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
+        const parsed = JSON.parse(saved);
         return {
           league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
           players: INITIAL_PLAYERS,
@@ -23,7 +33,12 @@ class Store {
           userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
           opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
           opponentProjected: 115.0,
-          ...JSON.parse(saved)
+          tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
+          ...parsed,
+          tierGaps: {
+            ...DEFAULT_TIER_GAPS,
+            ...(parsed.tierGaps || {})
+          }
         };
       }
     } catch (e) {
@@ -38,7 +53,8 @@ class Store {
       weeklyStrategy: 'CONSERVATIVE',
       userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
       opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
-      opponentProjected: 115.0
+      opponentProjected: 115.0,
+      tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS))
     };
   }
 
@@ -74,6 +90,22 @@ class Store {
     return this.state;
   }
 
+  getTierGap(pos, tierNum) {
+    if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
+    if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
+    if (this.state.tierGaps[pos][tierNum] !== undefined) {
+      return this.state.tierGaps[pos][tierNum];
+    }
+    return DEFAULT_TIER_GAPS[pos]?.[tierNum] ?? 25;
+  }
+
+  setTierGap(pos, tierNum, gapPx) {
+    if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
+    if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
+    this.state.tierGaps[pos][tierNum] = Math.max(0, Math.round(gapPx));
+    this.saveState();
+  }
+
   async addCustomPlayer(name, pos, team = 'FA', tier = 1) {
     if (!name || !name.trim()) return;
     const newId = `${pos.toLowerCase()}-custom-${Date.now()}`;
@@ -106,40 +138,71 @@ class Store {
     this.saveState();
   }
 
-  async updatePlayerTier(playerId, newTier) {
-    const p = this.state.players.find(x => x.id === playerId);
-    if (p) {
-      p.tier = parseInt(newTier, 10);
-      this.saveState();
-      await api.updateTier(playerId, newTier);
-    }
-  }
+  async reorderPlayer(draggedPlayerId, targetPlayerId, position = 'before') {
+    const draggedIdx = this.state.players.findIndex(p => p.id === draggedPlayerId);
+    const targetIdx = this.state.players.findIndex(p => p.id === targetPlayerId);
+    if (draggedIdx === -1 || targetIdx === -1) return;
 
-  async movePlayerToTier(playerId, targetTier, targetIndex = null) {
-    const p = this.state.players.find(x => x.id === playerId);
-    if (!p) return;
-    p.tier = parseInt(targetTier, 10);
+    const draggedPlayer = this.state.players[draggedIdx];
+    const targetPlayer = this.state.players[targetIdx];
 
-    if (targetIndex !== null) {
-      // Reorder array list to match index
-      const posPlayers = this.state.players.filter(x => x.pos === p.pos && x.tier === p.tier);
-      const otherPlayers = this.state.players.filter(x => x.pos !== p.pos || x.tier !== p.tier);
-      
-      const filteredPos = posPlayers.filter(x => x.id !== playerId);
-      filteredPos.splice(targetIndex, 0, p);
-      
-      this.state.players = [...otherPlayers, ...filteredPos];
-    }
+    // Align pos & tier with target
+    draggedPlayer.pos = targetPlayer.pos;
+    draggedPlayer.tier = targetPlayer.tier;
+
+    // Remove from current position
+    this.state.players.splice(draggedIdx, 1);
+
+    // Find new insertion point
+    const newTargetIdx = this.state.players.findIndex(p => p.id === targetPlayerId);
+    const insertIdx = position === 'after' ? newTargetIdx + 1 : newTargetIdx;
+
+    this.state.players.splice(insertIdx, 0, draggedPlayer);
+
+    // Recalculate custom ranks for consistency
+    this.state.players.forEach((p, idx) => {
+      p.customRank = idx + 1;
+    });
 
     this.saveState();
-    await api.updateTier(playerId, targetTier);
+    await api.updateTier(draggedPlayer.id, draggedPlayer.tier);
+  }
+
+  async movePlayerToTierEnd(draggedPlayerId, targetPos, targetTier) {
+    const draggedIdx = this.state.players.findIndex(p => p.id === draggedPlayerId);
+    if (draggedIdx === -1) return;
+
+    const draggedPlayer = this.state.players[draggedIdx];
+    draggedPlayer.pos = targetPos;
+    draggedPlayer.tier = parseInt(targetTier, 10);
+
+    this.state.players.splice(draggedIdx, 1);
+
+    let lastIdx = -1;
+    for (let i = 0; i < this.state.players.length; i++) {
+      if (this.state.players[i].pos === targetPos && this.state.players[i].tier === draggedPlayer.tier) {
+        lastIdx = i;
+      }
+    }
+
+    if (lastIdx !== -1) {
+      this.state.players.splice(lastIdx + 1, 0, draggedPlayer);
+    } else {
+      this.state.players.push(draggedPlayer);
+    }
+
+    this.state.players.forEach((p, idx) => {
+      p.customRank = idx + 1;
+    });
+
+    this.saveState();
+    await api.updateTier(draggedPlayer.id, draggedPlayer.tier);
   }
 
   async reorderTiers(pos, fromTier, toTier) {
     if (fromTier === toTier) return;
     const posPlayers = this.state.players.filter(x => x.pos === pos);
     
-    // Swap tier numbers between fromTier and toTier
     posPlayers.forEach(p => {
       if (p.tier === fromTier) p.tier = toTier;
       else if (p.tier === toTier) p.tier = fromTier;

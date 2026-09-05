@@ -8,18 +8,18 @@ export function renderPreDraftView() {
   const { players } = state;
 
   const positions = ['QB', 'RB', 'WR', 'TE', 'DST', 'K'];
+  const availableTiers = [1, 2, 3, 4, 5];
 
   let searchQuery = container.dataset.searchQuery || '';
 
   container.innerHTML = `
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-      <!-- Top Control Bar -->
+    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
       <div class="glass-card" style="padding: 1rem 1.25rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff;">🏆 Positional Tier Board</h2>
             <p style="font-size: 0.8rem; color: var(--text-muted);">
-              Drag & drop players between tiers or reorder tier boxes up and down. Enter new player names directly into any position column.
+              Drag players up & down within a tier to reorder them. Adjust vertical gaps between tier blocks using the <strong>↕ Gap Handles</strong> or <strong>+/-</strong> buttons.
             </p>
           </div>
 
@@ -29,7 +29,6 @@ export function renderPreDraftView() {
         </div>
       </div>
 
-      <!-- Multi-Column Positional Tier Board -->
       <div class="position-columns-grid">
         ${positions.map(pos => {
           const posPlayers = players.filter(p => {
@@ -39,7 +38,6 @@ export function renderPreDraftView() {
           });
 
           const tiersMap = {};
-          const availableTiers = [1, 2, 3, 4, 5];
           availableTiers.forEach(t => { tiersMap[t] = []; });
           
           posPlayers.forEach(p => {
@@ -53,61 +51,74 @@ export function renderPreDraftView() {
               <div class="pos-column-header">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                   <span class="pos-badge pos-${pos.toLowerCase()}" style="font-size: 0.85rem; padding: 0.25rem 0.6rem;">${pos}</span>
-                  <span style="font-weight: 800; font-size: 1rem; color: #fff;">${pos} Tiers</span>
+                  <span style="font-weight: 800; font-size: 1rem; color: #fff;">${pos}</span>
                 </div>
                 <span class="tier-badge" style="font-size: 0.75rem;">${posPlayers.length} Players</span>
               </div>
 
               <div class="quick-add-box">
-                <input type="text" class="search-input input-add-player" style="font-size: 0.8rem; padding: 0.35rem 0.6rem; width: 100%;" placeholder="+ Enter ${pos} name..." data-pos="${pos}">
+                <input type="text" class="search-input input-add-player" style="font-size: 0.8rem; padding: 0.35rem 0.6rem; width: 100%;" placeholder="+ Add ${pos}..." data-pos="${pos}">
                 <button class="btn-primary btn-add-player" data-pos="${pos}" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;">Add</button>
               </div>
 
-              <div class="tier-boxes-container" data-pos="${pos}">
-                ${availableTiers.map(tierNum => `
-                  <div class="tier-box" draggable="true" data-pos="${pos}" data-tier="${tierNum}">
-                    <div class="tier-box-header">
-                      <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <span class="drag-handle-icon" title="Drag to reorder tier position">⋮⋮</span>
-                        <span style="font-weight: 800; font-size: 0.8rem; color: var(--accent-primary);">TIER ${tierNum}</span>
+              <div class="tier-blocks-column" data-pos="${pos}">
+                ${availableTiers.map(tierNum => {
+                  const gap = store.getTierGap(pos, tierNum);
+                  const tierPlayers = tiersMap[tierNum] || [];
+
+                  return `
+                    <div class="tier-gap-spacer ${tierNum === 1 ? 'tier-top-spacer' : ''}" data-pos="${pos}" data-tier="${tierNum}" style="height: ${gap}px;">
+                      <div class="gap-control-bar" title="Drag vertically to resize gap, or click +/-">
+                        <span class="gap-drag-handle">↕</span>
+                        <span class="gap-label">${gap}px gap</span>
+                        <div class="gap-btn-group">
+                          <button class="btn-gap-dec" data-pos="${pos}" data-tier="${tierNum}" title="Decrease gap">-</button>
+                          <button class="btn-gap-inc" data-pos="${pos}" data-tier="${tierNum}" title="Increase gap">+</button>
+                        </div>
                       </div>
-                      <span class="tier-badge" style="font-size: 0.7rem;">${tiersMap[tierNum].length}</span>
                     </div>
 
-                    <div class="player-drop-zone" data-pos="${pos}" data-tier="${tierNum}">
-                      ${tiersMap[tierNum].length === 0 ? `
-                        <div class="empty-tier-msg">Drag player here</div>
-                      ` : ''}
+                    <div class="tier-box" data-pos="${pos}" data-tier="${tierNum}">
+                      <div class="tier-box-header">
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                          <span style="font-weight: 800; font-size: 0.8rem; color: var(--accent-primary);">TIER ${tierNum}</span>
+                        </div>
+                        <span class="tier-badge" style="font-size: 0.7rem;">${tierPlayers.length}</span>
+                      </div>
 
-                      ${tiersMap[tierNum].map((p, idx) => `
-                        <div class="draggable-player-card" draggable="true" data-id="${p.id}" data-pos="${pos}" data-tier="${tierNum}" data-index="${idx}">
-                          <div class="player-info">
-                            <span class="player-drag-dots">⋮</span>
-                            <div>
-                              <div class="player-name">${p.name}</div>
-                              <div class="player-team">${p.team} • Bye ${p.bye}</div>
+                      <div class="player-drop-zone" data-pos="${pos}" data-tier="${tierNum}">
+                        ${tierPlayers.length === 0 ? `
+                          <div class="empty-tier-msg">Drop player here</div>
+                        ` : ''}
+
+                        ${tierPlayers.map((p, idx) => `
+                          <div class="draggable-player-card" draggable="true" data-id="${p.id}" data-pos="${pos}" data-tier="${tierNum}" data-index="${idx}">
+                            <div class="player-info">
+                              <span class="player-drag-dots">⋮⋮</span>
+                              <div>
+                                <div class="player-name">${p.name}</div>
+                                <div class="player-team">${p.team} • Bye ${p.bye}</div>
+                              </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                              <span style="font-size: 0.7rem; font-weight: 700; color: #34d399;">#${idx + 1}</span>
                             </div>
                           </div>
-
-                          <div style="display: flex; align-items: center; gap: 0.35rem;">
-                            <span style="font-size: 0.7rem; font-weight: 700; color: #34d399;">#${p.customRank}</span>
-                            <button class="btn-icon btn-delete-player" data-id="${p.id}" style="width: 1.25rem; height: 1.25rem; font-size: 0.65rem; padding: 0;">✕</button>
-                          </div>
-                        </div>
-                      `).join('')}
+                        `).join('')}
+                      </div>
                     </div>
-                  </div>
-                `).join('')}
+                  `;
+                }).join('')}
               </div>
             </div>
           `;
         }).join('')}
       </div>
 
-      <!-- Stat Table & ECR Comparison Section -->
       <div class="glass-card">
         <div class="card-title">
-          <span>📊 Full Player Stats & ECR Comparison</span>
+          <span>📊 Player Database & Rankings</span>
         </div>
 
         <div class="stat-table-wrapper">
@@ -120,8 +131,6 @@ export function renderPreDraftView() {
                 <th>Team</th>
                 <th>Tier</th>
                 <th>ECR</th>
-                <th>My Rank</th>
-                <th>Gap</th>
                 <th>Proj Pts</th>
                 <th>Target Share</th>
                 <th>RZ Touches</th>
@@ -129,31 +138,20 @@ export function renderPreDraftView() {
               </tr>
             </thead>
             <tbody>
-              ${players.map(p => {
-                const diff = p.ecr - p.customRank;
-                let gapBadge = '<span style="color: var(--text-dim);">-</span>';
-                if (diff > 2) gapBadge = `<span class="diff-tag diff-sleeper">+${diff} Sleeper</span>`;
-                else if (diff < -2) gapBadge = `<span class="diff-tag diff-reach">${diff} Reach</span>`;
-
-                return `
-                  <tr>
-                    <td style="font-weight: 700; color: var(--accent-primary);">${p.customRank}</td>
-                    <td style="font-weight: 700; color: #fff;">${p.name}</td>
-                    <td><span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span></td>
-                    <td>${p.team}</td>
-                    <td><span class="tier-badge">T${p.tier}</span></td>
-                    <td style="color: var(--text-muted);">${p.ecr}</td>
-                    <td>
-                      <input type="number" class="rank-input search-input" style="width: 55px; padding: 0.15rem 0.3rem; font-size: 0.8rem;" data-id="${p.id}" value="${p.customRank}">
-                    </td>
-                    <td>${gapBadge}</td>
-                    <td style="font-weight: 700; color: #34d399;">${p.projectedPts}</td>
-                    <td>${p.targetShare}%</td>
-                    <td>${p.redzoneTouches}</td>
-                    <td>${p.airYardsShare}%</td>
-                  </tr>
-                `;
-              }).join('')}
+              ${players.map((p, idx) => `
+                <tr>
+                  <td style="font-weight: 700; color: var(--accent-primary);">${idx + 1}</td>
+                  <td style="font-weight: 700; color: #fff;">${p.name}</td>
+                  <td><span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span></td>
+                  <td>${p.team}</td>
+                  <td><span class="tier-badge">T${p.tier}</span></td>
+                  <td style="color: var(--text-muted);">${p.ecr}</td>
+                  <td style="font-weight: 700; color: #34d399;">${p.projectedPts}</td>
+                  <td>${p.targetShare}%</td>
+                  <td>${p.redzoneTouches}</td>
+                  <td>${p.airYardsShare}%</td>
+                </tr>
+              `).join('')}
             </tbody>
           </table>
         </div>
@@ -194,21 +192,70 @@ export function renderPreDraftView() {
     });
   });
 
-  container.querySelectorAll('.rank-input').forEach(input => {
-    input.addEventListener('change', (e) => {
-      store.updatePlayerCustomRank(e.target.dataset.id, e.target.value);
+  container.querySelectorAll('.btn-gap-inc').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pos = btn.dataset.pos;
+      const tier = parseInt(btn.dataset.tier, 10);
+      const curGap = store.getTierGap(pos, tier);
+      store.setTierGap(pos, tier, curGap + 25);
+      renderPreDraftView();
+    });
+  });
+
+  container.querySelectorAll('.btn-gap-dec').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pos = btn.dataset.pos;
+      const tier = parseInt(btn.dataset.tier, 10);
+      const curGap = store.getTierGap(pos, tier);
+      store.setTierGap(pos, tier, Math.max(0, curGap - 25));
+      renderPreDraftView();
+    });
+  });
+
+  container.querySelectorAll('.gap-control-bar').forEach(handle => {
+    handle.addEventListener('mousedown', (e) => {
+      if (e.target.tagName === 'BUTTON') return;
+      e.preventDefault();
+
+      const spacer = handle.closest('.tier-gap-spacer');
+      const pos = spacer.dataset.pos;
+      const tier = parseInt(spacer.dataset.tier, 10);
+      const startY = e.clientY;
+      const startHeight = spacer.offsetHeight;
+
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+
+      const onMouseMove = (moveEvent) => {
+        const deltaY = moveEvent.clientY - startY;
+        const newHeight = Math.max(0, startHeight + deltaY);
+        spacer.style.height = `${newHeight}px`;
+        const label = spacer.querySelector('.gap-label');
+        if (label) label.textContent = `${newHeight}px gap`;
+      };
+
+      const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        const finalHeight = spacer.offsetHeight;
+        store.setTierGap(pos, tier, finalHeight);
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
     });
   });
 
   let draggedPlayerId = null;
-  let draggedTierNum = null;
-  let draggedPos = null;
 
   container.querySelectorAll('.draggable-player-card').forEach(card => {
     card.addEventListener('dragstart', (e) => {
-      e.stopPropagation();
       draggedPlayerId = card.dataset.id;
-      draggedPos = card.dataset.pos;
       card.classList.add('dragging');
       e.dataTransfer.setData('text/plain', draggedPlayerId);
       e.dataTransfer.effectAllowed = 'move';
@@ -216,71 +263,71 @@ export function renderPreDraftView() {
 
     card.addEventListener('dragend', () => {
       card.classList.remove('dragging');
+      container.querySelectorAll('.draggable-player-card').forEach(c => {
+        c.classList.remove('drop-indicator-top', 'drop-indicator-bottom');
+      });
       draggedPlayerId = null;
+    });
+
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!draggedPlayerId || card.dataset.id === draggedPlayerId) return;
+
+      const rect = card.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+
+      if (e.clientY < midY) {
+        card.classList.add('drop-indicator-top');
+        card.classList.remove('drop-indicator-bottom');
+      } else {
+        card.classList.add('drop-indicator-bottom');
+        card.classList.remove('drop-indicator-top');
+      }
+      e.dataTransfer.dropEffect = 'move';
+    });
+
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drop-indicator-top', 'drop-indicator-bottom');
+    });
+
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      card.classList.remove('drop-indicator-top', 'drop-indicator-bottom');
+
+      if (!draggedPlayerId || card.dataset.id === draggedPlayerId) return;
+
+      const rect = card.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      const position = (e.clientY < midY) ? 'before' : 'after';
+
+      store.reorderPlayer(draggedPlayerId, card.dataset.id, position);
+      renderPreDraftView();
     });
   });
 
   container.querySelectorAll('.player-drop-zone').forEach(zone => {
     zone.addEventListener('dragover', (e) => {
       e.preventDefault();
-      e.stopPropagation();
       if (draggedPlayerId) {
         zone.classList.add('drop-hover');
         e.dataTransfer.dropEffect = 'move';
       }
     });
 
-    zone.addEventListener('dragleave', (e) => {
-      e.stopPropagation();
+    zone.addEventListener('dragleave', () => {
       zone.classList.remove('drop-hover');
     });
 
     zone.addEventListener('drop', (e) => {
       e.preventDefault();
-      e.stopPropagation();
       zone.classList.remove('drop-hover');
 
-      const targetTier = parseInt(zone.dataset.tier, 10);
-      if (draggedPlayerId && targetTier) {
-        store.movePlayerToTier(draggedPlayerId, targetTier);
-        renderPreDraftView();
-      }
-    });
-  });
-
-  container.querySelectorAll('.tier-box').forEach(tierBox => {
-    tierBox.addEventListener('dragstart', (e) => {
-      if (draggedPlayerId) return;
-      draggedTierNum = parseInt(tierBox.dataset.tier, 10);
-      draggedPos = tierBox.dataset.pos;
-      tierBox.classList.add('tier-dragging');
-      e.dataTransfer.setData('text/tier', draggedTierNum);
-      e.dataTransfer.effectAllowed = 'move';
-    });
-
-    tierBox.addEventListener('dragend', () => {
-      tierBox.classList.remove('tier-dragging');
-      draggedTierNum = null;
-    });
-
-    tierBox.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      if (!draggedPlayerId && draggedTierNum && tierBox.dataset.pos === draggedPos) {
-        tierBox.classList.add('tier-drop-hover');
-      }
-    });
-
-    tierBox.addEventListener('dragleave', () => {
-      tierBox.classList.remove('tier-drop-hover');
-    });
-
-    tierBox.addEventListener('drop', (e) => {
-      e.preventDefault();
-      tierBox.classList.remove('tier-drop-hover');
-      const targetTier = parseInt(tierBox.dataset.tier, 10);
-
-      if (!draggedPlayerId && draggedTierNum && targetTier && draggedTierNum !== targetTier) {
-        store.reorderTiers(draggedPos, draggedTierNum, targetTier);
+      if (draggedPlayerId) {
+        const targetPos = zone.dataset.pos;
+        const targetTier = parseInt(zone.dataset.tier, 10);
+        store.movePlayerToTierEnd(draggedPlayerId, targetPos, targetTier);
         renderPreDraftView();
       }
     });
