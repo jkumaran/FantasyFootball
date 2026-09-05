@@ -6,8 +6,8 @@ const STORAGE_KEY = 'fantasy_suite_state_v1';
 export const DEFAULT_TIER_GAPS = {
   RB: { 1: 0, 2: 30, 3: 30, 4: 30, 5: 30 },
   WR: { 1: 45, 2: 30, 3: 30, 4: 30, 5: 30 },
-  QB: { 1: 240, 2: 35, 3: 30, 4: 30, 5: 30 },
   TE: { 1: 180, 2: 30, 3: 30, 4: 30, 5: 30 },
+  QB: { 1: 240, 2: 35, 3: 30, 4: 30, 5: 30 },
   DST: { 1: 450, 2: 30, 3: 30, 4: 30, 5: 30 },
   K: { 1: 500, 2: 30, 3: 30, 4: 30, 5: 30 }
 };
@@ -106,6 +106,35 @@ class Store {
     this.saveState();
   }
 
+  isPlayerDrafted(playerId) {
+    return this.state.draftPicks.some(dp => dp.player && dp.player.id === playerId);
+  }
+
+  async togglePlayerDrafted(playerId) {
+    const isDrafted = this.isPlayerDrafted(playerId);
+    if (isDrafted) {
+      // Remove pick from draftPicks
+      const pickIdx = this.state.draftPicks.findIndex(dp => dp.player && dp.player.id === playerId);
+      if (pickIdx !== -1) {
+        const removedPick = this.state.draftPicks.splice(pickIdx, 1)[0];
+        // Re-number remaining picks
+        this.state.draftPicks.forEach((dp, i) => {
+          dp.pickNum = i + 1;
+          const teamsCount = this.state.league.teamsCount || 12;
+          dp.round = Math.ceil(dp.pickNum / teamsCount);
+        });
+        this.state.currentPick = this.state.draftPicks.length + 1;
+
+        if (removedPick.teamId === (this.state.league.userSlot || 1)) {
+          this.state.userRoster = this.state.userRoster.filter(id => id !== playerId);
+        }
+        this.saveState();
+      }
+    } else {
+      await this.draftPlayer(playerId);
+    }
+  }
+
   async addCustomPlayer(name, pos, team = 'FA', tier = 1) {
     if (!name || !name.trim()) return;
     const newId = `${pos.toLowerCase()}-custom-${Date.now()}`;
@@ -146,20 +175,16 @@ class Store {
     const draggedPlayer = this.state.players[draggedIdx];
     const targetPlayer = this.state.players[targetIdx];
 
-    // Align pos & tier with target
     draggedPlayer.pos = targetPlayer.pos;
     draggedPlayer.tier = targetPlayer.tier;
 
-    // Remove from current position
     this.state.players.splice(draggedIdx, 1);
 
-    // Find new insertion point
     const newTargetIdx = this.state.players.findIndex(p => p.id === targetPlayerId);
     const insertIdx = position === 'after' ? newTargetIdx + 1 : newTargetIdx;
 
     this.state.players.splice(insertIdx, 0, draggedPlayer);
 
-    // Recalculate custom ranks for consistency
     this.state.players.forEach((p, idx) => {
       p.customRank = idx + 1;
     });

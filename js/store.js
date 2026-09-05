@@ -6,8 +6,8 @@ const STORAGE_KEY = 'fantasy_suite_state_v1';
 export const DEFAULT_TIER_GAPS = {
   RB: { 1: 0, 2: 30, 3: 30, 4: 30, 5: 30 },
   WR: { 1: 45, 2: 30, 3: 30, 4: 30, 5: 30 },
-  QB: { 1: 240, 2: 35, 3: 30, 4: 30, 5: 30 },
   TE: { 1: 180, 2: 30, 3: 30, 4: 30, 5: 30 },
+  QB: { 1: 240, 2: 35, 3: 30, 4: 30, 5: 30 },
   DST: { 1: 450, 2: 30, 3: 30, 4: 30, 5: 30 },
   K: { 1: 500, 2: 30, 3: 30, 4: 30, 5: 30 }
 };
@@ -104,6 +104,33 @@ class Store {
     if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
     this.state.tierGaps[pos][tierNum] = Math.max(0, Math.round(gapPx));
     this.saveState();
+  }
+
+  isPlayerDrafted(playerId) {
+    return this.state.draftPicks.some(dp => dp.player && dp.player.id === playerId);
+  }
+
+  async togglePlayerDrafted(playerId) {
+    const isDrafted = this.isPlayerDrafted(playerId);
+    if (isDrafted) {
+      const pickIdx = this.state.draftPicks.findIndex(dp => dp.player && dp.player.id === playerId);
+      if (pickIdx !== -1) {
+        const removedPick = this.state.draftPicks.splice(pickIdx, 1)[0];
+        this.state.draftPicks.forEach((dp, i) => {
+          dp.pickNum = i + 1;
+          const teamsCount = this.state.league.teamsCount || 12;
+          dp.round = Math.ceil(dp.pickNum / teamsCount);
+        });
+        this.state.currentPick = this.state.draftPicks.length + 1;
+
+        if (removedPick.teamId === (this.state.league.userSlot || 1)) {
+          this.state.userRoster = this.state.userRoster.filter(id => id !== playerId);
+        }
+        this.saveState();
+      }
+    } else {
+      await this.draftPlayer(playerId);
+    }
   }
 
   async addCustomPlayer(name, pos, team = 'FA', tier = 1) {
