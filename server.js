@@ -1,8 +1,10 @@
 const http = require('node:http');
+const https = require('node:https');
 const path = require('node:path');
 const fs = require('node:fs');
 const url = require('node:url');
 const os = require('node:os');
+const { execSync } = require('node:child_process');
 
 const db = require('./services/db');
 const { fetchPlayerNews } = require('./services/serpapi');
@@ -10,6 +12,58 @@ const { fetchPlayerNews } = require('./services/serpapi');
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 const PUBLIC_DIR = path.join(__dirname, 'public');
+
+// Track running git commit (Render provides RENDER_GIT_COMMIT)
+let currentCommitHash = process.env.RENDER_GIT_COMMIT || '';
+if (!currentCommitHash) {
+  try {
+    currentCommitHash = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+  } catch (e) {
+    currentCommitHash = 'f99c0bd';
+  }
+}
+
+let cachedLatestCommit = null;
+let lastCommitCheckTime = 0;
+
+function getLatestGitHubCommit() {
+  return new Promise((resolve) => {
+    const now = Date.now();
+    if (cachedLatestCommit && (now - lastCommitCheckTime < 5000)) {
+      return resolve(cachedLatestCommit);
+    }
+
+    const options = {
+      hostname: 'api.github.com',
+      path: '/repos/jkumaran/FantasyFootball/commits/main',
+      method: 'GET',
+      headers: { 'User-Agent': 'FantasyFootball-App' }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed && parsed.sha) {
+            cachedLatestCommit = parsed.sha;
+            lastCommitCheckTime = now;
+            return resolve(parsed.sha);
+          }
+        } catch (err) {}
+        resolve(cachedLatestCommit || currentCommitHash);
+      });
+    });
+
+    req.on('error', () => resolve(cachedLatestCommit || currentCommitHash));
+    req.setTimeout(3500, () => {
+      req.destroy();
+      resolve(cachedLatestCommit || currentCommitHash);
+    });
+    req.end();
+  });
+}
 
 // LAN IP helper for local device sharing
 function getLanIp() {
@@ -77,6 +131,28 @@ const server = http.createServer(async (req, res) => {
   }
 
   // --- API ROUTES ---
+
+  // GET /api/deploy-status
+  if (method === 'GET' && pathname === '/api/deploy-status') {
+    try {
+      const latestSha = await getLatestGitHubCommit();
+      const currentShort = currentCommitHash.slice(0, 7);
+      const latestShort = (latestSha || currentCommitHash).slice(0, 7);
+      const isDeploying = Boolean(latestSha && !latestSha.startsWith(currentShort) && !currentCommitHash.startsWith(latestShort));
+
+      return sendJson(res, {
+        success: true,
+        isDeploying,
+        currentCommit: currentShort,
+        latestCommit: latestShort,
+        message: isDeploying
+          ? `Render is building commit #${latestShort}... Waiting to deploy...`
+          : `Running commit #${currentShort}`
+      });
+    } catch (err) {
+      return sendJson(res, { success: true, isDeploying: false, currentCommit: currentCommitHash.slice(0, 7) });
+    }
+  }
 
   // GET /api/players
   if (method === 'GET' && pathname === '/api/players') {

@@ -12,11 +12,18 @@
 </head>
 <body>
 
+  <!-- Live Deployment / Build Status Banner -->
+  <div id="deploy-notification-banner" class="deploy-banner" style="display: none;"></div>
+
   <!-- App Header -->
   <header class="app-header">
     <div class="brand-title">
       <div class="brand-icon">🏈</div>
       <span>GRIDIRON STRATEGY SUITE</span>
+      <div class="header-status-pill" id="header-deploy-status" title="Current build status">
+        <span class="status-dot"></span>
+        <span class="status-text">Live</span>
+      </div>
     </div>
 
     <!-- Main Navigation Tabs -->
