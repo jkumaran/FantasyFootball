@@ -2,6 +2,9 @@ import { INITIAL_PLAYERS } from './data/players.js';
 import { api } from './api.js';
 
 const STORAGE_KEY = 'fantasy_suite_state_v1';
+const BOARD_YAML_KEY = 'fantasy_active_board_yaml_v1';
+const BOARD_CUSTOM_FLAG = 'fantasy_board_customized_v1';
+const AUTOSAVE_KEY = 'fantasy_autosave_enabled_v1';
 
 export const DEFAULT_TIER_GAPS = {
   RB: { 1: 0, 2: 30 },
@@ -135,6 +138,8 @@ export function parseBoardYaml(yamlText) {
 class Store {
   constructor() {
     this.listeners = [];
+    this.isAutosaveEnabled = localStorage.getItem(AUTOSAVE_KEY) === 'true';
+    this.hasUnsavedChanges = false;
     this.state = this.loadInitialState();
     this.syncFromBackend();
   }
@@ -172,18 +177,20 @@ class Store {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        const playerList = (parsed.players && parsed.players.length >= 100) ? parsed.players : INITIAL_PLAYERS;
         state = {
           league: { teamsCount: 12, format: 'Snake', scoring: 'Half-PPR', userSlot: 1 },
-          players: INITIAL_PLAYERS,
+          players: playerList,
           draftPicks: [],
           currentPick: 1,
           weeklyStrategy: 'CONSERVATIVE',
-          userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
-          opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
+          userRoster: ['rb-904', 'wr-902', 'qb-774', 'te-899'],
+          opponentRoster: [],
           opponentProjected: 115.0,
           tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
           customAddedTiers: {},
           ...parsed,
+          players: playerList,
           isAuthenticated: isAuthedLocal,
           tierGaps: {
             ...DEFAULT_TIER_GAPS,
@@ -201,8 +208,8 @@ class Store {
         draftPicks: [],
         currentPick: 1,
         weeklyStrategy: 'CONSERVATIVE',
-        userRoster: ['rb-1', 'wr-1', 'qb-1', 'te-1'],
-        opponentRoster: ['rb-2', 'wr-2', 'qb-2', 'te-2'],
+        userRoster: ['rb-904', 'wr-902', 'qb-774', 'te-899'],
+        opponentRoster: [],
         opponentProjected: 115.0,
         tierGaps: JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS)),
         customAddedTiers: {},
@@ -220,8 +227,21 @@ class Store {
       return;
     }
 
+    const hasCustomBoard = localStorage.getItem(BOARD_CUSTOM_FLAG) === 'true';
+
     try {
-      // 1. By default, load from fixed YAML file on the server if it exists
+      // If the user already has custom board edits in their browser:
+      // Render rebuilds must NOT reset their custom board.
+      // Instead, we ensure the backend has their custom board.
+      if (hasCustomBoard) {
+        const localYaml = localStorage.getItem(BOARD_YAML_KEY) || this.exportYaml();
+        if (localYaml) {
+          api.saveBoardYaml(localYaml).catch(() => {});
+        }
+        return;
+      }
+
+      // If user has NOT customized yet, load the fixed tier_board.yaml from the server
       const yamlResult = await api.getBoardYaml();
       if (yamlResult && yamlResult.success && yamlResult.yaml) {
         this.loadFromYaml(yamlResult.yaml, true);
@@ -234,16 +254,16 @@ class Store {
     // Fallback: sync players from DB
     try {
       const remotePlayers = await api.getPlayers();
-      if (remotePlayers && remotePlayers.length > 0) {
+      if (remotePlayers && remotePlayers.length > 0 && !hasCustomBoard) {
         this.state.players = remotePlayers;
-        this.saveState();
+        this.saveState(true);
       }
     } catch (e) {
       console.warn('Player DB sync fallback:', e);
     }
   }
 
-  loadFromYaml(yamlText, skipBackendSave = false) {
+  loadFromYaml(yamlText, skipBackendSave = false, isUserEdit = false) {
     const parsed = parseBoardYaml(yamlText);
     if (!parsed) return false;
 
@@ -362,7 +382,7 @@ class Store {
     }
 
     this.cleanEmptyTiersFromState();
-    this.saveState(skipBackendSave);
+    this.saveState(skipBackendSave, isUserEdit);
     return true;
   }
 
@@ -494,25 +514,109 @@ class Store {
     return lines.join(String.fromCharCode(10)) + String.fromCharCode(10);
   }
 
-  saveState(skipBackendSave = false) {
+  saveState(skipBackendSave = false, isUserEdit = false) {
+    if (isUserEdit) {
+      this.hasUnsavedChanges = true;
+      try {
+        localStorage.setItem(BOARD_CUSTOM_FLAG, 'true');
+      } catch (e) {}
+    }
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
     } catch (e) {
       console.error('Save state error:', e);
     }
+    try {
+      localStorage.setItem(BOARD_YAML_KEY, this.exportYaml());
+    } catch (e) {}
+
     this.notify();
 
-    // Auto-sync YAML to backend so fixed tier_board.yaml stays preserved across refreshes
-    // Only attempt backend sync if authenticated
-    if (!skipBackendSave && this.state.isAuthenticated) {
+    // Auto-sync YAML to backend only if autosave is enabled and user is authenticated
+    if (!skipBackendSave && this.isAutosaveEnabled && this.state.isAuthenticated) {
       if (this._syncTimer) clearTimeout(this._syncTimer);
-      this._syncTimer = setTimeout(() => {
+      this._syncTimer = setTimeout(async () => {
         try {
           const yamlStr = this.exportYaml();
-          api.saveBoardYaml(yamlStr);
+          const res = await api.saveBoardYaml(yamlStr);
+          if (res && res.success) {
+            this.hasUnsavedChanges = false;
+            this.notify();
+          }
         } catch (e) {}
-      }, 1500);
+      }, 1200);
     }
+  }
+
+  isAutosave() {
+    return Boolean(this.isAutosaveEnabled);
+  }
+
+  setAutosave(enabled) {
+    this.isAutosaveEnabled = Boolean(enabled);
+    try {
+      localStorage.setItem(AUTOSAVE_KEY, this.isAutosaveEnabled ? 'true' : 'false');
+    } catch (e) {}
+    if (this.isAutosaveEnabled && this.hasUnsavedChanges) {
+      this.saveBoardToServer();
+    }
+    this.notify();
+  }
+
+  getHasUnsavedChanges() {
+    return Boolean(this.hasUnsavedChanges);
+  }
+
+  async saveBoardToServer() {
+    if (!this.state.isAuthenticated) {
+      if (typeof window.openAuthModal === 'function') {
+        window.openAuthModal();
+      }
+      return false;
+    }
+    try {
+      const yamlStr = this.exportYaml();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+        localStorage.setItem(BOARD_YAML_KEY, yamlStr);
+        localStorage.setItem(BOARD_CUSTOM_FLAG, 'true');
+      } catch (e) {}
+
+      const res = await api.saveBoardYaml(yamlStr);
+      if (res && res.success) {
+        this.hasUnsavedChanges = false;
+        this.notify();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('saveBoardToServer error:', e);
+      return false;
+    }
+  }
+
+  async resetToDefaultRankings() {
+    try {
+      const res = await api.getDefaultBoardYaml();
+      if (res && res.success && res.yaml) {
+        try {
+          localStorage.removeItem(BOARD_CUSTOM_FLAG);
+        } catch (e) {}
+        this.loadFromYaml(res.yaml, true, false);
+        if (this.isAutosaveEnabled && this.state.isAuthenticated) {
+          await api.saveBoardYaml(res.yaml);
+          this.hasUnsavedChanges = false;
+        } else {
+          this.hasUnsavedChanges = true;
+        }
+        this.notify();
+        return true;
+      }
+    } catch (e) {
+      console.error('resetToDefaultRankings error:', e);
+    }
+    return false;
   }
 
   subscribe(listener) {
@@ -557,7 +661,7 @@ class Store {
       this.state.customAddedTiers[pos].push(nextTier);
     }
 
-    this.saveState();
+    this.saveState(false, true);
     return nextTier;
   }
 
@@ -579,13 +683,13 @@ class Store {
       delete this.state.tierGaps[pos][tierNum];
     }
     this.cleanEmptyTiersFromState();
-    this.saveState();
+    this.saveState(false, true);
   }
 
   removeEmptyTiers() {
     this.state.customAddedTiers = {};
     this.cleanEmptyTiersFromState();
-    this.saveState();
+    this.saveState(false, true);
   }
 
   getTierGap(pos, tierNum) {
@@ -601,7 +705,7 @@ class Store {
     if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
     if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
     this.state.tierGaps[pos][tierNum] = Math.max(0, Math.round(gapPx));
-    this.saveState();
+    this.saveState(false, true);
   }
 
   setTierGaps(pos, gapUpdates) {
@@ -610,7 +714,7 @@ class Store {
     Object.keys(gapUpdates).forEach(t => {
       this.state.tierGaps[pos][t] = Math.max(0, Math.round(gapUpdates[t]));
     });
-    this.saveState();
+    this.saveState(false, true);
   }
 
   isPlayerDrafted(playerId) {
@@ -633,7 +737,7 @@ class Store {
         if (removedPick.teamId === (this.state.league.userSlot || 1)) {
           this.state.userRoster = this.state.userRoster.filter(id => id !== playerId);
         }
-        this.saveState();
+        this.saveState(false, true);
       }
     } else {
       await this.draftPlayer(playerId);
@@ -669,7 +773,7 @@ class Store {
     };
 
     this.state.players.push(newPlayer);
-    this.saveState();
+    this.saveState(false, true);
   }
 
   async reorderPlayer(draggedPlayerId, targetPlayerId, position = 'before') {
@@ -696,7 +800,7 @@ class Store {
       p.customRank = idx + 1;
     });
 
-    this.saveState();
+    this.saveState(false, true);
     await api.updateTier(draggedPlayer.id, draggedPlayer.tier);
   }
 
@@ -727,7 +831,7 @@ class Store {
       p.customRank = idx + 1;
     });
 
-    this.saveState();
+    this.saveState(false, true);
     await api.updateTier(draggedPlayer.id, draggedPlayer.tier);
   }
 
@@ -740,14 +844,14 @@ class Store {
       else if (p.tier === toTier) p.tier = fromTier;
     });
 
-    this.saveState();
+    this.saveState(false, true);
   }
 
   async updatePlayerCustomRank(playerId, newRank) {
     const p = this.state.players.find(x => x.id === playerId);
     if (p) {
       p.customRank = parseInt(newRank, 10);
-      this.saveState();
+      this.saveState(false, true);
       await api.updateRank(playerId, newRank);
     }
   }
@@ -771,7 +875,7 @@ class Store {
       }
     }
 
-    this.saveState();
+    this.saveState(false, true);
     await api.draftPick(playerId);
   }
 
@@ -784,25 +888,25 @@ class Store {
       this.state.userRoster = this.state.userRoster.filter(id => id !== lastPick.player.id);
     }
 
-    this.saveState();
+    this.saveState(false, true);
     await api.undoPick();
   }
 
   async resetDraft() {
     this.state.draftPicks = [];
     this.state.currentPick = 1;
-    this.saveState();
+    this.saveState(false, true);
     await api.resetDraft();
   }
 
   setWeeklyStrategy(mode) {
     this.state.weeklyStrategy = mode;
-    this.saveState();
+    this.saveState(false, true);
   }
 
   async updateLeagueSettings(newSettings) {
     this.state.league = { ...this.state.league, ...newSettings };
-    this.saveState();
+    this.saveState(false, true);
     await api.saveSettings(newSettings);
   }
 

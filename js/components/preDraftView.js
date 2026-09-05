@@ -1,6 +1,7 @@
 import { store } from '../store.js';
 import { api } from '../api.js';
 import { renderAuthModal } from './authModal.js';
+import { openSharpLineupModal } from './sharpLineupModal.js';
 
 function downloadFile(content, filename, mimeType = 'text/yaml;charset=utf-8;') {
   const blob = new Blob([content], { type: mimeType });
@@ -147,24 +148,37 @@ export function renderPreDraftView() {
           <div>
             <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff;">🏆 Positional Tier Board</h2>
             <p style="font-size: 0.8rem; color: var(--text-muted);">
-              Check boxes to mark players drafted. Drag players to reorder within a tier. Adjust vertical gaps using <strong>↕ Gap Handles</strong>. Your board preserves across refreshes from YAML!
+              Check boxes to mark players drafted. Drag players to reorder within a tier. Adjust vertical gaps using <strong>↕ Gap Handles</strong>. Click <strong>💾 Save Board</strong> or toggle <strong>Autosave</strong> to persist your board to server YAML.
             </p>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
             <input type="text" class="search-input" id="board-search" placeholder="🔍 Search player..." value="${searchQuery}">
             
-            <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Jump down to DST & K tiers">
+            <button class="btn-secondary" id="btn-view-sharplineup" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="View SharpLineup Top 300 rankings & tiers (does not overwrite your board)">
+              👁️ View SharpLineup
+            </button>
+
+            <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
+              💾 Save Board ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
+            </button>
+
+            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
+              <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
+              <span>Autosave</span>
+            </label>
+
+            <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Jump down to DST & K tiers">
               🛡️ DST & K ↓
             </button>
             <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
-            <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Load tier board from a local YAML file">
+            <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Load tier board from a local YAML file">
               📂 Load YAML
             </button>
-            <button class="btn-secondary" id="btn-clean-empty-tiers" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Remove all tiers with no players">
+            <button class="btn-secondary" id="btn-clean-empty-tiers" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Remove all tiers with no players">
               🗑️ Remove Empty Tiers
             </button>
-            <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
+            <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
               📥 Export Board (YAML)
             </button>
           </div>
@@ -269,6 +283,53 @@ export function renderPreDraftView() {
     });
   }
 
+  // View SharpLineup Modal
+  const btnViewSL = container.querySelector('#btn-view-sharplineup');
+  if (btnViewSL) {
+    btnViewSL.addEventListener('click', () => {
+      openSharpLineupModal();
+    });
+  }
+
+  // Autosave Checkbox
+  const chkAutosave = container.querySelector('#chk-autosave');
+  if (chkAutosave) {
+    chkAutosave.addEventListener('change', async (e) => {
+      if (!store.getState().isAuthenticated) {
+        e.preventDefault();
+        e.target.checked = !e.target.checked;
+        renderAuthModal();
+        return;
+      }
+      store.setAutosave(e.target.checked);
+    });
+  }
+
+  // Save Board to Server YAML Button
+  const btnSaveBoard = container.querySelector('#btn-save-board-yaml');
+  if (btnSaveBoard) {
+    btnSaveBoard.addEventListener('click', async () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
+      btnSaveBoard.disabled = true;
+      btnSaveBoard.innerHTML = '⏳ Saving...';
+      const ok = await store.saveBoardToServer();
+      if (ok) {
+        btnSaveBoard.innerHTML = '✅ Saved!';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 1000);
+      } else {
+        btnSaveBoard.innerHTML = '❌ Save Failed';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 1500);
+      }
+    });
+  }
+
   // Import / Load YAML Button
   const btnImport = container.querySelector('#btn-import-board');
   const fileInput = container.querySelector('#file-import-yaml');
@@ -289,10 +350,12 @@ export function renderPreDraftView() {
       const reader = new FileReader();
       reader.onload = async (event) => {
         const yamlText = event.target.result;
-        const success = store.loadFromYaml(yamlText);
+        const success = store.loadFromYaml(yamlText, false, true);
         if (success) {
-          await api.saveBoardYaml(yamlText);
-          alert(`✅ Successfully loaded tier board from "${file.name}"! Tiers, gaps, and rankings are preserved across refreshes.`);
+          if (store.isAutosave()) {
+            await api.saveBoardYaml(yamlText);
+          }
+          alert(`✅ Successfully loaded tier board from "${file.name}"! Click "Save Board" or toggle Autosave to persist to server.`);
           renderPreDraftView();
         } else {
           alert('⚠️ Could not parse the selected YAML file. Please make sure it is a valid tier board file.');
@@ -598,3 +661,5 @@ export function renderPreDraftView() {
     });
   });
 }
+
+window.refreshPreDraftView = renderPreDraftView;

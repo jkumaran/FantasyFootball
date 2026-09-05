@@ -221,5 +221,48 @@ export const api = {
       console.warn('YAML sync to server failed:', e);
       return { success: false, error: e.message };
     }
+  },
+
+  async getDefaultBoardYaml() {
+    try {
+      const res = await fetch('/api/board/default-yaml', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.yaml) return data;
+      }
+    } catch (e) {
+      console.warn('API getDefaultBoardYaml failed:', e);
+    }
+    // Fallback: fetch static file /data/default_tier_board.yaml
+    try {
+      const res2 = await fetch('/data/default_tier_board.yaml');
+      if (res2.ok) {
+        const text = await res2.text();
+        if (text && text.includes('positions:')) {
+          return { success: true, yaml: text, file: 'data/default_tier_board.yaml (static)' };
+        }
+      }
+    } catch (e) {
+      console.warn('Static getDefaultBoardYaml fallback failed:', e);
+    }
+    return null;
+  },
+
+  async resetToDefaultBoard() {
+    try {
+      const res = await fetch('/api/board/reset-default', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      if (res.status === 401 && typeof window.onAuthRequired === 'function') {
+        window.onAuthRequired();
+        return { success: false, error: 'Authentication required' };
+      }
+      return await res.json();
+    } catch (e) {
+      console.warn('API resetToDefaultBoard failed:', e);
+      return { success: false, error: e.message };
+    }
   }
 };

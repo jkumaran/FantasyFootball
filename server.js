@@ -277,10 +277,39 @@ const server = http.createServer(async (req, res) => {
   // GET /api/board/yaml
   if (method === 'GET' && pathname === '/api/board/yaml') {
     try {
+      // 1. Try DB persistent store first
+      const dbYaml = await db.getBoardYaml();
+      if (dbYaml && dbYaml.yaml) {
+        return sendJson(res, { success: true, yaml: dbYaml.yaml, source: 'database', updatedAt: dbYaml.updatedAt });
+      }
+
+      // 2. Fallback to fixed file candidates
       const candidates = [
         path.join(__dirname, 'tier_board.yaml'),
         path.join(__dirname, 'data', 'tier_board.yaml'),
-        path.join(__dirname, 'public', 'data', 'tier_board.yaml')
+        path.join(__dirname, 'public', 'data', 'tier_board.yaml'),
+        path.join(__dirname, 'default_tier_board.yaml'),
+        path.join(__dirname, 'data', 'default_tier_board.yaml')
+      ];
+      for (const filePath of candidates) {
+        if (fs.existsSync(filePath)) {
+          const yamlContent = fs.readFileSync(filePath, 'utf8');
+          return sendJson(res, { success: true, yaml: yamlContent, file: path.basename(filePath), source: 'file' });
+        }
+      }
+      return sendJson(res, { success: false, message: 'No fixed YAML file found' });
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // GET /api/board/default-yaml
+  if (method === 'GET' && pathname === '/api/board/default-yaml') {
+    try {
+      const candidates = [
+        path.join(__dirname, 'default_tier_board.yaml'),
+        path.join(__dirname, 'data', 'default_tier_board.yaml'),
+        path.join(__dirname, 'public', 'data', 'default_tier_board.yaml')
       ];
       for (const filePath of candidates) {
         if (fs.existsSync(filePath)) {
@@ -288,7 +317,7 @@ const server = http.createServer(async (req, res) => {
           return sendJson(res, { success: true, yaml: yamlContent, file: path.basename(filePath) });
         }
       }
-      return sendJson(res, { success: false, message: 'No fixed YAML file found' });
+      return sendJson(res, { success: false, message: 'Default YAML file not found' }, 404);
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }
@@ -310,9 +339,63 @@ const server = http.createServer(async (req, res) => {
             fs.writeFileSync(p, body.yaml, 'utf8');
           } catch (e) {}
         });
+
+        // Persist to DB table so it survives across server restarts & rebuilds
+        try {
+          await db.saveBoardYaml(body.yaml);
+        } catch (dbErr) {
+          console.warn('DB saveBoardYaml error:', dbErr);
+        }
+
         return sendJson(res, { success: true });
       }
       return sendJson(res, { success: false, error: 'Missing yaml content' }, 400);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // POST /api/board/reset-default
+  if (method === 'POST' && pathname === '/api/board/reset-default') {
+    try {
+      const defaultCandidates = [
+        path.join(__dirname, 'default_tier_board.yaml'),
+        path.join(__dirname, 'data', 'default_tier_board.yaml'),
+        path.join(__dirname, 'public', 'data', 'default_tier_board.yaml')
+      ];
+      let defaultYaml = null;
+      for (const p of defaultCandidates) {
+        if (fs.existsSync(p)) {
+          defaultYaml = fs.readFileSync(p, 'utf8');
+          break;
+        }
+      }
+
+      if (!defaultYaml) {
+        return sendJson(res, { success: false, error: 'Default YAML file not found' }, 404);
+      }
+
+      // Overwrite active tier board files
+      const paths = [
+        path.join(__dirname, 'tier_board.yaml'),
+        path.join(__dirname, 'data', 'tier_board.yaml'),
+        path.join(__dirname, 'public', 'data', 'tier_board.yaml')
+      ];
+      paths.forEach(p => {
+        try {
+          fs.mkdirSync(path.dirname(p), { recursive: true });
+          fs.writeFileSync(p, defaultYaml, 'utf8');
+        } catch (e) {}
+      });
+
+      // Overwrite DB active board
+      try {
+        await db.saveBoardYaml(defaultYaml);
+      } catch (dbErr) {
+        console.warn('DB reset saveBoardYaml error:', dbErr);
+      }
+
+      return sendJson(res, { success: true, yaml: defaultYaml });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }
