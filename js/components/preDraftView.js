@@ -61,9 +61,12 @@ export function renderPreDraftView() {
             return matchesPos && matchesSearch;
           });
 
+          const posTiers = store.getTiersForPos(pos);
+          const nextTier = (posTiers.length > 0 ? Math.max(...posTiers) : 0) + 1;
+
           // Group players by tier while maintaining exact array order
           const tiersMap = {};
-          availableTiers.forEach(t => { tiersMap[t] = []; });
+          posTiers.forEach(t => { tiersMap[t] = []; });
           
           posPlayers.forEach(p => {
             const t = p.tier || 1;
@@ -75,45 +78,42 @@ export function renderPreDraftView() {
             <div class="pos-column glass-card" data-pos="${pos}">
               <!-- Column Header -->
               <div class="pos-column-header">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <span class="pos-badge pos-${pos.toLowerCase()}" style="font-size: 0.85rem; padding: 0.25rem 0.6rem;">${pos}</span>
-                  <span style="font-weight: 800; font-size: 1rem; color: #fff;">${pos}</span>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <span class="pos-badge pos-${pos.toLowerCase()}" style="font-size: 0.78rem; padding: 0.2rem 0.5rem;">${pos}</span>
+                  <span style="font-weight: 800; font-size: 0.9rem; color: #fff;">${pos}</span>
                 </div>
-                <span class="tier-badge" style="font-size: 0.75rem;">${posPlayers.length} Players</span>
+                <span class="tier-badge" style="font-size: 0.7rem;">${posPlayers.length}</span>
               </div>
 
               <!-- Quick Enter Player Name -->
               <div class="quick-add-box">
-                <input type="text" class="search-input input-add-player" style="font-size: 0.8rem; padding: 0.35rem 0.6rem; width: 100%;" placeholder="+ Add ${pos}..." data-pos="${pos}">
-                <button class="btn-primary btn-add-player" data-pos="${pos}" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;">Add</button>
+                <input type="text" class="search-input input-add-player" style="font-size: 0.75rem; padding: 0.3rem 0.5rem; width: 100%;" placeholder="+ Add ${pos}..." data-pos="${pos}">
+                <button class="btn-primary btn-add-player" data-pos="${pos}" style="padding: 0.3rem 0.5rem; font-size: 0.72rem;">Add</button>
               </div>
 
               <!-- Tier Blocks Container with Adjustable Gaps -->
               <div class="tier-blocks-column" data-pos="${pos}">
-                ${availableTiers.map(tierNum => {
+                ${posTiers.map(tierNum => {
                   const gap = store.getTierGap(pos, tierNum);
                   const tierPlayers = tiersMap[tierNum] || [];
 
                   return `
                     <!-- Adjustable Vertical Gap Spacer -->
-                    <div class="tier-gap-spacer ${tierNum === 1 ? 'tier-top-spacer' : ''}" data-pos="${pos}" data-tier="${tierNum}" style="height: ${gap}px;">
-                      <div class="gap-control-bar" title="Drag vertically to resize gap, or click +/-">
+                    <div class="tier-gap-spacer ${tierNum === 1 ? 'tier-top-spacer' : ''}" data-pos="${pos}" data-tier="${tierNum}" style="height: ${gap}px;" title="Drag up or down to adjust gap">
+                      <div class="gap-control-bar" title="Drag up or down to adjust gap">
                         <span class="gap-drag-handle">↕</span>
-                        <span class="gap-label">${gap}px gap</span>
-                        <div class="gap-btn-group">
-                          <button class="btn-gap-dec" data-pos="${pos}" data-tier="${tierNum}" title="Decrease gap">-</button>
-                          <button class="btn-gap-inc" data-pos="${pos}" data-tier="${tierNum}" title="Increase gap">+</button>
-                        </div>
+                        <span class="gap-label">${gap}px</span>
                       </div>
                     </div>
 
                     <!-- Tier Block Card -->
                     <div class="tier-box" data-pos="${pos}" data-tier="${tierNum}">
-                      <div class="tier-box-header">
-                        <div style="display: flex; align-items: center; gap: 0.4rem;">
-                          <span style="font-weight: 800; font-size: 0.8rem; color: var(--accent-primary);">TIER ${tierNum}</span>
+                      <div class="tier-box-header" data-pos="${pos}" data-tier="${tierNum}" title="Drag up or down to adjust tier position">
+                        <div style="display: flex; align-items: center; gap: 0.3rem;">
+                          <span class="tier-drag-handle" title="Drag up/down">↕</span>
+                          <span style="font-weight: 800; font-size: 0.76rem; color: var(--accent-primary);">TIER ${tierNum}</span>
                         </div>
-                        <span class="tier-badge" style="font-size: 0.7rem;">${tierPlayers.length}</span>
+                        <span class="tier-badge" style="font-size: 0.65rem;">${tierPlayers.length}</span>
                       </div>
 
                       <!-- Player Cards Drop Zone -->
@@ -128,10 +128,10 @@ export function renderPreDraftView() {
                             <div class="draggable-player-card ${isDrafted ? 'card-drafted' : ''}" draggable="true" data-id="${p.id}" data-pos="${pos}" data-tier="${tierNum}" data-index="${idx}">
                               <div class="player-card-left">
                                 <input type="checkbox" class="player-draft-chk" data-id="${p.id}" ${isDrafted ? 'checked' : ''} title="${isDrafted ? 'Drafted (click to unmark)' : 'Mark Drafted'}">
-                                <div class="player-info">
+                                <div class="player-info" style="min-width: 0; overflow: hidden;">
                                   <span class="player-drag-dots" title="Drag to reorder">⋮⋮</span>
-                                  <div>
-                                    <div class="player-name ${isDrafted ? 'name-drafted' : ''}">
+                                  <div style="min-width: 0; overflow: hidden;">
+                                    <div class="player-name ${isDrafted ? 'name-drafted' : ''}" title="${p.name}">
                                       ${p.name}
                                       ${isDrafted ? '<span class="drafted-badge">DRAFTED</span>' : ''}
                                     </div>
@@ -140,9 +140,7 @@ export function renderPreDraftView() {
                                 </div>
                               </div>
 
-                              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                <span style="font-size: 0.7rem; font-weight: 700; color: ${isDrafted ? '#64748b' : '#34d399'};"><span style="opacity:0.6;">#</span>${idx + 1}</span>
-                              </div>
+                              <span style="font-size: 0.65rem; font-weight: 700; color: ${isDrafted ? '#64748b' : '#34d399'}; flex-shrink: 0;"><span style="opacity:0.6;">#</span>${idx + 1}</span>
                             </div>
                           `;
                         }).join('')}
@@ -150,6 +148,13 @@ export function renderPreDraftView() {
                     </div>
                   `;
                 }).join('')}
+              </div>
+
+              <!-- Option to Add Tier at Bottom of Column -->
+              <div class="column-footer" style="margin-top: 0.4rem; padding-top: 0.25rem;">
+                <button class="btn-add-tier" data-pos="${pos}" title="Add Tier ${nextTier} at the bottom of ${pos}">
+                  + Add Tier ${nextTier}
+                </button>
               </div>
             </div>
           `;
@@ -288,66 +293,98 @@ export function renderPreDraftView() {
     });
   });
 
-  // --- ADJUSTABLE GAP BUTTONS & DRAGGING ---
-
-  // 1. Plus / Minus Buttons
-  container.querySelectorAll('.btn-gap-inc').forEach(btn => {
+  // --- ADD TIER AT BOTTOM OF COLUMN ---
+  container.querySelectorAll('.btn-add-tier').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const pos = btn.dataset.pos;
-      const tier = parseInt(btn.dataset.tier, 10);
-      const curGap = store.getTierGap(pos, tier);
-      store.setTierGap(pos, tier, curGap + 25);
+      if (!pos) return;
+      store.addTier(pos);
       renderPreDraftView();
     });
   });
 
-  container.querySelectorAll('.btn-gap-dec').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const pos = btn.dataset.pos;
-      const tier = parseInt(btn.dataset.tier, 10);
-      const curGap = store.getTierGap(pos, tier);
-      store.setTierGap(pos, tier, Math.max(0, curGap - 25));
-      renderPreDraftView();
-    });
-  });
+  // --- DRAG TIERS UP / DOWN (CONSTRAINED BY TOP/PREV TIER & NEXT TIER, UNBOUNDED AT BOTTOM) ---
+  container.querySelectorAll('.tier-gap-spacer, .tier-box-header, .gap-control-bar').forEach(handle => {
+    handle.addEventListener('pointerdown', (e) => {
+      // Ignore clicks on player cards, checkboxes, buttons, or inputs
+      if (e.target.closest('.draggable-player-card, input, button, .player-draft-chk')) return;
 
-  // 2. Drag Spacer to Resize Gap in Real Time
-  container.querySelectorAll('.gap-control-bar').forEach(handle => {
-    handle.addEventListener('mousedown', (e) => {
-      if (e.target.tagName === 'BUTTON') return;
+      const targetEl = handle.closest('.tier-gap-spacer, .tier-box');
+      if (!targetEl) return;
+      const pos = targetEl.dataset.pos;
+      const tierNum = parseInt(targetEl.dataset.tier, 10);
+      if (!pos || isNaN(tierNum)) return;
+
       e.preventDefault();
 
-      const spacer = handle.closest('.tier-gap-spacer');
-      const pos = spacer.dataset.pos;
-      const tier = parseInt(spacer.dataset.tier, 10);
-      const startY = e.clientY;
-      const startHeight = spacer.offsetHeight;
+      const allTiers = store.getTiersForPos(pos);
+      const idx = allTiers.indexOf(tierNum);
+      if (idx === -1) return;
 
+      const nextTier = idx < allTiers.length - 1 ? allTiers[idx + 1] : null;
+      const initialGap = store.getTierGap(pos, tierNum);
+      const initialNextGap = nextTier ? store.getTierGap(pos, nextTier) : null;
+      const startY = e.clientY;
+
+      const colEl = container.querySelector(`.tier-blocks-column[data-pos="${pos}"]`);
+      const curSpacer = colEl?.querySelector(`.tier-gap-spacer[data-tier="${tierNum}"]`);
+      const nextSpacer = nextTier ? colEl?.querySelector(`.tier-gap-spacer[data-tier="${nextTier}"]`) : null;
+      const curTierBox = colEl?.querySelector(`.tier-box[data-tier="${tierNum}"]`);
+
+      if (curTierBox) curTierBox.classList.add('tier-dragging');
       document.body.style.cursor = 'ns-resize';
       document.body.style.userSelect = 'none';
 
-      const onMouseMove = (moveEvent) => {
+      let finalGap = initialGap;
+      let finalNextGap = initialNextGap;
+
+      const onPointerMove = (moveEvent) => {
         const deltaY = moveEvent.clientY - startY;
-        const newHeight = Math.max(0, startHeight + deltaY);
-        spacer.style.height = `${newHeight}px`;
-        const label = spacer.querySelector('.gap-label');
-        if (label) label.textContent = `${newHeight}px gap`;
+
+        // Upper limit (moving UP):
+        // Cannot reduce gap(t) below 0 (limited by top or previous tier)
+        const minDelta = -initialGap;
+
+        // Lower limit (moving DOWN):
+        // If nextTier exists: cannot reduce gap(nextTier) below 0 (limited by next tier)
+        // If nextTier does not exist (bottom tier): unlimited downward!
+        const maxDelta = nextTier ? initialNextGap : Infinity;
+
+        const clampedDelta = Math.max(minDelta, Math.min(maxDelta, deltaY));
+
+        finalGap = Math.max(0, Math.round(initialGap + clampedDelta));
+
+        if (curSpacer) {
+          curSpacer.style.height = `${finalGap}px`;
+          const label = curSpacer.querySelector('.gap-label');
+          if (label) label.textContent = `${finalGap}px`;
+        }
+
+        if (nextTier && nextSpacer) {
+          finalNextGap = Math.max(0, Math.round(initialNextGap - clampedDelta));
+          nextSpacer.style.height = `${finalNextGap}px`;
+          const nextLabel = nextSpacer.querySelector('.gap-label');
+          if (nextLabel) nextLabel.textContent = `${finalNextGap}px`;
+        }
       };
 
-      const onMouseUp = () => {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
+      const onPointerUp = () => {
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
+        if (curTierBox) curTierBox.classList.remove('tier-dragging');
 
-        const finalHeight = spacer.offsetHeight;
-        store.setTierGap(pos, tier, finalHeight);
+        if (nextTier && finalNextGap !== null) {
+          store.setTierGaps(pos, { [tierNum]: finalGap, [nextTier]: finalNextGap });
+        } else {
+          store.setTierGap(pos, tierNum, finalGap);
+        }
       };
 
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
     });
   });
 

@@ -60,7 +60,7 @@ export function parseBoardYaml(yamlText) {
         if (!result.tierGaps[currentPos]) result.tierGaps[currentPos] = {};
         continue;
       }
-      const tierMatch = rawLine.match(/^    tier_([1-5]):\s*(\d+)/);
+      const tierMatch = rawLine.match(/^    tier_(\d+):\s*(\d+)/);
       if (tierMatch && currentPos) {
         const tNum = parseInt(tierMatch[1], 10);
         const gapVal = parseInt(tierMatch[2], 10);
@@ -74,7 +74,7 @@ export function parseBoardYaml(yamlText) {
         continue;
       }
 
-      const tierMatch = rawLine.match(/^    tier_([1-5]):/);
+      const tierMatch = rawLine.match(/^    tier_(\d+):/);
       if (tierMatch) {
         currentTier = parseInt(tierMatch[1], 10);
         continue;
@@ -326,7 +326,6 @@ class Store {
   exportYaml() {
     const { players, league } = this.state;
     const positions = ['RB', 'WR', 'TE', 'QB', 'DST', 'K'];
-    const availableTiers = [1, 2, 3, 4, 5];
     const colWidth = 24;
     const separator = ' | ';
     const now = new Date().toISOString();
@@ -334,7 +333,8 @@ class Store {
     const colLines = {};
     positions.forEach(pos => {
       colLines[pos] = [];
-      availableTiers.forEach(t => {
+      const posTiers = this.getTiersForPos(pos);
+      posTiers.forEach(t => {
         const gapPx = this.getTierGap(pos, t);
         const numBlankLines = Math.max(0, Math.round(gapPx / 28));
         for (let b = 0; b < numBlankLines; b++) {
@@ -412,7 +412,8 @@ class Store {
     lines.push('vertical_tier_gaps_px:');
     positions.forEach(pos => {
       lines.push(`  ${pos}:`);
-      availableTiers.forEach(t => {
+      const posTiers = this.getTiersForPos(pos);
+      posTiers.forEach(t => {
         lines.push(`    tier_${t}: ${this.getTierGap(pos, t)}`);
       });
     });
@@ -421,7 +422,8 @@ class Store {
     lines.push('positions:');
     positions.forEach(pos => {
       lines.push(`  ${pos}:`);
-      availableTiers.forEach(t => {
+      const posTiers = this.getTiersForPos(pos);
+      posTiers.forEach(t => {
         const tierPlayers = players.filter(p => p.pos === pos && (p.tier || 1) === t);
         const gapPx = this.getTierGap(pos, t);
         lines.push(`    tier_${t}:`);
@@ -484,6 +486,39 @@ class Store {
     return this.state;
   }
 
+  getTiersForPos(pos) {
+    const set = new Set([1, 2, 3, 4, 5]);
+    if (this.state.positionTiers && this.state.positionTiers[pos]) {
+      this.state.positionTiers[pos].forEach(t => set.add(Number(t)));
+    }
+    if (this.state.tierGaps && this.state.tierGaps[pos]) {
+      Object.keys(this.state.tierGaps[pos]).forEach(t => set.add(Number(t)));
+    }
+    if (this.state.players) {
+      this.state.players.filter(p => p.pos === pos).forEach(p => {
+        if (p.tier) set.add(Number(p.tier));
+      });
+    }
+    return Array.from(set).sort((a, b) => a - b);
+  }
+
+  addTier(pos) {
+    const currentTiers = this.getTiersForPos(pos);
+    const nextTier = (currentTiers.length > 0 ? Math.max(...currentTiers) : 0) + 1;
+    if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
+    if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
+    this.state.tierGaps[pos][nextTier] = 30;
+
+    if (!this.state.positionTiers) this.state.positionTiers = {};
+    if (!this.state.positionTiers[pos]) this.state.positionTiers[pos] = [...currentTiers];
+    if (!this.state.positionTiers[pos].includes(nextTier)) {
+      this.state.positionTiers[pos].push(nextTier);
+    }
+
+    this.saveState();
+    return nextTier;
+  }
+
   getTierGap(pos, tierNum) {
     if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
     if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
@@ -497,6 +532,15 @@ class Store {
     if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
     if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
     this.state.tierGaps[pos][tierNum] = Math.max(0, Math.round(gapPx));
+    this.saveState();
+  }
+
+  setTierGaps(pos, gapUpdates) {
+    if (!this.state.tierGaps) this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
+    if (!this.state.tierGaps[pos]) this.state.tierGaps[pos] = {};
+    Object.keys(gapUpdates).forEach(t => {
+      this.state.tierGaps[pos][t] = Math.max(0, Math.round(gapUpdates[t]));
+    });
     this.saveState();
   }
 
