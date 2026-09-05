@@ -1091,3 +1091,167 @@ body {
   border: 1px solid rgba(52, 211, 153, 0.35);
   font-weight: 700;
 }
+
+/* --- FULL PAGE AUTH GATE (NO VIEW-ONLY ACCESS) --- */
+
+.auth-gate-container {
+  min-height: calc(85vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+.auth-gate-card {
+  max-width: 480px;
+  width: 100%;
+  padding: 2.25rem 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.85);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.08);
+}
+
+.auth-gate-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-gate-icon {
+  font-size: 2.75rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 12px rgba(245, 158, 11, 0.3));
+}
+
+.auth-gate-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.auth-gate-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auth-gate-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.gate-form-group {
+  margin-bottom: 1.25rem;
+}
+
+.gate-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.gate-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.gate-input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 0.85rem;
+  font-size: 0.95rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  transition: all var(--transition-fast);
+}
+
+.gate-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+  outline: none;
+}
+
+.gate-toggle-pass {
+  position: absolute;
+  right: 0.65rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  padding: 0.2rem;
+}
+
+.gate-duration-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.gate-duration-cards .auth-duration-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gate-duration-cards .auth-duration-card input {
+  margin-top: 0.2rem;
+  cursor: pointer;
+}
+
+.duration-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.duration-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.gate-error-alert {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1rem;
+  color: #fca5a5;
+  font-size: 0.82rem;
+}
+
+.gate-submit-btn {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}

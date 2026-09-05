@@ -233,23 +233,19 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, { success: true, authenticated: false }, 200, { 'Set-Cookie': cookieHeader });
   }
 
-  // --- MUTATING ENDPOINT PROTECTION ---
-  const mutatingRoutes = [
-    { method: 'POST', path: '/api/board/yaml' },
-    { method: 'PUT', path: '/api/players/tier' },
-    { method: 'PUT', path: '/api/players/rank' },
-    { method: 'POST', path: '/api/draft/pick' },
-    { method: 'POST', path: '/api/draft/undo' },
-    { method: 'POST', path: '/api/draft/reset' },
-    { method: 'POST', path: '/api/sync/news' },
-    { method: 'POST', path: '/api/settings' }
+  // --- STRICT ACCESS CONTROL (NO VIEW-ONLY MODE: AUTH REQUIRED FOR ALL DATA) ---
+  const publicApiRoutes = [
+    { method: 'GET', path: '/api/auth/status' },
+    { method: 'POST', path: '/api/auth/login' },
+    { method: 'POST', path: '/api/auth/logout' },
+    { method: 'GET', path: '/api/deploy-status' }
   ];
 
-  const isMutating = mutatingRoutes.some(r => r.method === method && r.path === pathname);
-  if (isMutating && !isAuthenticated(req)) {
+  const isPublicApi = publicApiRoutes.some(r => r.method === method && r.path === pathname);
+  if (pathname.startsWith('/api/') && !isPublicApi && !isAuthenticated(req)) {
     return sendJson(res, {
       success: false,
-      error: 'Authentication required. Please unlock with your access password to edit.',
+      error: 'Authentication required. Please enter your passcode to access the suite.',
       code: 'UNAUTHORIZED'
     }, 401);
   }
@@ -451,6 +447,12 @@ const server = http.createServer(async (req, res) => {
   if (!filePath.startsWith(PUBLIC_DIR)) {
     res.writeHead(403);
     return res.end('Forbidden');
+  }
+
+  // Block direct download of YAML files if not authenticated
+  if ((pathname.endsWith('.yaml') || pathname.endsWith('.yml')) && !isAuthenticated(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ success: false, error: 'Unauthorized. Passcode required.' }));
   }
 
   fs.stat(filePath, (err, stats) => {

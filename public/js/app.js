@@ -5,6 +5,7 @@ import { renderLiveDraftView } from './components/liveDraftView.js';
 import { renderWeeklyView } from './components/weeklyView.js';
 import { renderSettingsModal } from './components/settingsModal.js';
 import { renderAuthModal } from './components/authModal.js';
+import { renderAuthGate } from './components/authGate.js';
 
 let currentTab = 'predraft';
 
@@ -13,19 +14,42 @@ function updateAuthHeaderButton() {
   if (!btnAuth) return;
   const isAuthed = Boolean(store.getState().isAuthenticated);
   if (isAuthed) {
+    btnAuth.style.display = 'inline-flex';
     btnAuth.className = 'header-auth-btn unlocked';
-    btnAuth.innerHTML = '<span class="auth-icon">🔓</span><span class="auth-label">Unlocked</span>';
-    btnAuth.title = 'Board editing is unlocked (session active). Click to lock or manage.';
+    btnAuth.innerHTML = '<span class="auth-icon">🔓</span><span class="auth-label">Sign Out</span>';
+    btnAuth.title = 'Suite is unlocked. Click to lock / sign out.';
   } else {
-    btnAuth.className = 'header-auth-btn locked';
-    btnAuth.innerHTML = '<span class="auth-icon">🔒</span><span class="auth-label">Locked</span>';
-    btnAuth.title = 'View-only mode. Click to enter passcode and unlock editing.';
+    btnAuth.style.display = 'none';
   }
 }
 
 function renderCurrentView() {
+  const isAuthed = Boolean(store.getState().isAuthenticated);
+  const navTabsContainer = document.querySelector('.nav-tabs');
+  const btnSyncNews = document.getElementById('btn-sync-news');
+  const btnSettings = document.getElementById('btn-open-settings');
   const sections = document.querySelectorAll('.view-section');
+
   sections.forEach(sec => sec.classList.remove('active'));
+
+  if (!isAuthed) {
+    // Strictly block access: hide navigation tabs, controls, and suites
+    if (navTabsContainer) navTabsContainer.style.display = 'none';
+    if (btnSyncNews) btnSyncNews.style.display = 'none';
+    if (btnSettings) btnSettings.style.display = 'none';
+
+    const authSec = document.getElementById('view-auth');
+    if (authSec) authSec.classList.add('active');
+
+    updateAuthHeaderButton();
+    renderAuthGate();
+    return;
+  }
+
+  // Authenticated: show navigation tabs and controls
+  if (navTabsContainer) navTabsContainer.style.display = 'flex';
+  if (btnSyncNews) btnSyncNews.style.display = 'inline-flex';
+  if (btnSettings) btnSettings.style.display = 'inline-flex';
 
   const activeSec = document.getElementById(`view-${currentTab}`);
   if (activeSec) activeSec.classList.add('active');

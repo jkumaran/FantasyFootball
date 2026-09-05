@@ -182,7 +182,10 @@ class Store {
 
   async syncFromBackend() {
     // 0. Verify auth session cookie with backend
-    await this.checkAuth();
+    const authed = await this.checkAuth();
+    if (!authed) {
+      return;
+    }
 
     try {
       // 1. By default, load from fixed YAML file on the server if it exists
@@ -770,13 +773,10 @@ class Store {
     if (result && result.success && result.authenticated) {
       this.state.isAuthenticated = true;
       localStorage.setItem('auth_unlocked_v1', 'true');
-      this.notify();
 
-      // Immediately sync current YAML to backend now that we have write permission
-      try {
-        const yamlStr = this.exportYaml();
-        await api.saveBoardYaml(yamlStr);
-      } catch (e) {}
+      // Fetch saved YAML and players from backend now that we are authenticated
+      await this.syncFromBackend();
+      this.notify();
 
       return { success: true, durationDays: result.durationDays };
     }

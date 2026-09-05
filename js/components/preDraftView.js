@@ -30,35 +30,6 @@ export function renderPreDraftView() {
 
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-      <!-- Auth Status Banner -->
-      <div class="glass-card board-auth-banner ${isAuthed ? 'banner-unlocked' : 'banner-locked'}" style="padding: 0.75rem 1.25rem;">
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; width: 100%;">
-          <div style="display: flex; align-items: center; gap: 0.65rem;">
-            <span style="font-size: 1.15rem;">${isAuthed ? '🔓' : '🔒'}</span>
-            <div>
-              <div style="font-weight: 800; font-size: 0.85rem; color: #fff;">
-                ${isAuthed ? 'Board Editing Unlocked (Session Active)' : 'View-Only Mode'}
-              </div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">
-                ${isAuthed ? 'All changes to tiers, gaps, rankings, and drafted status will automatically persist across refreshes.' : 'Anyone with this link can view. Passcode required to modify tiers, drag players, adjust gaps, and save.'}
-              </div>
-            </div>
-          </div>
-          <div>
-            ${!isAuthed ? `
-              <button class="btn-primary" id="btn-banner-unlock" style="padding: 0.35rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
-                🔑 Unlock Editing
-              </button>
-            ` : `
-              <button class="btn-secondary" id="btn-banner-lock" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);">
-                <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #34d399;"></span>
-                <span>Unlocked (Manage)</span>
-              </button>
-            `}
-          </div>
-        </div>
-      </div>
-
       <!-- Control Bar -->
       <div class="glass-card" style="padding: 1rem 1.25rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -237,23 +208,6 @@ export function renderPreDraftView() {
   `;
 
   // --- ATTACH EVENT LISTENERS ---
-
-  // --- ATTACH EVENT LISTENERS ---
-
-  // Auth Banner buttons
-  const btnBannerUnlock = container.querySelector('#btn-banner-unlock');
-  if (btnBannerUnlock) {
-    btnBannerUnlock.addEventListener('click', () => {
-      renderAuthModal();
-    });
-  }
-
-  const btnBannerLock = container.querySelector('#btn-banner-lock');
-  if (btnBannerLock) {
-    btnBannerLock.addEventListener('click', () => {
-      renderAuthModal();
-    });
-  }
 
   // Search Filter
   const searchInput = container.querySelector('#board-search');
