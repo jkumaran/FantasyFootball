@@ -617,10 +617,15 @@ const server = http.createServer(async (req, res) => {
         timestamp: Date.now()
       };
       if (body.userSlot && body.leagueId) {
-        const session = draftSessions.find(s => s.leagueId === String(body.leagueId) || s.id.includes(String(body.leagueId)));
-        if (session && session.league) {
-          session.league.userSlot = parseInt(body.userSlot, 10);
-        }
+        try {
+          const sData = await db.getDraftSessions();
+          const target = (sData.sessions || []).find(s => s.leagueId === String(body.leagueId) || s.id.includes(String(body.leagueId)));
+          if (target) {
+            target.userSlot = parseInt(body.userSlot, 10);
+            if (body.url) target.draftUrl = body.url;
+            await db.saveDraftSession(target);
+          }
+        } catch (e) {}
       }
       return sendJson(res, { success: true, connected: true, userSlot: body.userSlot || null });
     } catch (err) {

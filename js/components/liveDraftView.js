@@ -85,6 +85,11 @@ export function renderLiveDraftView() {
     }
   };
 
+  const linkedId = currentSession?.leagueId || (currentSession?.id?.includes('1548819') ? '1548819' : '1548819');
+  const actualDraftRoomUrl = (linkedId === '1548819')
+    ? 'https://football.fantasysports.yahoo.com/draftclient/f1/1548819/8?auth=4abeae969ecfd710'
+    : (currentSession?.draftUrl || `https://football.fantasysports.yahoo.com/f1/${linkedId}`);
+
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 1rem;">
       <!-- Sticky Top Draft Options & Multi-League Selection Bar -->
@@ -110,15 +115,18 @@ export function renderLiveDraftView() {
         </div>
 
         <!-- Group 2: Real-Time Chrome Extension Bridge Status -->
-        <div style="display: flex; align-items: center; gap: 0.45rem; padding: 0.25rem 0.5rem; border: 1px dashed ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.6)' : 'rgba(251, 191, 36, 0.5)'}; border-radius: var(--radius-sm); background: ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.08)' : 'rgba(251, 191, 36, 0.05)'};">
+        <div style="display: flex; align-items: center; gap: 0.45rem; padding: 0.25rem 0.5rem; border: 1px dashed ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.6)' : 'rgba(251, 191, 36, 0.5)'}; border-radius: var(--radius-sm); background: ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.08)' : 'rgba(251, 191, 36, 0.05)'}; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 0.35rem;">
             <span style="width: 9px; height: 9px; border-radius: 50%; background: ${state.bridgeConnected ? '#34d399' : '#fbbf24'}; box-shadow: 0 0 8px ${state.bridgeConnected ? '#34d399' : '#fbbf24'}; animation: pulse 1.5s infinite;"></span>
             <span style="font-size: 0.74rem; font-weight: 700; color: ${state.bridgeConnected ? '#34d399' : '#fde68a'};">
               ${state.bridgeConnected 
-                ? `🟢 Yahoo Connected (${state.bridgeLeagueId ? '#' + state.bridgeLeagueId : currentSession?.leagueId ? '#' + currentSession.leagueId : '#1548819'}) • Live Sync Active`
-                : `🟡 Yahoo Bridge Waiting... (Open Draft Tab)`}
+                ? `🟢 Yahoo Connected (${state.bridgeLeagueId ? '#' + state.bridgeLeagueId : currentSession?.leagueId ? '#' + currentSession.leagueId : '#1548819'}) • Slot #8`
+                : `🟡 Yahoo Bridge Waiting...`}
             </span>
           </div>
+          <a href="${actualDraftRoomUrl}" target="_blank" class="btn-primary" style="padding: 0.24rem 0.65rem; font-size: 0.72rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1px solid #38bdf8;">
+            ⚡ Open Draft Room ↗
+          </a>
           <button class="btn-secondary" id="btn-extension-guide" style="padding: 0.24rem 0.55rem; font-size: 0.72rem; font-weight: 700; color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1);">
             🔌 Extension Bridge
           </button>
@@ -652,13 +660,16 @@ function openExtensionHelpModal(currentSession) {
 
   const state = store.getState();
   const linkedId = currentSession?.leagueId || (currentSession?.id?.includes('1548819') ? '1548819' : '1548819');
-  const draftRoomUrl = `https://football.fantasysports.yahoo.com/f1/${linkedId}`;
+  const actualDraftRoomUrl = (linkedId === '1548819')
+    ? 'https://football.fantasysports.yahoo.com/draftclient/f1/1548819/8?auth=4abeae969ecfd710'
+    : (currentSession?.draftUrl || `https://football.fantasysports.yahoo.com/f1/${linkedId}`);
+  const leagueHomeUrl = `https://football.fantasysports.yahoo.com/f1/${linkedId}`;
 
   const modal = document.createElement('div');
   modal.id = 'modal-ext-help';
   modal.className = 'modal-overlay';
   modal.innerHTML = `
-    <div class="modal-card" style="max-width: 600px; width: 92%; max-height: 88vh; overflow-y: auto;">
+    <div class="modal-card" style="max-width: 620px; width: 92%; max-height: 88vh; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <span style="font-size: 1.4rem;">🔌</span>
@@ -678,7 +689,7 @@ function openExtensionHelpModal(currentSession) {
             <div>
               <strong style="color: #fff; font-size: 0.85rem;">Bridge Status: </strong>
               <span style="color: ${state.bridgeConnected ? '#34d399' : '#fbbf24'}; font-weight: 700;">
-                ${state.bridgeConnected ? `CONNECTED (Yahoo League #${state.bridgeLeagueId || linkedId})` : 'WAITING FOR YAHOO DRAFT TAB'}
+                ${state.bridgeConnected ? `CONNECTED (Yahoo League #${state.bridgeLeagueId || linkedId} • Slot #8)` : 'WAITING FOR YAHOO DRAFT TAB'}
               </span>
             </div>
           </div>
@@ -688,15 +699,20 @@ function openExtensionHelpModal(currentSession) {
         <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
             <div>
-              <strong style="color: #38bdf8; display: block; font-size: 0.85rem;">Active Target Draft Room:</strong>
+              <strong style="color: #38bdf8; display: block; font-size: 0.85rem;">Target Draft Room:</strong>
               <div style="color: #fff; font-weight: 800; font-size: 1rem; margin-top: 2px;">${currentSession?.name || 'Yahoo: League 1'}</div>
               <div style="color: #34d399; font-size: 0.75rem; margin-top: 3px; font-weight: 700;">
-                🟣 Linked Yahoo League ID: <code>${linkedId}</code>
+                🟣 Yahoo League ID: <code>${linkedId}</code> • Slot #8
               </div>
             </div>
-            <a href="${draftRoomUrl}" target="_blank" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-              Open Yahoo League Page ↗
-            </a>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+              <a href="${actualDraftRoomUrl}" target="_blank" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1px solid #38bdf8;">
+                ⚡ Open Real Draft (Slot #8) ↗
+              </a>
+              <a href="${leagueHomeUrl}" target="_blank" class="btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                League Home ↗
+              </a>
+            </div>
           </div>
         </div>
 
@@ -710,12 +726,12 @@ function openExtensionHelpModal(currentSession) {
               /Users/kumaran/Documents/FantasyFootball/chrome-extension
             </div>
           </li>
-          <li>Refresh your Yahoo draft tab! Look for the floating badge <strong>"🟣 Cameron Bridge: Yahoo Draft Sync Active"</strong> in the bottom-right corner of the Yahoo page.</li>
+          <li>Click the <strong>"⚡ Open Real Draft (Slot #8) ↗"</strong> button above to open your live draft room in Chrome!</li>
         </ol>
 
         <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
           <strong style="color: #34d399; display: block; margin-bottom: 0.25rem;">⚡ How Live Sync Works:</strong>
-          Keep your Yahoo draft room (<code style="color: #38bdf8;">football.fantasysports.yahoo.com</code>) open in one tab, and this Live Draft War Room open in another. Every time a pick occurs, it is instantly crossed off your board with zero manual work!
+          Keep your Yahoo draft client open in one tab/window, and this Live Draft War Room open in another. Every time a pick is made in Yahoo, the bridge instantly crosses them off your board in real time!
         </div>
 
         <div style="display: flex; justify-content: flex-end; margin-top: 0.25rem;">
