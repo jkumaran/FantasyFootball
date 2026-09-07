@@ -257,6 +257,24 @@ const server = http.createServer(async (req, res) => {
   // GET /api/deploy-status
   if (method === 'GET' && pathname === '/api/deploy-status') {
     try {
+      const isRender = Boolean(process.env.RENDER || process.env.RENDER_GIT_COMMIT || process.env.RENDER_SERVICE_ID);
+      
+      // When running locally, do not block or show Render deployment banner
+      if (!isRender) {
+        let localCommit = 'local';
+        try {
+          localCommit = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim().slice(0, 7);
+        } catch (e) {}
+        return sendJson(res, {
+          success: true,
+          isDeploying: false,
+          isLocal: true,
+          currentCommit: localCommit,
+          latestCommit: localCommit,
+          message: `Running locally #${localCommit}`
+        });
+      }
+
       const latestSha = await getLatestGitHubCommit();
       const currentShort = currentCommitHash.slice(0, 7);
       const latestShort = (latestSha || currentCommitHash).slice(0, 7);
@@ -265,6 +283,7 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, {
         success: true,
         isDeploying,
+        isLocal: false,
         currentCommit: currentShort,
         latestCommit: latestShort,
         message: isDeploying

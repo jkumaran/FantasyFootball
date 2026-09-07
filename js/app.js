@@ -125,16 +125,24 @@ function initDeployWatcher() {
       const status = await api.getDeployStatus();
       if (!status || !status.success) return;
 
+      const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
       if (statusPill) {
         const dot = statusPill.querySelector('.status-dot');
         const text = statusPill.querySelector('.status-text');
-        if (status.isDeploying) {
+        if (status.isDeploying && !isLocalHost && !status.isLocal) {
           if (dot) dot.className = 'status-dot building';
           if (text) text.textContent = `Deploying #${status.latestCommit}`;
         } else {
           if (dot) dot.className = 'status-dot';
-          if (text) text.textContent = `Live #${status.currentCommit}`;
+          if (text) text.textContent = (isLocalHost || status.isLocal) ? `Local #${status.currentCommit}` : `Live #${status.currentCommit}`;
         }
+      }
+
+      // If running on localhost or marked as local, do not display Render deploy banner
+      if (isLocalHost || status.isLocal) {
+        if (banner) banner.style.display = 'none';
+        return;
       }
 
       if (status.isDeploying) {
