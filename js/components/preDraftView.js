@@ -1,6 +1,7 @@
 import { store } from '../store.js';
 import { api } from '../api.js';
 import { renderAuthModal } from './authModal.js';
+import { getPlayerAnalytics } from '../data/analytics.js';
 
 function downloadFile(content, filename, mimeType = 'text/yaml;charset=utf-8;') {
   const blob = new Blob([content], { type: mimeType });
@@ -27,6 +28,27 @@ export function renderPreDraftView() {
   // Specialist positions rendered separately at the bottom (DST, K)
   const bottomPositions = ['DST', 'K'];
   const availableTiers = [1, 2, 3, 4, 5];
+
+  // Filter and enriched data for Player Database & 6 Pillars Table
+  const selectedPos = container.dataset.posFilter || 'ALL';
+  const tableSearch = (container.dataset.tableSearchQuery || '').toLowerCase().trim();
+
+  const enrichedPlayers = players.map((p, idx) => ({
+    ...p,
+    rank: p.ecr || p.customRank || (idx + 1),
+    analytics: getPlayerAnalytics(p),
+  }));
+
+  const filteredPlayers = enrichedPlayers.filter(p => {
+    if (selectedPos !== 'ALL' && p.pos !== selectedPos) return false;
+    if (tableSearch) {
+      const matchName = (p.name || '').toLowerCase().includes(tableSearch);
+      const matchTeam = (p.team || '').toLowerCase().includes(tableSearch);
+      const matchPos = (p.pos || '').toLowerCase().includes(tableSearch);
+      if (!matchName && !matchTeam && !matchPos) return false;
+    }
+    return true;
+  });
 
   const renderPosColumn = (pos) => {
     const posPlayers = players.filter(p => p.pos === pos);
@@ -138,46 +160,49 @@ export function renderPreDraftView() {
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
       <!-- Sticky Action Bar (Always Visible) -->
       <div class="glass-card sticky-tier-toolbar">
-        <button class="btn-secondary" id="btn-load-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="Load active tier_board.yaml from server">
-          📂 Load Current
-        </button>
+        <!-- Group 1: Load, Load J/K, Load SL, Import (Thin Dotted Rectangle) -->
+        <div style="border: 1px dotted rgba(255, 255, 255, 0.4); border-radius: 6px; padding: 0.2rem 0.35rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+          <button class="btn-secondary" id="btn-load-board" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="Load active tier_board.yaml from server">
+            📂 Load
+          </button>
+          <button class="btn-secondary" id="btn-load-jody-koerner" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Load Jody Smith & Sean Koerner consensus expert rankings">
+            📊 Load J/K
+          </button>
+          <button class="btn-secondary" id="btn-load-sharplineup" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Load SharpLineup Market Implied Top 300 rankings">
+            🏈 Load SL
+          </button>
+          <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
+          <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Load tier board from a local YAML file">
+            📥 Import
+          </button>
+        </div>
 
-        <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
-          💾 Save Current ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
-        </button>
+        <!-- Group 2: Autosave, Save, Export -->
+        <div style="display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.2rem 0.35rem;">
+          <label style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: #cbd5e1; cursor: pointer; padding: 0.38rem 0.6rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
+            <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
+            <span>Autosave</span>
+          </label>
+          <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
+            💾 Save ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
+          </button>
+          <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
+            📤 Export
+          </button>
+        </div>
 
-        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
-          <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
-          <span>Autosave</span>
-        </label>
-
-        <button class="btn-secondary" id="btn-load-jody-koerner" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Load Jody Smith & Sean Koerner consensus expert rankings">
-          📊 Load Jody/Koerner
-        </button>
-
-        <button class="btn-secondary" id="btn-load-sharplineup" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Load SharpLineup Market Implied Top 300 rankings">
-          🏈 Load SharpLineup
-        </button>
-
-        <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
-        <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Load tier board from a local YAML file">
-          📥 Import YAML
-        </button>
-        <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
-          📤 Export YAML
-        </button>
-
-        <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Jump down to DST & K tiers">
-          🛡️ DST & K ↓
-        </button>
-
-        <button class="btn-secondary" id="btn-jump-player-db" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #a78bfa; border-color: rgba(167, 139, 250, 0.4);" title="Jump down to Player Database & Evaluation Framework">
-          📋 Player DB ↓
-        </button>
-
-        <button class="btn-secondary" id="btn-jump-top-bar" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #facc15; border-color: rgba(250, 204, 21, 0.4);" title="Scroll back to top">
-          ⬆️ Back to Top
-        </button>
+        <!-- Group 3: Positional Links (Offense first, then DST & K, then Player DB) -->
+        <div style="display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.2rem 0.35rem; margin-left: auto;">
+          <button class="btn-secondary" id="btn-jump-top-bar" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #facc15; border-color: rgba(250, 204, 21, 0.4);" title="Jump to top / Offense tiers">
+            🏈 Offense
+          </button>
+          <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Jump down to DST & K tiers">
+            🛡️ DST & K ↓
+          </button>
+          <button class="btn-secondary" id="btn-jump-player-db" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #a78bfa; border-color: rgba(167, 139, 250, 0.4);" title="Jump down to Player Database & Evaluation Framework">
+            📋 Player DB ↓
+          </button>
+        </div>
       </div>
 
       <!-- Primary 4-Column Offense Board (RB, WR, TE, QB) -->
@@ -185,20 +210,84 @@ export function renderPreDraftView() {
         ${primaryPositions.map(renderPosColumn).join('')}
       </div>
 
-      <!-- Dedicated Specialists Section at Bottom (DST & K) -->
-      <div id="section-dst-k" class="glass-card" style="padding: 1.25rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+      <!-- Specialists & Late-Round Companion Split Container (Half-Page Width) -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.25rem; align-items: stretch;">
+        <!-- Left Half: Defense & Kicker Tiers (DST & K) -->
+        <div id="section-dst-k" class="glass-card" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
           <div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
               <span>🛡️ Defense & Kicker Tiers (DST & K)</span>
             </h3>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
               Specialist positions kept separate for late-round drafting. Full tier dragging, gap adjustments, and drafting features enabled.
             </p>
           </div>
+          <div class="specialists-grid">
+            ${bottomPositions.map(renderPosColumn).join('')}
+          </div>
         </div>
-        <div class="specialists-grid">
-          ${bottomPositions.map(renderPosColumn).join('')}
+
+        <!-- Right Half: Late-Round Specialists & Streaming Playbook -->
+        <div class="glass-card" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(99, 102, 241, 0.25);">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #e0e7ff; display: flex; align-items: center; gap: 0.5rem;">
+              <span>⚡ Late-Round Specialists & Streaming Playbook</span>
+            </h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+              High-yield tactical cheat sheet for final draft rounds and early-season waiver wire streaming.
+            </p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.65rem; flex: 1; justify-content: space-between;">
+            <!-- DST Streaming Blueprint -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.65rem 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;">
+                <span style="font-size: 0.82rem;">🛡️</span>
+                <strong style="font-size: 0.8rem; color: #38bdf8;">DST Streaming Formula & Early Targets</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.73rem; color: #cbd5e1; line-height: 1.35;">
+                Target defenses favored at home with opponent implied total <strong>&lt; 20.0 pts</strong> facing turnover-prone QBs or bottom-10 O-lines. Top Weeks 1–2 targets:
+              </p>
+              <div style="margin-top: 0.35rem; display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                <span style="font-size: 0.68rem; padding: 0.12rem 0.4rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; color: #38bdf8;">NO: W1 vs CAR, W2 at DAL</span>
+                <span style="font-size: 0.68rem; padding: 0.12rem 0.4rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; color: #38bdf8;">CIN: W1 vs NE, W2 at KC</span>
+                <span style="font-size: 0.68rem; padding: 0.12rem 0.4rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; color: #38bdf8;">SEA: W1 vs DEN, W2 at NE</span>
+              </div>
+            </div>
+
+            <!-- Kicker Selection Criteria -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.65rem 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;">
+                <span style="font-size: 0.82rem;">🎯</span>
+                <strong style="font-size: 0.8rem; color: #34d399;">Kicker Selection Rules</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.73rem; color: #cbd5e1; line-height: 1.35;">
+                Target kickers on top-10 scoring offenses (<strong>implied PPG &gt; 24.0</strong>) in domes or calm weather (wind &lt; 15 mph). Teams with efficient 20-to-20 yard offenses that stall in the red zone yield the highest volume of 40+ yard FG attempts.
+              </p>
+            </div>
+
+            <!-- Late-Round RB/WR Stashes -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.65rem 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;">
+                <span style="font-size: 0.82rem;">⚡</span>
+                <strong style="font-size: 0.8rem; color: #facc15;">Late-Round High-Upside Stashes</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.73rem; color: #cbd5e1; line-height: 1.35;">
+                Draft backup RBs with direct contingent monopolization (inheriting 75%+ touches if the starter is sidelined) over low-ceiling committee plodders. For WRs, target explosive rookie wideouts whose target shares accelerate post-bye.
+              </p>
+            </div>
+
+            <!-- Critical Bye Week Clusters -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.65rem 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;">
+                <span style="font-size: 0.82rem;">📅</span>
+                <strong style="font-size: 0.8rem; color: #c084fc;">Roster Construction: Bye Week Clusters</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.73rem; color: #cbd5e1; line-height: 1.35;">
+                Avoid stacking too many starters in heavy bye clusters: <strong>Week 6</strong> (KC, MIA, MIN, LAR), <strong>Week 7</strong> (CHI, DAL), <strong>Week 9</strong> (SF, PIT), <strong>Week 12</strong> (BUF, CIN, ATL), and <strong>Week 14</strong> (BAL, DEN, HOU, IND, NE, WAS).
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -290,40 +379,91 @@ export function renderPreDraftView() {
           </div>
         </div>
 
-        <!-- Stat Table -->
+        <!-- Interactive Position Filter and Table Search -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.25rem;">
+          <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+            <button class="pos-filter-btn" data-pos="ALL" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 20px; cursor: pointer; background: ${selectedPos === 'ALL' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)'}; color: ${selectedPos === 'ALL' ? '#000' : '#cbd5e1'}; font-weight: 700; border: 1px solid var(--border-color);">
+              All (${players.length})
+            </button>
+            ${['RB', 'WR', 'TE', 'QB'].map(pos => `
+              <button class="pos-filter-btn" data-pos="${pos}" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 20px; cursor: pointer; background: ${selectedPos === pos ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)'}; color: ${selectedPos === pos ? '#000' : '#cbd5e1'}; font-weight: 700; border: 1px solid var(--border-color);">
+                ${pos} (${players.filter(p => p.pos === pos).length})
+              </button>
+            `).join('')}
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="text" id="table-player-search" value="${container.dataset.tableSearchQuery || ''}" placeholder="🔍 Search player, team, pos..." style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: #fff; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.78rem; outline: none; width: 200px;">
+          </div>
+        </div>
+
+        <!-- Stat Table with 6 Analytical Pillars -->
         <div class="stat-table-wrapper">
           <table class="stat-table">
             <thead>
               <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Pos</th>
-                <th>Team</th>
-                <th>Tier</th>
-                <th>ECR</th>
-                <th>Proj Pts</th>
-                <th>Proj PPG</th>
-                <th>Target Share</th>
-                <th>RZ Touches</th>
-                <th>Air Yards</th>
+                <th title="Overall Consensus Rank">Rank</th>
+                <th title="Player Name">Player</th>
+                <th title="Position">Pos</th>
+                <th title="NFL Team & Bye Week">Team</th>
+                <th title="Tier">Tier</th>
+                <th title="Consensus ECR">ECR</th>
+                <th title="Pillar 2 (Efficiency): Projected Points Per Game & Season Total">Proj PPG (Tot)</th>
+                <th title="Pillar 2 (Efficiency): YPRR for WR/TE, Explosive Run % for RB, YPA for QB">Per-Play Eff</th>
+                <th title="Pillar 1 (Volume & Opportunity): Opportunity Share % for RB / WOPR for WR/TE">Opp / WOPR</th>
+                <th title="Pillar 1 (Volume & Opportunity): Target Share %">Tgt %</th>
+                <th title="Pillar 1 (Volume & Opportunity): Red Zone Touches">RZ Tch</th>
+                <th title="Pillar 3 (Environment): Vegas Implied Team PPG & Neutral Pass %">Env (Vegas / Pass%)</th>
+                <th title="Pillar 4 (Offensive Line): Unit Rank (1-32) & Tier Grade">OL Rank</th>
+                <th title="Pillar 5 (Coaching & Pace): Neutral Seconds/Snap Rank & Offensive Scheme">Pace & Scheme</th>
+                <th title="Pillar 6 (Strength of Schedule): Fantasy Playoff Schedule (Weeks 15-17)">Playoff SoS</th>
               </tr>
             </thead>
             <tbody>
-              ${players.map((p, idx) => `
-                <tr>
-                  <td style="font-weight: 700; color: var(--accent-primary);">${p.ecr || p.customRank || (idx + 1)}</td>
-                  <td style="font-weight: 700; color: #fff;">${p.name}</td>
-                  <td><span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span></td>
-                  <td>${p.team}</td>
-                  <td><span class="tier-badge">T${p.tier}</span></td>
-                  <td style="color: var(--text-muted);">${p.ecr || '-'}</td>
-                  <td style="font-weight: 700; color: #34d399;">${p.projectedPts}</td>
-                  <td style="font-weight: 600; color: #38bdf8;">${(p.projectedPts / 17).toFixed(1)}</td>
-                  <td>${p.targetShare || 0}%</td>
-                  <td>${p.redzoneTouches || 0}</td>
-                  <td>${p.airYardsShare || 0}%</td>
-                </tr>
-              `).join('')}
+              ${filteredPlayers.map((p) => {
+                const a = p.analytics;
+                let olColor = '#34d399';
+                if (a.olRank > 28) olColor = '#f87171';
+                else if (a.olRank > 21) olColor = '#fb923c';
+                else if (a.olRank > 12) olColor = '#facc15';
+
+                let sosColor = '#38bdf8';
+                if (a.playoffSos.startsWith('A')) sosColor = '#34d399';
+                else if (a.playoffSos.startsWith('C')) sosColor = '#fb923c';
+                else if (a.playoffSos.startsWith('D')) sosColor = '#f87171';
+
+                return `
+                  <tr>
+                    <td style="font-weight: 700; color: var(--accent-primary);">${p.rank}</td>
+                    <td style="font-weight: 700; color: #fff;">${p.name}</td>
+                    <td><span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span></td>
+                    <td style="color: #cbd5e1;">${p.team} <span style="font-size: 0.68rem; color: var(--text-dim);">b${p.bye || '-'}</span></td>
+                    <td><span class="tier-badge">T${p.tier}</span></td>
+                    <td style="color: var(--text-muted);">${p.ecr || '-'}</td>
+                    <td style="font-weight: 700; color: #34d399;">
+                      ${a.projPpg} <span style="font-size: 0.7rem; font-weight: 500; color: var(--text-dim);">(${p.projectedPts})</span>
+                    </td>
+                    <td style="font-weight: 600; color: #38bdf8;">${a.effLabel}</td>
+                    <td style="font-weight: 600; color: #facc15;">${a.oppShareLabel}</td>
+                    <td>${a.targetShare ? a.targetShare + '%' : '-'}</td>
+                    <td>${a.rzTouches || 0}</td>
+                    <td style="font-size: 0.78rem;">
+                      <strong style="color: #38bdf8;">${a.impliedPpg}</strong> <span style="color: var(--text-dim);">(${a.neutralPassRate}%)</span>
+                    </td>
+                    <td>
+                      <span style="font-weight: 700; color: ${olColor};">#${a.olRank}</span>
+                      <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 2px;">${a.olGrade}</span>
+                    </td>
+                    <td style="font-size: 0.74rem; color: #cbd5e1;" title="${a.scheme}">
+                      <span style="color: #c084fc; font-weight: 600;">${a.paceLabel}</span>
+                      <span style="color: var(--text-dim); margin-left: 3px;">· ${a.scheme.split('/')[0].trim()}</span>
+                    </td>
+                    <td>
+                      <span style="font-weight: 600; color: ${sosColor};">${a.playoffSos}</span>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
             </tbody>
           </table>
         </div>
@@ -355,11 +495,34 @@ export function renderPreDraftView() {
     });
   }
 
-  // Jump Back to Top
+  // Jump Back to Offense (Top of Page)
   const btnJumpTopBar = container.querySelector('#btn-jump-top-bar');
   if (btnJumpTopBar) {
     btnJumpTopBar.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // Position Filter Pills for Table
+  const posFilterBtns = container.querySelectorAll('.pos-filter-btn');
+  posFilterBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      container.dataset.posFilter = e.currentTarget.dataset.pos;
+      renderPreDraftView();
+    });
+  });
+
+  // Table Player Search Input
+  const tableSearchInput = container.querySelector('#table-player-search');
+  if (tableSearchInput) {
+    tableSearchInput.addEventListener('input', (e) => {
+      container.dataset.tableSearchQuery = e.target.value;
+      renderPreDraftView();
+      const updatedInput = container.querySelector('#table-player-search');
+      if (updatedInput) {
+        updatedInput.focus();
+        updatedInput.selectionStart = updatedInput.selectionEnd = updatedInput.value.length;
+      }
     });
   }
 
