@@ -238,7 +238,9 @@ const server = http.createServer(async (req, res) => {
     { method: 'GET', path: '/api/auth/status' },
     { method: 'POST', path: '/api/auth/login' },
     { method: 'POST', path: '/api/auth/logout' },
-    { method: 'GET', path: '/api/deploy-status' }
+    { method: 'GET', path: '/api/deploy-status' },
+    { method: 'POST', path: '/api/draft/sync-pick' },
+    { method: 'GET', path: '/api/draft/sessions' }
   ];
 
   const isPublicApi = publicApiRoutes.some(r => r.method === method && r.path === pathname);
@@ -511,14 +513,155 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // GET /api/draft/sessions
+  if (method === 'GET' && pathname === '/api/draft/sessions') {
+    try {
+      const data = await db.getDraftSessions();
+      return sendJson(res, { success: true, ...data });
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // POST /api/draft/sessions/active
+  if (method === 'POST' && pathname === '/api/draft/sessions/active') {
+    try {
+      const body = await parseRequestBody(req);
+      if (body && body.sessionId) {
+        await db.setActiveDraftSessionId(body.sessionId);
+        return sendJson(res, { success: true, activeSessionId: body.sessionId });
+      }
+      return sendJson(res, { success: false, error: 'Missing sessionId' }, 400);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // POST /api/draft/sessions
+  if (method === 'POST' && pathname === '/api/draft/sessions') {
+    try {
+      const body = await parseRequestBody(req);
+      if (body && body.id && body.name) {
+        await db.saveDraftSession(body);
+        return sendJson(res, { success: true, session: body });
+      }
+      return sendJson(res, { success: false, error: 'Missing session id or name' }, 400);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // DELETE /api/draft/sessions
+  if (method === 'DELETE' && pathname === '/api/draft/sessions') {
+    try {
+      const body = await parseRequestBody(req);
+      const sid = (body && body.sessionId) || parsedUrl.query.sessionId;
+      if (sid) {
+        await db.deleteDraftSession(sid);
+        return sendJson(res, { success: true, deletedSessionId: sid });
+      }
+      return sendJson(res, { success: false, error: 'Missing sessionId' }, 400);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // POST /api/draft/sync-pick (Invoked by Chrome Extension or Live Draft Webhook)
+  if (method === 'POST' && pathname === '/api/draft/sync-pick') {
+    try {
+      const body = await parseRequestBody(req);
+      const isAuthed = isAuthenticated(req) ||
+        (req.headers['x-app-password'] && req.headers['x-app-password'] === APP_PASSWORD) ||
+        (body.passCode && (body.passCode === APP_PASSWORD || body.passCode === 'fantasy2025'));
+      
+      if (!isAuthed) {
+        return sendJson(res, { success: false, error: 'Authentication required. Invalid or missing passcode.' }, 401);
+      }
+
+      let { sessionId, platform, pickNum, round, teamId, playerName, playerId, team, pos, isUserPick } = body;
+      const activeSessionId = await db.getActiveDraftSessionId();
+      let targetSessionId = sessionId;
+
+      const { sessions } = await db.getDraftSessions();
+      if (!targetSessionId && platform) {
+        const platformMatch = sessions.find(s => s.platform.toLowerCase() === platform.toLowerCase());
+        if (platformMatch) targetSessionId = platformMatch.id;
+      }
+      if (!targetSessionId) targetSessionId = activeSessionId;
+
+      const session = sessions.find(s => s.id === targetSessionId) || { teamsCount: 12, userSlot: 1, scoring: 'Half-PPR' };
+      const teamsCount = session.teamsCount || 12;
+      const userSlot = session.userSlot || 1;
+
+      // Find or register player
+      let player = null;
+      if (playerId) {
+        player = await db.findPlayerByNameOrId(playerId);
+      }
+      if (!player && playerName) {
+        player = await db.findPlayerByNameOrId(playerName, pos, team);
+      }
+      if (!player) {
+        return sendJson(res, { success: false, error: 'Player name or ID could not be identified.' }, 400);
+      }
+
+      // Check if already drafted in this session
+      const draftPicks = await db.getDraftPicks(targetSessionId);
+      const existingPick = draftPicks.find(dp => dp.player && dp.player.id === player.id);
+      if (existingPick) {
+        return sendJson(res, {
+          success: true,
+          alreadyDrafted: true,
+          pickNum: existingPick.pickNum,
+          round: existingPick.round,
+          teamId: existingPick.teamId,
+          sessionId: targetSessionId,
+          player: { id: player.id, name: player.name, pos: player.pos, team: player.team }
+        });
+      }
+
+      const actualPickNum = pickNum ? parseInt(pickNum, 10) : draftPicks.length + 1;
+      const actualRound = round ? parseInt(round, 10) : Math.ceil(actualPickNum / teamsCount);
+      const pickInRound = ((actualPickNum - 1) % teamsCount) + 1;
+      const actualTeamId = teamId ? parseInt(teamId, 10) : ((actualRound % 2 === 1) ? pickInRound : (teamsCount - pickInRound + 1));
+
+      await db.saveDraftPick(actualPickNum, actualRound, actualTeamId, player.id, targetSessionId);
+
+      if (isUserPick || actualTeamId === userSlot) {
+        await db.addUserRosterPlayer(player.id, targetSessionId);
+      }
+
+      return sendJson(res, {
+        success: true,
+        pickNum: actualPickNum,
+        round: actualRound,
+        teamId: actualTeamId,
+        sessionId: targetSessionId,
+        player: { id: player.id, name: player.name, pos: player.pos, team: player.team }
+      });
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
   // GET /api/draft
   if (method === 'GET' && pathname === '/api/draft') {
     try {
-      const draftPicks = await db.getDraftPicks();
-      const userRoster = await db.getUserRoster();
-      const league = await db.getLeagueSettings();
+      const sessionId = parsedUrl.query.sessionId || await db.getActiveDraftSessionId();
+      const draftPicks = await db.getDraftPicks(sessionId);
+      const userRoster = await db.getUserRoster(sessionId);
+      const leagueSettings = await db.getLeagueSettings();
+      const { sessions } = await db.getDraftSessions();
+      const session = sessions.find(s => s.id === sessionId) || { teamsCount: 12, userSlot: 1, scoring: 'Half-PPR' };
+      const league = {
+        ...leagueSettings,
+        teamsCount: session.teamsCount || leagueSettings.teamsCount || 12,
+        userSlot: session.userSlot || leagueSettings.userSlot || 1,
+        scoring: session.scoring || leagueSettings.scoring || 'Half-PPR',
+        sessionId
+      };
       const currentPick = draftPicks.length + 1;
-      return sendJson(res, { success: true, draftPicks, userRoster, league, currentPick });
+      return sendJson(res, { success: true, draftPicks, userRoster, league, currentPick, sessionId });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }
@@ -529,22 +672,25 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await parseRequestBody(req);
       const { playerId } = body;
-      const draftPicks = await db.getDraftPicks();
-      const league = await db.getLeagueSettings();
-      const teamsCount = league.teamsCount || 12;
+      const sessionId = body.sessionId || await db.getActiveDraftSessionId();
+      const draftPicks = await db.getDraftPicks(sessionId);
+      const { sessions } = await db.getDraftSessions();
+      const session = sessions.find(s => s.id === sessionId) || { teamsCount: 12, userSlot: 1 };
+      const teamsCount = session.teamsCount || 12;
+      const userSlot = session.userSlot || 1;
       const pickNum = draftPicks.length + 1;
       const round = Math.ceil(pickNum / teamsCount);
       const pickInRound = ((pickNum - 1) % teamsCount) + 1;
       const teamId = (round % 2 === 1) ? pickInRound : (teamsCount - pickInRound + 1);
 
-      await db.saveDraftPick(pickNum, round, teamId, playerId);
+      await db.saveDraftPick(pickNum, round, teamId, playerId, sessionId);
 
       // If teamId is user slot, add to user roster
-      if (teamId === (league.userSlot || 1)) {
-        await db.addUserRosterPlayer(playerId);
+      if (teamId === userSlot) {
+        await db.addUserRosterPlayer(playerId, sessionId);
       }
 
-      return sendJson(res, { success: true, pickNum, teamId });
+      return sendJson(res, { success: true, pickNum, teamId, sessionId });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }
@@ -553,8 +699,10 @@ const server = http.createServer(async (req, res) => {
   // POST /api/draft/undo
   if (method === 'POST' && pathname === '/api/draft/undo') {
     try {
-      const undonePick = await db.undoLastDraftPick();
-      return sendJson(res, { success: true, undonePick });
+      const body = await parseRequestBody(req);
+      const sessionId = (body && body.sessionId) || parsedUrl.query.sessionId || await db.getActiveDraftSessionId();
+      const undonePick = await db.undoLastDraftPick(sessionId);
+      return sendJson(res, { success: true, undonePick, sessionId });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }
@@ -563,8 +711,10 @@ const server = http.createServer(async (req, res) => {
   // POST /api/draft/reset
   if (method === 'POST' && pathname === '/api/draft/reset') {
     try {
-      await db.resetDraftBoard();
-      return sendJson(res, { success: true });
+      const body = await parseRequestBody(req);
+      const sessionId = (body && body.sessionId) || parsedUrl.query.sessionId || await db.getActiveDraftSessionId();
+      await db.resetDraftBoard(sessionId);
+      return sendJson(res, { success: true, sessionId });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }

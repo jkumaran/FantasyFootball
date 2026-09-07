@@ -2,14 +2,40 @@ import { store } from '../store.js';
 import { getDraftRecommendations } from '../engine/draftAssistant.js';
 import { renderAuthModal } from './authModal.js';
 
+let isPollingStarted = false;
+
+function ensurePolling() {
+  if (isPollingStarted) return;
+  isPollingStarted = true;
+  setInterval(() => {
+    const el = document.getElementById('view-livedraft');
+    if (el && el.offsetParent !== null && !el.classList.contains('hidden')) {
+      store.pollDraftUpdates();
+    }
+  }, 2500);
+}
+
 export function renderLiveDraftView() {
+  ensurePolling();
+
   const container = document.getElementById('view-livedraft');
   if (!container) return;
 
   const state = store.getState();
-  const { players, draftPicks, currentPick, league, userRoster } = state;
+  const { players, draftPicks, currentPick, league, userRoster, draftSessions, activeDraftSessionId } = state;
   const teamsCount = league.teamsCount || 12;
   const userSlot = league.userSlot || 1;
+
+  // Available draft sessions (fallback defaults if backend hasn't populated yet)
+  const defaultSessions = [
+    { id: 'yahoo-1', name: 'Yahoo: League 1', platform: 'yahoo', teamsCount: 12, userSlot: 1 },
+    { id: 'espn-2', name: 'ESPN: League 2', platform: 'espn', teamsCount: 10, userSlot: 4 },
+    { id: 'sleeper-3', name: 'Sleeper: League 3', platform: 'sleeper', teamsCount: 12, userSlot: 2 },
+    { id: 'mock', name: 'Manual / Mock', platform: 'manual', teamsCount: 12, userSlot: 1 }
+  ];
+  const sessions = (draftSessions && draftSessions.length > 0) ? draftSessions : defaultSessions;
+  const activeSessionId = activeDraftSessionId || sessions[0]?.id || 'yahoo-1';
+  const currentSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
 
   const assistantData = getDraftRecommendations(state);
   const { topRecommendations, picksUntilNextUserPick, isUserTurn, scarcityAlert, availabilityMap } = assistantData;
@@ -48,218 +74,307 @@ export function renderLiveDraftView() {
 
   const userTeamPlayers = players.filter(p => userRoster.includes(p.id));
 
+  // Platform icon helper
+  const getPlatformIcon = (plat) => {
+    switch ((plat || '').toLowerCase()) {
+      case 'yahoo': return '🟣';
+      case 'espn': return '🔴';
+      case 'sleeper': return '🔵';
+      default: return '🎲';
+    }
+  };
+
   container.innerHTML = `
-    <div class="warroom-layout">
-      <!-- Left Column: Real-Time AI Draft Assistant -->
-      <div class="assistant-panel">
-        <div class="glass-card" style="border-color: ${isUserTurn ? 'var(--accent-primary)' : 'var(--border-color)'};">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">CURRENT PICK</div>
-              <div style="font-size: 1.4rem; font-weight: 900; color: #fff;">Round ${round} • Pick ${pickInRound}</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Overall Pick #${currentPick} (Half-PPR Snake)</div>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <!-- Sticky Top Draft Options & Multi-League Selection Bar -->
+      <div class="glass-card" style="padding: 0.5rem 0.85rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; position: sticky; top: 3.8rem; z-index: 95; backdrop-filter: blur(16px); background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+        
+        <!-- Group 1: Thin Dotted Box for Draft Options / Leagues -->
+        <div style="display: flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.45rem; border: 1px dashed rgba(255, 255, 255, 0.25); border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.02); flex-wrap: wrap;">
+          <span style="font-size: 0.68rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-right: 0.2rem; letter-spacing: 0.5px;">DRAFT ROOMS:</span>
+          ${sessions.map(s => {
+            const isActive = s.id === activeSessionId;
+            const icon = getPlatformIcon(s.platform);
+            return `
+              <button class="btn-secondary btn-switch-session" data-id="${s.id}" style="padding: 0.28rem 0.65rem; font-size: 0.76rem; font-weight: 700; ${isActive ? 'background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #fff; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);' : 'color: var(--text-muted);'}">
+                ${icon} ${s.name} ${isActive ? '<span style="color: #38bdf8; font-size: 0.68rem; margin-left: 3px;">●</span>' : ''}
+              </button>
+            `;
+          }).join('')}
+          <button class="btn-secondary" id="btn-add-session" style="padding: 0.28rem 0.6rem; font-size: 0.74rem; font-weight: 700; color: #34d399; border-color: rgba(52, 211, 153, 0.3);">
+            ➕ New League
+          </button>
+        </div>
+
+        <!-- Group 2: Thin Dotted Box for Real-Time Chrome Extension Bridge -->
+        <div style="display: flex; align-items: center; gap: 0.45rem; padding: 0.25rem 0.5rem; border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: var(--radius-sm); background: rgba(56, 189, 248, 0.04);">
+          <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: pulse 2s infinite;"></span>
+            <span style="font-size: 0.74rem; font-weight: 700; color: #fff;">
+              ${getPlatformIcon(currentSession?.platform)} ${currentSession?.platform?.toUpperCase() || 'LIVE'}: Pick #${currentPick}
+            </span>
+          </div>
+          <button class="btn-secondary" id="btn-extension-guide" style="padding: 0.24rem 0.55rem; font-size: 0.72rem; font-weight: 700; color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1);">
+            🔌 Extension Bridge
+          </button>
+        </div>
+
+        <!-- Group 3: Thin Dotted Box for Draft Controls -->
+        <div style="display: flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.45rem; border: 1px dashed rgba(255, 255, 255, 0.25); border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.02);">
+          <button class="btn-secondary" id="btn-top-undo-pick" style="padding: 0.28rem 0.6rem; font-size: 0.74rem; font-weight: 700;" ${draftPicks.length === 0 ? 'disabled' : ''}>
+            ↩️ Undo
+          </button>
+          <button class="btn-danger" id="btn-top-reset-draft" style="padding: 0.28rem 0.6rem; font-size: 0.74rem; font-weight: 700;">
+            🔄 Reset
+          </button>
+          <button class="btn-secondary" id="btn-league-settings" style="padding: 0.28rem 0.6rem; font-size: 0.74rem; font-weight: 700;">
+            ⚙️ Settings
+          </button>
+        </div>
+      </div>
+
+      <!-- Main War Room Layout -->
+      <div class="warroom-layout">
+        <!-- Left Column: Real-Time AI Draft Assistant -->
+        <div class="assistant-panel">
+          <div class="glass-card" style="border-color: ${isUserTurn ? 'var(--accent-primary)' : 'var(--border-color)'};">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">CURRENT PICK • ${currentSession?.name || 'League 1'}</div>
+                <div style="font-size: 1.4rem; font-weight: 900; color: #fff;">Round ${round} • Pick ${pickInRound}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Overall Pick #${currentPick} (${currentSession?.scoring || 'Half-PPR'} Snake • ${teamsCount} Teams)</div>
+              </div>
+              ${isUserTurn ? `
+                <span class="pos-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.85rem; padding: 0.4rem 0.75rem;">
+                  🎯 YOUR TURN TO PICK!
+                </span>
+              ` : `
+                <span style="font-size: 0.8rem; color: var(--text-muted);">
+                  ${picksUntilNextUserPick} picks until your turn (Slot #${userSlot})
+                </span>
+              `}
             </div>
-            ${isUserTurn ? `
-              <span class="pos-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.85rem; padding: 0.4rem 0.75rem;">
-                🎯 YOUR TURN TO PICK!
-              </span>
-            ` : `
-              <span style="font-size: 0.8rem; color: var(--text-muted);">
-                ${picksUntilNextUserPick} picks until your turn
-              </span>
-            `}
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+              <button class="btn-secondary" id="btn-undo-pick" ${draftPicks.length === 0 ? 'disabled' : ''}>
+                ↩️ Undo Pick
+              </button>
+              <button class="btn-danger" id="btn-reset-draft">
+                🔄 Reset Draft
+              </button>
+            </div>
           </div>
 
-          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-            <button class="btn-secondary" id="btn-undo-pick" ${draftPicks.length === 0 ? 'disabled' : ''}>
-              ↩️ Undo Pick
-            </button>
-            <button class="btn-danger" id="btn-reset-draft">
-              🔄 Reset Draft
-            </button>
+          ${scarcityAlert ? `
+            <div class="glass-card" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fbbf24;">
+                ${scarcityAlert.text}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>🤖 AI Draft Recommender</span>
+              <span style="font-size: 0.75rem; color: #818cf8;">VORP + Availability Forecaster</span>
+            </div>
+
+            ${topRecommendations.length === 0 ? '<p style="color: var(--text-dim);">No remaining recommendations.</p>' : ''}
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              ${topRecommendations.map((rec, idx) => {
+                const p = rec.player;
+                const odds = rec.survivalOdds;
+                let oddsClass = 'survival-high';
+                if (odds < 35) oddsClass = 'survival-low';
+                else if (odds < 70) oddsClass = 'survival-med';
+
+                return `
+                  <div class="recommendation-card" style="${idx === 0 ? 'border-color: var(--accent-primary);' : ''}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                      <div>
+                        <div class="rec-rank">#${idx + 1} RECOMMENDED PICK</div>
+                        <div class="rec-name">${p.name}</div>
+                        <div class="rec-meta">
+                          <span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span>
+                          <span class="player-team">${p.team} • Bye ${p.bye}</span>
+                          <span class="metric-badge" style="color: #34d399;">VORP: +${rec.vorp}</span>
+                        </div>
+                      </div>
+                      <button class="btn-primary btn-draft-player" data-id="${p.id}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                        Draft Player
+                      </button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem;">
+                      <div style="font-size: 0.75rem; color: var(--text-dim);">
+                        Next Round Survival Odds:
+                      </div>
+                      <span class="survival-badge ${oddsClass}">
+                        ${odds}% Chance to survive
+                      </span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
           </div>
         </div>
 
-        ${scarcityAlert ? `
-          <div class="glass-card" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
-            <div style="font-size: 0.85rem; font-weight: 700; color: #fbbf24;">
-              ${scarcityAlert.text}
+        <!-- Center Column: Available Pool & Live Board -->
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>⚡ Available Players Pool</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">${availablePlayers.length} Available</span>
+            </div>
+
+            <div class="stat-table-wrapper" style="max-height: 280px; overflow-y: auto;">
+              <table class="stat-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Pos</th>
+                    <th>Team</th>
+                    <th>Proj Pts</th>
+                    <th>Survival Odds</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${availablePlayers.slice(0, 20).map(p => {
+                    const odds = availabilityMap[p.id] !== undefined ? availabilityMap[p.id] : 50;
+                    let oddsClass = 'survival-high';
+                    if (odds < 35) oddsClass = 'survival-low';
+                    else if (odds < 70) oddsClass = 'survival-med';
+
+                    return `
+                      <tr>
+                        <td style="font-weight: 700; color: var(--accent-primary);">${p.customRank || p.ecr}</td>
+                        <td style="font-weight: 700; color: #fff;">${p.name}</td>
+                        <td><span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span></td>
+                        <td>${p.team}</td>
+                        <td style="color: #34d399; font-weight: 700;">${p.projectedPts}</td>
+                        <td><span class="survival-badge ${oddsClass}">${odds}%</span></td>
+                        <td>
+                          <button class="btn-primary btn-draft-player" data-id="${p.id}" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+                            Draft
+                          </button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
             </div>
           </div>
-        ` : ''}
 
+          <div class="glass-card">
+            <div class="card-title">
+              <span>📋 Draft Board (${teamsCount} Teams • Snake)</span>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">Pick ${currentPick} of ${teamsCount * totalRounds}</span>
+            </div>
+
+            <div class="draft-board-container">
+              <div class="draft-grid" style="grid-template-columns: repeat(${teamsCount}, minmax(80px, 1fr)); margin-bottom: 0.4rem;">
+                ${Array.from({ length: teamsCount }, (_, i) => i + 1).map(t => `
+                  <div style="font-weight: 800; font-size: 0.75rem; text-align: center; color: ${t === userSlot ? '#34d399' : 'var(--text-muted)'}; background: rgba(255,255,255,0.03); padding: 0.3rem; border-radius: var(--radius-sm);">
+                    ${t === userSlot ? '⭐ Team ' + t : 'Team ' + t}
+                  </div>
+                `).join('')}
+              </div>
+
+              <div class="draft-grid" style="grid-template-columns: repeat(${teamsCount}, minmax(80px, 1fr));">
+                ${gridCells.map(cell => `
+                  <div class="draft-cell ${cell.isCurrent ? 'current-pick' : ''} ${cell.isUserTeam ? 'user-pick' : ''}">
+                    <div class="cell-pick-num">${cell.round}.${((cell.pickNum - 1) % teamsCount) + 1} (#${cell.pickNum})</div>
+                    ${cell.player ? `
+                      <div class="cell-player-name">${cell.player.name}</div>
+                      <div><span class="pos-badge pos-${cell.player.pos.toLowerCase()}" style="font-size: 0.65rem; padding: 0.05rem 0.25rem;">${cell.player.pos}</span></div>
+                    ` : `
+                      <div style="color: var(--text-dim); font-size: 0.7rem;">-</div>
+                    `}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: User Roster Breakdown -->
         <div class="glass-card">
           <div class="card-title">
-            <span>🤖 AI Draft Recommender</span>
-            <span style="font-size: 0.75rem; color: #818cf8;">VORP + Availability Forecaster</span>
+            <span>🛡️ Your Roster</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">${userTeamPlayers.length} Players</span>
           </div>
 
-          ${topRecommendations.length === 0 ? '<p style="color: var(--text-dim);">No remaining recommendations.</p>' : ''}
-
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
-            ${topRecommendations.map((rec, idx) => {
-              const p = rec.player;
-              const odds = rec.survivalOdds;
-              let oddsClass = 'survival-high';
-              if (odds < 35) oddsClass = 'survival-low';
-              else if (odds < 70) oddsClass = 'survival-med';
+          <div class="roster-list">
+            ${['QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'DST', 'K'].map((slot, idx) => {
+              let player = null;
+              if (slot === 'QB') player = userTeamPlayers.find(p => p.pos === 'QB');
+              else if (slot === 'RB') {
+                const rbs = userTeamPlayers.filter(p => p.pos === 'RB');
+                player = idx === 1 ? rbs[0] : rbs[1];
+              } else if (slot === 'WR') {
+                const wrs = userTeamPlayers.filter(p => p.pos === 'WR');
+                player = idx === 3 ? wrs[0] : wrs[1];
+              } else if (slot === 'TE') player = userTeamPlayers.find(p => p.pos === 'TE');
+              else if (slot === 'DST') player = userTeamPlayers.find(p => p.pos === 'DST');
+              else if (slot === 'K') player = userTeamPlayers.find(p => p.pos === 'K');
+              else if (slot === 'FLEX') {
+                const flexRbsWrsTes = userTeamPlayers.filter(p => ['RB', 'WR', 'TE'].includes(p.pos));
+                player = flexRbsWrsTes[2] || null;
+              }
 
               return `
-                <div class="recommendation-card" style="${idx === 0 ? 'border-color: var(--accent-primary);' : ''}">
-                  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                      <div class="rec-rank">#${idx + 1} RECOMMENDED PICK</div>
-                      <div class="rec-name">${p.name}</div>
-                      <div class="rec-meta">
-                        <span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span>
-                        <span class="player-team">${p.team} • Bye ${p.bye}</span>
-                        <span class="metric-badge" style="color: #34d399;">VORP: +${rec.vorp}</span>
-                      </div>
+                <div class="roster-slot-row">
+                  <span class="slot-label">${slot}</span>
+                  ${player ? `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="pos-badge pos-${player.pos.toLowerCase()}">${player.pos}</span>
+                      <span style="font-weight: 700; font-size: 0.85rem; color: #fff;">${player.name}</span>
                     </div>
-                    <button class="btn-primary btn-draft-player" data-id="${p.id}" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
-                      Draft Player
-                    </button>
-                  </div>
-
-                  <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem;">
-                    <div style="font-size: 0.75rem; color: var(--text-dim);">
-                      Next Round Survival Odds:
-                    </div>
-                    <span class="survival-badge ${oddsClass}">
-                      ${odds}% Chance to survive
-                    </span>
-                  </div>
+                  ` : `
+                    <span style="color: var(--text-dim); font-size: 0.8rem;">Empty</span>
+                  `}
                 </div>
               `;
             }).join('')}
           </div>
         </div>
       </div>
-
-      <!-- Center Column: Available Pool & Live Board -->
-      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-        <div class="glass-card">
-          <div class="card-title">
-            <span>⚡ Available Players Pool</span>
-            <span style="font-size: 0.8rem; color: var(--text-dim);">${availablePlayers.length} Available</span>
-          </div>
-
-          <div class="stat-table-wrapper" style="max-height: 280px; overflow-y: auto;">
-            <table class="stat-table">
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Player</th>
-                  <th>Pos</th>
-                  <th>Team</th>
-                  <th>Proj Pts</th>
-                  <th>Survival Odds</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${availablePlayers.slice(0, 20).map(p => {
-                  const odds = availabilityMap[p.id] !== undefined ? availabilityMap[p.id] : 50;
-                  let oddsClass = 'survival-high';
-                  if (odds < 35) oddsClass = 'survival-low';
-                  else if (odds < 70) oddsClass = 'survival-med';
-
-                  return `
-                    <tr>
-                      <td style="font-weight: 700; color: var(--accent-primary);">${p.customRank || p.ecr}</td>
-                      <td style="font-weight: 700; color: #fff;">${p.name}</td>
-                      <td><span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span></td>
-                      <td>${p.team}</td>
-                      <td style="color: #34d399; font-weight: 700;">${p.projectedPts}</td>
-                      <td><span class="survival-badge ${oddsClass}">${odds}%</span></td>
-                      <td>
-                        <button class="btn-primary btn-draft-player" data-id="${p.id}" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
-                          Draft
-                        </button>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="glass-card">
-          <div class="card-title">
-            <span>📋 Draft Board (12 Teams • Snake)</span>
-            <span style="font-size: 0.75rem; color: var(--text-dim);">Pick ${currentPick} of 192</span>
-          </div>
-
-          <div class="draft-board-container">
-            <div class="draft-grid" style="margin-bottom: 0.4rem;">
-              ${Array.from({ length: teamsCount }, (_, i) => i + 1).map(t => `
-                <div style="font-weight: 800; font-size: 0.75rem; text-align: center; color: ${t === userSlot ? '#34d399' : 'var(--text-muted)'}; background: rgba(255,255,255,0.03); padding: 0.3rem; border-radius: var(--radius-sm);">
-                  ${t === userSlot ? '⭐ Team ' + t : 'Team ' + t}
-                </div>
-              `).join('')}
-            </div>
-
-            <div class="draft-grid">
-              ${gridCells.map(cell => `
-                <div class="draft-cell ${cell.isCurrent ? 'current-pick' : ''} ${cell.isUserTeam ? 'user-pick' : ''}">
-                  <div class="cell-pick-num">${cell.round}.${((cell.pickNum - 1) % teamsCount) + 1} (#${cell.pickNum})</div>
-                  ${cell.player ? `
-                    <div class="cell-player-name">${cell.player.name}</div>
-                    <div><span class="pos-badge pos-${cell.player.pos.toLowerCase()}" style="font-size: 0.65rem; padding: 0.05rem 0.25rem;">${cell.player.pos}</span></div>
-                  ` : `
-                    <div style="color: var(--text-dim); font-size: 0.7rem;">-</div>
-                  `}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: User Roster Breakdown -->
-      <div class="glass-card">
-        <div class="card-title">
-          <span>🛡️ Your Roster</span>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">${userTeamPlayers.length} Players</span>
-        </div>
-
-        <div class="roster-list">
-          ${['QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'DST', 'K'].map((slot, idx) => {
-            let player = null;
-            if (slot === 'QB') player = userTeamPlayers.find(p => p.pos === 'QB');
-            else if (slot === 'RB') {
-              const rbs = userTeamPlayers.filter(p => p.pos === 'RB');
-              player = idx === 1 ? rbs[0] : rbs[1];
-            } else if (slot === 'WR') {
-              const wrs = userTeamPlayers.filter(p => p.pos === 'WR');
-              player = idx === 3 ? wrs[0] : wrs[1];
-            } else if (slot === 'TE') player = userTeamPlayers.find(p => p.pos === 'TE');
-            else if (slot === 'DST') player = userTeamPlayers.find(p => p.pos === 'DST');
-            else if (slot === 'K') player = userTeamPlayers.find(p => p.pos === 'K');
-            else if (slot === 'FLEX') {
-              const flexRbsWrsTes = userTeamPlayers.filter(p => ['RB', 'WR', 'TE'].includes(p.pos));
-              player = flexRbsWrsTes[2] || null;
-            }
-
-            return `
-              <div class="roster-slot-row">
-                <span class="slot-label">${slot}</span>
-                ${player ? `
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="pos-badge pos-${player.pos.toLowerCase()}">${player.pos}</span>
-                    <span style="font-weight: 700; font-size: 0.85rem; color: #fff;">${player.name}</span>
-                  </div>
-                ` : `
-                  <span style="color: var(--text-dim); font-size: 0.8rem;">Empty</span>
-                `}
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
     </div>
   `;
+
+  // Attach Event Listeners
+  container.querySelectorAll('.btn-switch-session').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const sid = e.currentTarget.dataset.id;
+      store.switchDraftSession(sid);
+    });
+  });
+
+  const btnAddSession = container.querySelector('#btn-add-session');
+  if (btnAddSession) {
+    btnAddSession.addEventListener('click', () => {
+      openAddSessionModal();
+    });
+  }
+
+  const btnExtensionGuide = container.querySelector('#btn-extension-guide');
+  if (btnExtensionGuide) {
+    btnExtensionGuide.addEventListener('click', () => {
+      openExtensionHelpModal(currentSession);
+    });
+  }
+
+  const btnLeagueSettings = container.querySelector('#btn-league-settings');
+  if (btnLeagueSettings) {
+    btnLeagueSettings.addEventListener('click', () => {
+      openLeagueSettingsModal(currentSession);
+    });
+  }
 
   container.querySelectorAll('.btn-draft-player').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -273,26 +388,259 @@ export function renderLiveDraftView() {
   });
 
   const btnUndo = container.querySelector('#btn-undo-pick');
-  if (btnUndo) {
-    btnUndo.addEventListener('click', () => {
-      if (!store.getState().isAuthenticated) {
-        renderAuthModal();
-        return;
-      }
-      store.undoLastPick();
-    });
-  }
+  const btnTopUndo = container.querySelector('#btn-top-undo-pick');
+  [btnUndo, btnTopUndo].forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', () => {
+        if (!store.getState().isAuthenticated) {
+          renderAuthModal();
+          return;
+        }
+        store.undoLastPick();
+      });
+    }
+  });
 
   const btnReset = container.querySelector('#btn-reset-draft');
-  if (btnReset) {
-    btnReset.addEventListener('click', () => {
-      if (!store.getState().isAuthenticated) {
-        renderAuthModal();
-        return;
-      }
-      if (confirm('Are you sure you want to reset the draft board?')) {
-        store.resetDraft();
-      }
+  const btnTopReset = container.querySelector('#btn-top-reset-draft');
+  [btnReset, btnTopReset].forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', () => {
+        if (!store.getState().isAuthenticated) {
+          renderAuthModal();
+          return;
+        }
+        if (confirm(`Are you sure you want to reset the draft board for "${currentSession?.name || 'this league'}"?`)) {
+          store.resetDraft();
+        }
+      });
+    }
+  });
+}
+
+function openAddSessionModal() {
+  const existing = document.getElementById('modal-add-session');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'modal-add-session';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-card" style="max-width: 440px; width: 90%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="margin: 0; color: #fff; font-size: 1.15rem; font-weight: 800;">➕ Add Fantasy League Draft</h3>
+        <button id="close-add-modal" style="background: transparent; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
+      </div>
+      <form id="form-add-session" style="display: flex; flex-direction: column; gap: 0.9rem;">
+        <div>
+          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">LEAGUE / DRAFT NAME</label>
+          <input type="text" id="session-name" required placeholder="e.g. Yahoo: Work League" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
+        </div>
+        <div>
+          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">DRAFT PLATFORM</label>
+          <select id="session-platform" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;">
+            <option value="yahoo">🟣 Yahoo Fantasy</option>
+            <option value="espn">🔴 ESPN Fantasy</option>
+            <option value="sleeper">🔵 Sleeper Fantasy</option>
+            <option value="manual">🎲 Manual / Mock Draft</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 0.8rem;">
+          <div style="flex: 1;">
+            <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">NUMBER OF TEAMS</label>
+            <select id="session-teams" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;">
+              <option value="8">8 Teams</option>
+              <option value="10">10 Teams</option>
+              <option value="12" selected>12 Teams</option>
+              <option value="14">14 Teams</option>
+              <option value="16">16 Teams</option>
+            </select>
+          </div>
+          <div style="flex: 1;">
+            <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">YOUR DRAFT SLOT</label>
+            <input type="number" id="session-slot" min="1" max="16" value="1" required style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">SCORING FORMAT</label>
+          <select id="session-scoring" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;">
+            <option value="Half-PPR" selected>Half-PPR (0.5 PPR)</option>
+            <option value="Full-PPR">Full-PPR (1.0 PPR)</option>
+            <option value="Standard">Standard (0.0 PPR)</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
+          <button type="button" id="btn-cancel-add" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Create Draft Room</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeModal = () => modal.remove();
+  modal.querySelector('#close-add-modal').addEventListener('click', closeModal);
+  modal.querySelector('#btn-cancel-add').addEventListener('click', closeModal);
+
+  modal.querySelector('#form-add-session').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('session-name').value.trim();
+    const platform = document.getElementById('session-platform').value;
+    const teamsCount = parseInt(document.getElementById('session-teams').value, 10);
+    const userSlot = parseInt(document.getElementById('session-slot').value, 10);
+    const scoring = document.getElementById('session-scoring').value;
+    const id = `${platform}-${Date.now().toString(36)}`;
+
+    await store.createDraftSession({
+      id,
+      name,
+      platform,
+      teamsCount,
+      userSlot,
+      scoring
     });
-  }
+    closeModal();
+  });
+}
+
+function openLeagueSettingsModal(session) {
+  const existing = document.getElementById('modal-league-settings');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'modal-league-settings';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-card" style="max-width: 440px; width: 90%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="margin: 0; color: #fff; font-size: 1.15rem; font-weight: 800;">⚙️ League & Draft Settings</h3>
+        <button id="close-settings-modal" style="background: transparent; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
+      </div>
+      <form id="form-edit-session" style="display: flex; flex-direction: column; gap: 0.9rem;">
+        <div>
+          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">LEAGUE NAME</label>
+          <input type="text" id="edit-session-name" value="${session?.name || ''}" required style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
+        </div>
+        <div style="display: flex; gap: 0.8rem;">
+          <div style="flex: 1;">
+            <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">TEAMS COUNT</label>
+            <select id="edit-session-teams" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;">
+              <option value="8" ${session?.teamsCount === 8 ? 'selected' : ''}>8 Teams</option>
+              <option value="10" ${session?.teamsCount === 10 ? 'selected' : ''}>10 Teams</option>
+              <option value="12" ${session?.teamsCount === 12 || !session?.teamsCount ? 'selected' : ''}>12 Teams</option>
+              <option value="14" ${session?.teamsCount === 14 ? 'selected' : ''}>14 Teams</option>
+              <option value="16" ${session?.teamsCount === 16 ? 'selected' : ''}>16 Teams</option>
+            </select>
+          </div>
+          <div style="flex: 1;">
+            <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">YOUR DRAFT SLOT</label>
+            <input type="number" id="edit-session-slot" min="1" max="16" value="${session?.userSlot || 1}" required style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
+          </div>
+        </div>
+        <div>
+          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">SCORING FORMAT</label>
+          <select id="edit-session-scoring" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;">
+            <option value="Half-PPR" ${session?.scoring === 'Half-PPR' ? 'selected' : ''}>Half-PPR (0.5 PPR)</option>
+            <option value="Full-PPR" ${session?.scoring === 'Full-PPR' ? 'selected' : ''}>Full-PPR (1.0 PPR)</option>
+            <option value="Standard" ${session?.scoring === 'Standard' ? 'selected' : ''}>Standard (0.0 PPR)</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+          <button type="button" id="btn-delete-session" class="btn-danger" style="font-size: 0.76rem; padding: 0.35rem 0.75rem;">🗑️ Delete League</button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" id="btn-cancel-edit" class="btn-secondary">Cancel</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeModal = () => modal.remove();
+  modal.querySelector('#close-settings-modal').addEventListener('click', closeModal);
+  modal.querySelector('#btn-cancel-edit').addEventListener('click', closeModal);
+
+  modal.querySelector('#btn-delete-session').addEventListener('click', async () => {
+    if (confirm(`Are you sure you want to delete "${session?.name}" and all its picks?`)) {
+      await store.deleteDraftSession(session.id);
+      closeModal();
+    }
+  });
+
+  modal.querySelector('#form-edit-session').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const updated = {
+      ...session,
+      name: document.getElementById('edit-session-name').value.trim(),
+      teamsCount: parseInt(document.getElementById('edit-session-teams').value, 10),
+      userSlot: parseInt(document.getElementById('edit-session-slot').value, 10),
+      scoring: document.getElementById('edit-session-scoring').value
+    };
+    await store.createDraftSession(updated);
+    closeModal();
+  });
+}
+
+function openExtensionHelpModal(currentSession) {
+  const existing = document.getElementById('modal-ext-help');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'modal-ext-help';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-card" style="max-width: 580px; width: 92%; max-height: 88vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.4rem;">🔌</span>
+          <div>
+            <h3 style="margin: 0; color: #fff; font-size: 1.15rem; font-weight: 800;">Real-Time Chrome Extension Bridge</h3>
+            <div style="font-size: 0.74rem; color: #38bdf8;">Sync live picks automatically from Yahoo, ESPN & Sleeper drafts</div>
+          </div>
+        </div>
+        <button id="close-ext-modal" style="background: transparent; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.82rem; color: var(--text-color); line-height: 1.5;">
+        <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
+          <strong style="color: #38bdf8; display: block; margin-bottom: 0.25rem;">Active Target Draft Room:</strong>
+          <span style="color: #fff; font-weight: 700;">${currentSession?.name || 'Yahoo: League 1'}</span>
+          <span style="color: var(--text-dim); font-size: 0.75rem; margin-left: 0.5rem;">(${currentSession?.platform?.toUpperCase() || 'YAHOO'} • ID: <code>${currentSession?.id || 'yahoo-1'}</code>)</span>
+        </div>
+
+        <div style="font-weight: 700; color: #fff; margin-top: 0.25rem;">How to install the extension in 30 seconds:</div>
+        
+        <ol style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+          <li>Open <strong>Google Chrome</strong> (or Brave / Edge) and navigate to <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #38bdf8;">chrome://extensions</code>.</li>
+          <li>Turn ON <strong>"Developer mode"</strong> in the top-right corner.</li>
+          <li>Click the <strong>"Load unpacked"</strong> button in the top-left corner.</li>
+          <li>Select the <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #34d399;">chrome-extension</code> folder inside this repository:
+            <div style="margin-top: 4px; padding: 4px 8px; background: rgba(0,0,0,0.3); border-radius: 4px; font-family: monospace; font-size: 0.74rem; color: #fbbf24;">
+              /Users/kumaran/Documents/FantasyFootball/chrome-extension
+            </div>
+          </li>
+          <li>Pin the <strong>"Cameron's Fantasy Draft Bridge"</strong> icon in your browser bar.</li>
+          <li>Click the extension icon to verify the <strong>Server URL</strong> (<code style="color: #38bdf8;">http://localhost:3000</code>) and Passcode (<code style="color: #38bdf8;">fantasy2025</code>), and pick your target session.</li>
+        </ol>
+
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
+          <strong style="color: #34d399; display: block; margin-bottom: 0.25rem;">⚡ Zero-Effort Automation:</strong>
+          Keep your Yahoo, ESPN, or Sleeper draft room open in one tab, and this Live Draft War Room open in another. Every time someone makes a pick in the draft room, the extension instantly detects it and crosses the player off your board, updates survival odds, and recommends your best pick!
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+          <button type="button" id="btn-done-ext" class="btn-primary" style="padding: 0.45rem 1rem;">Got It, Let's Draft!</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeModal = () => modal.remove();
+  modal.querySelector('#close-ext-modal').addEventListener('click', closeModal);
+  modal.querySelector('#btn-done-ext').addEventListener('click', closeModal);
 }

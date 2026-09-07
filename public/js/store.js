@@ -216,6 +216,8 @@ class Store {
         players: INITIAL_PLAYERS,
         draftPicks: [],
         currentPick: 1,
+        activeDraftSessionId: 'yahoo-1',
+        draftSessions: [],
         weeklyStrategy: 'CONSERVATIVE',
         userRoster: ['rb-904', 'wr-902', 'qb-774', 'te-899'],
         opponentRoster: [],
@@ -224,6 +226,9 @@ class Store {
         customAddedTiers: {},
         isAuthenticated: isAuthedLocal
       };
+    } else {
+      if (!state.activeDraftSessionId) state.activeDraftSessionId = 'yahoo-1';
+      if (!state.draftSessions) state.draftSessions = [];
     }
     this.cleanEmptyTiersFromState(state);
     return state;
@@ -278,6 +283,27 @@ class Store {
       }
     } catch (e) {
       console.warn('Player DB sync fallback:', e);
+    }
+
+    // Sync draft sessions & active session draft board
+    try {
+      const sessionRes = await api.getDraftSessions();
+      if (sessionRes && sessionRes.success) {
+        this.state.draftSessions = sessionRes.sessions || [];
+        this.state.activeDraftSessionId = sessionRes.activeSessionId || 'yahoo-1';
+        
+        const draftRes = await api.getDraft(this.state.activeDraftSessionId);
+        if (draftRes && draftRes.success) {
+          this.state.draftPicks = draftRes.draftPicks || [];
+          this.state.userRoster = draftRes.userRoster || [];
+          this.state.currentPick = draftRes.currentPick || 1;
+          if (draftRes.league) {
+            this.state.league = { ...this.state.league, ...draftRes.league };
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Draft sessions sync error:', e);
     }
   }
 
@@ -904,6 +930,65 @@ class Store {
     }
   }
 
+  async switchDraftSession(sessionId) {
+    this.state.activeDraftSessionId = sessionId;
+    await api.setActiveDraftSession(sessionId);
+    const draftRes = await api.getDraft(sessionId);
+    if (draftRes && draftRes.success) {
+      this.state.draftPicks = draftRes.draftPicks || [];
+      this.state.userRoster = draftRes.userRoster || [];
+      this.state.currentPick = draftRes.currentPick || 1;
+      if (draftRes.league) {
+        this.state.league = { ...this.state.league, ...draftRes.league };
+      }
+    }
+    const sessionRes = await api.getDraftSessions();
+    if (sessionRes && sessionRes.success) {
+      this.state.draftSessions = sessionRes.sessions || [];
+    }
+    this.saveState(false, true);
+    this.notify();
+  }
+
+  async createDraftSession(sessionData) {
+    const res = await api.saveDraftSession(sessionData);
+    if (res && res.success) {
+      await this.switchDraftSession(sessionData.id);
+    }
+  }
+
+  async deleteDraftSession(sessionId) {
+    await api.deleteDraftSession(sessionId);
+    const sessionRes = await api.getDraftSessions();
+    if (sessionRes && sessionRes.sessions && sessionRes.sessions.length > 0) {
+      await this.switchDraftSession(sessionRes.sessions[0].id);
+    }
+  }
+
+  async pollDraftUpdates() {
+    try {
+      const sessionId = this.state.activeDraftSessionId || 'yahoo-1';
+      const draftRes = await api.getDraft(sessionId);
+      if (draftRes && draftRes.success) {
+        const currentCount = this.state.draftPicks.length;
+        const newCount = (draftRes.draftPicks || []).length;
+        if (newCount !== currentCount || draftRes.currentPick !== this.state.currentPick) {
+          this.state.draftPicks = draftRes.draftPicks || [];
+          this.state.userRoster = draftRes.userRoster || [];
+          this.state.currentPick = draftRes.currentPick || 1;
+          if (draftRes.league) {
+            this.state.league = { ...this.state.league, ...draftRes.league };
+          }
+          this.notify();
+        }
+      }
+      const sessionRes = await api.getDraftSessions();
+      if (sessionRes && sessionRes.success) {
+        this.state.draftSessions = sessionRes.sessions || [];
+      }
+    } catch (e) {}
+  }
+
   async draftPlayer(playerId) {
     const player = this.state.players.find(p => p.id === playerId);
     if (!player) return;
@@ -924,7 +1009,7 @@ class Store {
     }
 
     this.saveState(false, true);
-    await api.draftPick(playerId);
+    await api.draftPick(playerId, this.state.activeDraftSessionId);
   }
 
   async undoLastPick() {
@@ -937,14 +1022,14 @@ class Store {
     }
 
     this.saveState(false, true);
-    await api.undoPick();
+    await api.undoPick(this.state.activeDraftSessionId);
   }
 
   async resetDraft() {
     this.state.draftPicks = [];
     this.state.currentPick = 1;
     this.saveState(false, true);
-    await api.resetDraft();
+    await api.resetDraft(this.state.activeDraftSessionId);
   }
 
   setWeeklyStrategy(mode) {

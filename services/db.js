@@ -100,6 +100,63 @@ async function initDb() {
     );
   `);
 
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS draft_sessions (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      platform TEXT NOT NULL,
+      teams_count INTEGER DEFAULT 12,
+      user_slot INTEGER DEFAULT 1,
+      scoring TEXT DEFAULT 'Half-PPR',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS session_draft_picks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id TEXT NOT NULL,
+      pick_num INTEGER NOT NULL,
+      round INTEGER NOT NULL,
+      team_id INTEGER NOT NULL,
+      player_id TEXT NOT NULL,
+      timestamp TEXT NOT NULL,
+      UNIQUE(session_id, pick_num)
+    );
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS session_user_roster (
+      session_id TEXT NOT NULL,
+      player_id TEXT NOT NULL,
+      assigned_at TEXT NOT NULL,
+      PRIMARY KEY (session_id, player_id)
+    );
+  `);
+
+  // Seed default draft sessions if empty
+  try {
+    const sessionCheck = await db.execute('SELECT COUNT(*) as count FROM draft_sessions');
+    if (sessionCheck.rows && sessionCheck.rows[0].count === 0) {
+      const defaultSessions = [
+        { id: 'yahoo-1', name: 'Yahoo: League 1', platform: 'yahoo', teams_count: 12, user_slot: 1 },
+        { id: 'espn-2', name: 'ESPN: League 2', platform: 'espn', teams_count: 10, user_slot: 4 },
+        { id: 'sleeper-3', name: 'Sleeper: League 3', platform: 'sleeper', teams_count: 12, user_slot: 2 },
+        { id: 'mock', name: 'Manual / Mock', platform: 'manual', teams_count: 12, user_slot: 1 }
+      ];
+      const now = new Date().toISOString();
+      for (const s of defaultSessions) {
+        await db.execute({
+          sql: 'INSERT INTO draft_sessions (id, name, platform, teams_count, user_slot, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          args: [s.id, s.name, s.platform, s.teams_count, s.user_slot, now, now]
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('Draft sessions seed error:', e);
+  }
+
   // Check if players table needs seeding/updating with initial 300 dataset
   const { rows } = await db.execute('SELECT COUNT(*) as count FROM players');
   if (rows[0].count < INITIAL_PLAYERS.length) {
@@ -253,61 +310,286 @@ async function updatePlayerNotes(id, notes, sleeperTag = null) {
   }
 }
 
-// Draft Pick Methods
-async function getDraftPicks() {
-  const { rows } = await db.execute('SELECT dp.*, p.name, p.pos, p.team FROM draft_picks dp JOIN players p ON dp.player_id = p.id ORDER BY pick_num ASC');
-  return rows.map(r => ({
-    pickNum: r.pick_num,
-    round: r.round,
-    teamId: r.team_id,
-    player: {
-      id: r.player_id,
-      name: r.name,
-      pos: r.pos,
-      team: r.team
-    }
-  }));
+function normalizePlayerName(name) {
+  if (!name) return '';
+  return name
+    .toLowerCase()
+    .replace(/^(d\/st|def|dst)\s+/i, '')
+    .replace(/\s+(d\/st|def|dst)$/i, '')
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b\.?/gi, '')
+    .replace(/[^a-z0-9]/g, '')
+    .trim();
 }
 
-async function saveDraftPick(pickNum, round, teamId, playerId) {
+async function findPlayerByNameOrId(nameOrId, pos = null, team = null) {
+  if (!nameOrId) return null;
+  const { rows } = await db.execute('SELECT * FROM players');
+  
+  // 1. Direct ID match
+  const direct = rows.find(p => p.id.toLowerCase() === String(nameOrId).toLowerCase());
+  if (direct) return direct;
+
+  const targetNorm = normalizePlayerName(String(nameOrId));
+  if (!targetNorm) return null;
+
+  // 2. Exact normalized name match
+  let matches = rows.filter(p => normalizePlayerName(p.name) === targetNorm);
+  if (matches.length === 1) return matches[0];
+  if (matches.length > 1 && pos) {
+    const posMatch = matches.find(p => p.pos.toLowerCase() === String(pos).toLowerCase());
+    if (posMatch) return posMatch;
+  }
+  if (matches.length > 0) return matches[0];
+
+  // 3. Substring match
+  matches = rows.filter(p => {
+    const pNorm = normalizePlayerName(p.name);
+    return pNorm.includes(targetNorm) || targetNorm.includes(pNorm);
+  });
+  if (matches.length === 1) return matches[0];
+  if (matches.length > 1 && pos) {
+    const posMatch = matches.find(p => p.pos.toLowerCase() === String(pos).toLowerCase());
+    if (posMatch) return posMatch;
+  }
+  if (matches.length > 0) return matches[0];
+
+  // 4. If not found in seed dataset, dynamically register player
+  const newPos = (pos || 'FLEX').toUpperCase();
+  const newTeam = (team || 'FA').toUpperCase();
+  const cleanName = String(nameOrId).trim();
+  const newId = `${newPos.toLowerCase()}-auto-${Date.now()}`;
+  const newPlayer = {
+    id: newId,
+    name: cleanName,
+    pos: newPos,
+    team: newTeam,
+    bye: 8,
+    ecr: 250,
+    customRank: 250,
+    tier: 5,
+    projectedPts: 120.0
+  };
+  await savePlayer(newPlayer);
+  return newPlayer;
+}
+
+// Active Draft Session Management
+async function getActiveDraftSessionId() {
+  try {
+    const { rows } = await db.execute("SELECT value FROM league_settings WHERE key = 'active_draft_session_id'");
+    if (rows && rows.length > 0) {
+      return JSON.parse(rows[0].value);
+    }
+  } catch (e) {}
+  return 'yahoo-1';
+}
+
+async function setActiveDraftSessionId(sessionId) {
   await db.execute({
-    sql: 'INSERT INTO draft_picks (pick_num, round, team_id, player_id, timestamp) VALUES (?, ?, ?, ?, ?)',
-    args: [pickNum, round, teamId, playerId, new Date().toISOString()]
+    sql: 'INSERT INTO league_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+    args: ['active_draft_session_id', JSON.stringify(sessionId)]
   });
 }
 
-async function undoLastDraftPick() {
-  const { rows } = await db.execute('SELECT pick_num FROM draft_picks ORDER BY pick_num DESC LIMIT 1');
+async function getDraftSessions() {
+  const { rows } = await db.execute('SELECT * FROM draft_sessions ORDER BY created_at ASC');
+  const activeId = await getActiveDraftSessionId();
+  
+  const sessions = [];
+  for (const r of rows) {
+    const pickRes = await db.execute({
+      sql: 'SELECT COUNT(*) as count FROM session_draft_picks WHERE session_id = ?',
+      args: [r.id]
+    });
+    const pickCount = pickRes.rows[0].count;
+    sessions.push({
+      id: r.id,
+      name: r.name,
+      platform: r.platform,
+      teamsCount: r.teams_count,
+      userSlot: r.user_slot,
+      scoring: r.scoring || 'Half-PPR',
+      currentPick: pickCount + 1,
+      draftPicksCount: pickCount,
+      updatedAt: r.updated_at,
+      isActive: r.id === activeId
+    });
+  }
+  return { activeSessionId: activeId, sessions };
+}
+
+async function saveDraftSession(s) {
+  const now = new Date().toISOString();
+  await db.execute({
+    sql: `INSERT INTO draft_sessions (id, name, platform, teams_count, user_slot, scoring, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(id) DO UPDATE SET
+            name = excluded.name,
+            platform = excluded.platform,
+            teams_count = excluded.teams_count,
+            user_slot = excluded.user_slot,
+            scoring = excluded.scoring,
+            updated_at = excluded.updated_at`,
+    args: [s.id, s.name, s.platform, s.teamsCount || 12, s.userSlot || 1, s.scoring || 'Half-PPR', now, now]
+  });
+}
+
+async function deleteDraftSession(sessionId) {
+  await db.execute({ sql: 'DELETE FROM session_draft_picks WHERE session_id = ?', args: [sessionId] });
+  await db.execute({ sql: 'DELETE FROM session_user_roster WHERE session_id = ?', args: [sessionId] });
+  await db.execute({ sql: 'DELETE FROM draft_sessions WHERE id = ?', args: [sessionId] });
+}
+
+// Draft Pick Methods (Multi-Session Supported)
+async function getDraftPicks(sessionId = null) {
+  const targetSession = sessionId || await getActiveDraftSessionId();
+  const { rows } = await db.execute({
+    sql: `SELECT sdp.pick_num, sdp.round, sdp.team_id, p.id, p.name, p.pos, p.team
+          FROM session_draft_picks sdp
+          JOIN players p ON sdp.player_id = p.id
+          WHERE sdp.session_id = ?
+          ORDER BY sdp.pick_num ASC`,
+    args: [targetSession]
+  });
+  if (rows && rows.length > 0) {
+    return rows.map(r => ({
+      pickNum: r.pick_num,
+      round: r.round,
+      teamId: r.team_id,
+      player: {
+        id: r.id,
+        name: r.name,
+        pos: r.pos,
+        team: r.team
+      }
+    }));
+  }
+  // Fallback to legacy draft_picks if targetSession is 'default' or 'mock'
+  if (targetSession === 'default' || targetSession === 'mock') {
+    const legacy = await db.execute('SELECT dp.*, p.name, p.pos, p.team FROM draft_picks dp JOIN players p ON dp.player_id = p.id ORDER BY pick_num ASC');
+    return legacy.rows.map(r => ({
+      pickNum: r.pick_num,
+      round: r.round,
+      teamId: r.team_id,
+      player: {
+        id: r.player_id,
+        name: r.name,
+        pos: r.pos,
+        team: r.team
+      }
+    }));
+  }
+  return [];
+}
+
+async function saveDraftPick(pickNum, round, teamId, playerId, sessionId = null) {
+  const targetSession = sessionId || await getActiveDraftSessionId();
+  const now = new Date().toISOString();
+  await db.execute({
+    sql: `INSERT INTO session_draft_picks (session_id, pick_num, round, team_id, player_id, timestamp)
+          VALUES (?, ?, ?, ?, ?, ?)
+          ON CONFLICT(session_id, pick_num) DO UPDATE SET
+            round = excluded.round,
+            team_id = excluded.team_id,
+            player_id = excluded.player_id,
+            timestamp = excluded.timestamp`,
+    args: [targetSession, pickNum, round, teamId, playerId, now]
+  });
+
+  // Also mirror to legacy draft_picks for backwards compatibility
+  try {
+    await db.execute({
+      sql: 'INSERT INTO draft_picks (pick_num, round, team_id, player_id, timestamp) VALUES (?, ?, ?, ?, ?) ON CONFLICT(pick_num) DO UPDATE SET player_id = excluded.player_id',
+      args: [pickNum, round, teamId, playerId, now]
+    });
+  } catch (e) {}
+
+  // Update session updated_at
+  try {
+    await db.execute({
+      sql: 'UPDATE draft_sessions SET updated_at = ? WHERE id = ?',
+      args: [now, targetSession]
+    });
+  } catch (e) {}
+}
+
+async function undoLastDraftPick(sessionId = null) {
+  const targetSession = sessionId || await getActiveDraftSessionId();
+  const { rows } = await db.execute({
+    sql: 'SELECT pick_num, player_id, team_id FROM session_draft_picks WHERE session_id = ? ORDER BY pick_num DESC LIMIT 1',
+    args: [targetSession]
+  });
   if (rows.length > 0) {
     const lastPickNum = rows[0].pick_num;
-    await db.execute({ sql: 'DELETE FROM draft_picks WHERE pick_num = ?', args: [lastPickNum] });
+    const lastPlayerId = rows[0].player_id;
+    await db.execute({
+      sql: 'DELETE FROM session_draft_picks WHERE session_id = ? AND pick_num = ?',
+      args: [targetSession, lastPickNum]
+    });
+    await db.execute({
+      sql: 'DELETE FROM session_user_roster WHERE session_id = ? AND player_id = ?',
+      args: [targetSession, lastPlayerId]
+    });
+    try {
+      await db.execute({ sql: 'DELETE FROM draft_picks WHERE pick_num = ?', args: [lastPickNum] });
+      await db.execute({ sql: 'DELETE FROM user_roster WHERE player_id = ?', args: [lastPlayerId] });
+    } catch (e) {}
     return lastPickNum;
   }
   return null;
 }
 
-async function resetDraftBoard() {
-  await db.execute('DELETE FROM draft_picks');
+async function resetDraftBoard(sessionId = null) {
+  const targetSession = sessionId || await getActiveDraftSessionId();
+  await db.execute({ sql: 'DELETE FROM session_draft_picks WHERE session_id = ?', args: [targetSession] });
+  await db.execute({ sql: 'DELETE FROM session_user_roster WHERE session_id = ?', args: [targetSession] });
+  try {
+    await db.execute('DELETE FROM draft_picks');
+    await db.execute('DELETE FROM user_roster');
+  } catch (e) {}
 }
 
-// User Roster Methods
-async function getUserRoster() {
-  const { rows } = await db.execute('SELECT player_id FROM user_roster');
-  return rows.map(r => r.player_id);
-}
-
-async function addUserRosterPlayer(playerId) {
-  await db.execute({
-    sql: 'INSERT OR IGNORE INTO user_roster (player_id, assigned_at) VALUES (?, ?)',
-    args: [playerId, new Date().toISOString()]
+// User Roster Methods (Multi-Session Supported)
+async function getUserRoster(sessionId = null) {
+  const targetSession = sessionId || await getActiveDraftSessionId();
+  const { rows } = await db.execute({
+    sql: 'SELECT player_id FROM session_user_roster WHERE session_id = ?',
+    args: [targetSession]
   });
+  if (rows && rows.length > 0) {
+    return rows.map(r => r.player_id);
+  }
+  const legacy = await db.execute('SELECT player_id FROM user_roster');
+  return legacy.rows.map(r => r.player_id);
 }
 
-async function removeUserRosterPlayer(playerId) {
+async function addUserRosterPlayer(playerId, sessionId = null) {
+  const targetSession = sessionId || await getActiveDraftSessionId();
+  const now = new Date().toISOString();
   await db.execute({
-    sql: 'DELETE FROM user_roster WHERE player_id = ?',
-    args: [playerId]
+    sql: 'INSERT OR IGNORE INTO session_user_roster (session_id, player_id, assigned_at) VALUES (?, ?, ?)',
+    args: [targetSession, playerId, now]
   });
+  try {
+    await db.execute({
+      sql: 'INSERT OR IGNORE INTO user_roster (player_id, assigned_at) VALUES (?, ?)',
+      args: [playerId, now]
+    });
+  } catch (e) {}
+}
+
+async function removeUserRosterPlayer(playerId, sessionId = null) {
+  const targetSession = sessionId || await getActiveDraftSessionId();
+  await db.execute({
+    sql: 'DELETE FROM session_user_roster WHERE session_id = ? AND player_id = ?',
+    args: [targetSession, playerId]
+  });
+  try {
+    await db.execute({
+      sql: 'DELETE FROM user_roster WHERE player_id = ?',
+      args: [playerId]
+    });
+  } catch (e) {}
 }
 
 // League Settings Methods
@@ -418,6 +700,13 @@ module.exports = {
   updatePlayerTier,
   updatePlayerRank,
   updatePlayerNotes,
+  findPlayerByNameOrId,
+  normalizePlayerName,
+  getDraftSessions,
+  saveDraftSession,
+  deleteDraftSession,
+  getActiveDraftSessionId,
+  setActiveDraftSessionId,
   getDraftPicks,
   saveDraftPick,
   undoLastDraftPick,

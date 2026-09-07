@@ -88,13 +88,24 @@ export const api = {
     }
   },
 
-  async draftPick(playerId) {
+  async getDraft(sessionId = null) {
+    try {
+      const q = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
+      const res = await fetch(`/api/draft${q}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async draftPick(playerId, sessionId = null) {
     try {
       const res = await fetch('/api/draft/pick', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ playerId })
+        body: JSON.stringify({ playerId, sessionId })
       });
       if (res.status === 401 && typeof window.onAuthRequired === 'function') {
         window.onAuthRequired();
@@ -107,11 +118,13 @@ export const api = {
     }
   },
 
-  async undoPick() {
+  async undoPick(sessionId = null) {
     try {
       const res = await fetch('/api/draft/undo', {
         method: 'POST',
-        credentials: 'include'
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ sessionId })
       });
       if (res.status === 401 && typeof window.onAuthRequired === 'function') {
         window.onAuthRequired();
@@ -123,17 +136,86 @@ export const api = {
     }
   },
 
-  async resetDraft() {
+  async resetDraft(sessionId = null) {
     try {
       const res = await fetch('/api/draft/reset', {
         method: 'POST',
-        credentials: 'include'
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ sessionId })
       });
       if (res.status === 401 && typeof window.onAuthRequired === 'function') {
         window.onAuthRequired();
       }
+      return await res.json();
     } catch (e) {
       console.warn('Backend reset failed:', e);
+    }
+  },
+
+  async getDraftSessions() {
+    try {
+      const res = await fetch('/api/draft/sessions', { credentials: 'include' });
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async setActiveDraftSession(sessionId) {
+    try {
+      const res = await fetch('/api/draft/sessions/active', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ sessionId })
+      });
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async saveDraftSession(sessionData) {
+    try {
+      const res = await fetch('/api/draft/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(sessionData)
+      });
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async deleteDraftSession(sessionId) {
+    try {
+      const res = await fetch('/api/draft/sessions', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ sessionId })
+      });
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async syncPick(pickData) {
+    try {
+      const res = await fetch('/api/draft/sync-pick', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(pickData)
+      });
+      return await res.json();
+    } catch (e) {
+      return null;
     }
   },
 

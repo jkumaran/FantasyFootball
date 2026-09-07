@@ -127,18 +127,33 @@ export function renderPreDraftView() {
                   ${tierPlayers.map((p, idx) => {
                     const isDrafted = store.isPlayerDrafted(p.id);
                     const overallRank = p.ecr || p.customRank || (idx + 1);
+                    const a = getPlayerAnalytics(p);
                     return `
                       <div class="draggable-player-card ${isDrafted ? 'card-drafted' : ''}" draggable="true" data-id="${p.id}" data-pos="${pos}" data-tier="${tierNum}" data-index="${idx}">
                         <div class="player-card-left">
                           <input type="checkbox" class="player-draft-chk" data-id="${p.id}" ${isDrafted ? 'checked' : ''} title="${isDrafted ? 'Drafted (click to unmark)' : 'Mark Drafted'}">
-                          <div class="player-info" style="min-width: 0; overflow: hidden;">
+                          <div class="player-info" style="min-width: 0; overflow: hidden; width: 100%;">
                             <span class="player-drag-dots" title="Drag to reorder">⋮⋮</span>
-                            <div style="min-width: 0; overflow: hidden;">
+                            <div style="min-width: 0; overflow: hidden; width: 100%;">
                               <div class="player-name ${isDrafted ? 'name-drafted' : ''}" title="${p.name}">
                                 ${p.name}
                                 ${isDrafted ? '<span class="drafted-badge">DRAFTED</span>' : ''}
                               </div>
-                              <div class="player-team">${p.team} • Bye ${p.bye}</div>
+                              <div class="player-team" style="display: flex; flex-direction: column; gap: 1px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                                  <span>${p.team} • Bye ${p.bye}</span>
+                                  ${a.lastYrPpg ? `<span style="font-size: 0.62rem; color: #fb923c; font-weight: 600;" title="Last Year PPG: ${a.lastYrPpg}">${a.lastYrPpg} PPG</span>` : ''}
+                                </div>
+                                <div class="pillar-grades-row" style="display: flex; gap: 2px; flex-wrap: nowrap; margin-top: 2px; line-height: 1;">
+                                  <span style="color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P1 (Volume & Opportunity): Grade ${a.gradeP1}">1:${a.gradeP1}</span>
+                                  <span style="color: #34d399; background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P2 (Efficiency): Grade ${a.gradeP2}">2:${a.gradeP2}</span>
+                                  <span style="color: #facc15; background: rgba(250, 204, 21, 0.12); border: 1px solid rgba(250, 204, 21, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P3 (Environment): Grade ${a.gradeP3}">3:${a.gradeP3}</span>
+                                  <span style="color: #fb7185; background: rgba(251, 113, 133, 0.12); border: 1px solid rgba(251, 113, 133, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P4 (Offensive Line): Grade ${a.gradeP4}">4:${a.gradeP4}</span>
+                                  <span style="color: #c084fc; background: rgba(192, 132, 252, 0.12); border: 1px solid rgba(192, 132, 252, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P5 (Coaching & Pace): Grade ${a.gradeP5}">5:${a.gradeP5}</span>
+                                  <span style="color: #a3e635; background: rgba(163, 230, 53, 0.12); border: 1px solid rgba(163, 230, 53, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P6 (Playoff SoS W15-17: ${a.playoffPts} pts): Grade ${a.gradeP6}">6:${a.gradeP6}</span>
+                                  <span style="color: #fb923c; background: rgba(251, 146, 60, 0.12); border: 1px solid rgba(251, 146, 60, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P7 (Last Year PPG: ${a.lastYrPpg}): Grade ${a.gradeP7}">7:${a.gradeP7}</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -162,6 +177,37 @@ export function renderPreDraftView() {
       </div>
     `;
   };
+
+  const renderPillarLegend = (titlePrefix = 'Offense') => `
+    <div class="glass-card pillar-legend-bar" style="padding: 0.45rem 0.85rem; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.72rem;">
+      <div style="font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0;">
+        <span>⚡ 7-Pillar Evaluation Grades (A+ to F):</span>
+      </div>
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.65rem; flex: 1; justify-content: flex-end;">
+        <span style="color: #38bdf8; display: inline-flex; align-items: center; gap: 0.25rem;" title="Volume is the strongest predictor of fantasy success. Evaluates Opportunity Share, Target Share, and Red Zone touches.">
+          <strong style="background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.35); padding: 0 4px; border-radius: 3px;">1</strong> Volume & Opp (Carries/Tgts/RZ)
+        </span>
+        <span style="color: #34d399; display: inline-flex; align-items: center; gap: 0.25rem;" title="Measures per-snap dominance over raw totals: YPRR (WR/TE), Explosive Run % (RB), YPA (QB), and Proj PPG.">
+          <strong style="background: rgba(52, 211, 153, 0.18); border: 1px solid rgba(52, 211, 153, 0.35); padding: 0 4px; border-radius: 3px;">2</strong> Efficiency (YPRR/Expl/YPA)
+        </span>
+        <span style="color: #facc15; display: inline-flex; align-items: center; gap: 0.25rem;" title="Position-adjusted Vegas implied totals and neutral game scripts: High pass rates for WR/QB; positive game scripts for RBs.">
+          <strong style="background: rgba(250, 204, 21, 0.18); border: 1px solid rgba(250, 204, 21, 0.35); padding: 0 4px; border-radius: 3px;">3</strong> Environment (Vegas Totals/Pass%)
+        </span>
+        <span style="color: #fb7185; display: inline-flex; align-items: center; gap: 0.25rem;" title="Position-adjusted line play: Run-block push for RBs, pass-block pocket stability for QBs/WRs.">
+          <strong style="background: rgba(251, 113, 133, 0.18); border: 1px solid rgba(251, 113, 133, 0.35); padding: 0 4px; border-radius: 3px;">4</strong> Offensive Line Unit
+        </span>
+        <span style="color: #c084fc; display: inline-flex; align-items: center; gap: 0.25rem;" title="Position-adjusted coaching pace and scheme: 11 spread tempo for WR/QB, outside-zone for RBs, multi-TE for TEs.">
+          <strong style="background: rgba(192, 132, 252, 0.18); border: 1px solid rgba(192, 132, 252, 0.35); padding: 0 4px; border-radius: 3px;">5</strong> Coaching Pace & Scheme
+        </span>
+        <span style="color: #a3e635; display: inline-flex; align-items: center; gap: 0.25rem;" title="Fantasy playoff schedule difficulty and combined Weeks 15-17 projected points.">
+          <strong style="background: rgba(163, 230, 53, 0.18); border: 1px solid rgba(163, 230, 53, 0.35); padding: 0 4px; border-radius: 3px;">6</strong> Playoff SoS (W15-17 Pts)
+        </span>
+        <span style="color: #fb923c; display: inline-flex; align-items: center; gap: 0.25rem;" title="Last year historical fantasy points per game baseline to eliminate one-year fluke bias.">
+          <strong style="background: rgba(251, 146, 60, 0.18); border: 1px solid rgba(251, 146, 60, 0.35); padding: 0 4px; border-radius: 3px;">7</strong> Last Year PPG Baseline
+        </span>
+      </div>
+    </div>
+  `;
 
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
@@ -212,6 +258,9 @@ export function renderPreDraftView() {
         </div>
       </div>
 
+      <!-- Offense 7-Pillar Legend Bar -->
+      ${renderPillarLegend('Offense')}
+
       <!-- Primary 4-Column Offense Board (RB, WR, TE, QB) -->
       <div class="position-columns-grid">
         ${primaryPositions.map(renderPosColumn).join('')}
@@ -229,6 +278,10 @@ export function renderPreDraftView() {
               Specialist positions kept separate for late-round drafting. Full tier dragging, gap adjustments, and drafting features enabled.
             </p>
           </div>
+
+          <!-- K/DST 7-Pillar Legend Bar -->
+          ${renderPillarLegend('Specialists')}
+
           <div class="specialists-grid">
             ${bottomPositions.map(renderPosColumn).join('')}
           </div>
@@ -404,7 +457,7 @@ export function renderPreDraftView() {
           </div>
         </div>
 
-        <!-- Stat Table with 6 Analytical Pillars -->
+        <!-- Stat Table with 7 Analytical Pillars -->
         <div class="stat-table-wrapper">
           <table class="stat-table">
             <thead>
@@ -416,6 +469,7 @@ export function renderPreDraftView() {
                 <th title="Tier">Tier</th>
                 <th title="Consensus ECR">ECR</th>
                 <th title="Pillar 2 (Efficiency): Projected Points Per Game & Season Total">Proj PPG (Tot)</th>
+                <th title="Pillar 7 (Historical Baseline): Last Year Points Per Game">Last Yr PPG</th>
                 <th title="Pillar 2 (Efficiency): YPRR for WR/TE, Explosive Run % for RB, YPA for QB">Per-Play Eff</th>
                 <th title="Pillar 1 (Volume & Opportunity): Opportunity Share % for RB / WOPR for WR/TE">Opp / WOPR</th>
                 <th title="Pillar 1 (Volume & Opportunity): Target Share %">Tgt %</th>
@@ -423,7 +477,7 @@ export function renderPreDraftView() {
                 <th title="Pillar 3 (Environment): Vegas Implied Team PPG & Neutral Pass %">Env (Vegas / Pass%)</th>
                 <th title="Pillar 4 (Offensive Line): Unit Rank (1-32) & Tier Grade">OL Rank</th>
                 <th title="Pillar 5 (Coaching & Pace): Neutral Seconds/Snap Rank & Offensive Scheme">Pace & Scheme</th>
-                <th title="Pillar 6 (Strength of Schedule): Fantasy Playoff Schedule (Weeks 15-17)">Playoff SoS</th>
+                <th title="Pillar 6 (Strength of Schedule): Fantasy Playoff Schedule & Projected Points (Weeks 15-17)">Playoff SoS (W15-17)</th>
               </tr>
             </thead>
             <tbody>
@@ -450,6 +504,9 @@ export function renderPreDraftView() {
                     <td style="font-weight: 700; color: #34d399;">
                       ${a.projPpg} <span style="font-size: 0.7rem; font-weight: 500; color: var(--text-dim);">(${p.projectedPts})</span>
                     </td>
+                    <td style="font-weight: 700; color: #fb923c;">
+                      ${a.lastYrPpg ? `${a.lastYrPpg} PPG` : '<span style="color: var(--text-dim); font-size: 0.7rem;">Rookie</span>'}
+                    </td>
                     <td style="font-weight: 600; color: #38bdf8;">${a.effLabel}</td>
                     <td style="font-weight: 600; color: #facc15;">${a.oppShareLabel}</td>
                     <td>${a.targetShare ? a.targetShare + '%' : '-'}</td>
@@ -465,8 +522,9 @@ export function renderPreDraftView() {
                       <span style="color: #c084fc; font-weight: 600;">${a.paceLabel}</span>
                       <span style="color: var(--text-dim); margin-left: 3px;">· ${a.scheme.split('/')[0].trim()}</span>
                     </td>
-                    <td>
-                      <span style="font-weight: 600; color: ${sosColor};">${a.playoffSos}</span>
+                    <td title="Weeks 15-17 combined projected: ${a.playoffPts} points">
+                      <strong style="color: #38bdf8;">${a.playoffPts} pts</strong>
+                      <span style="font-weight: 600; color: ${sosColor}; font-size: 0.72rem; margin-left: 3px;">${a.playoffSos}</span>
                     </td>
                   </tr>
                 `;

@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Cameron's Fantasy Draft Bridge",
+  "version": "1.0.0",
+  "description": "Real-time sync bridge for Cameron's Fantasy Football Live Draft War Room from Yahoo, ESPN, and Sleeper.",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*",
+    "https://*.sports.yahoo.com/*",
+    "https://fantasy.espn.com/*",
+    "https://sleeper.com/*",
+    "https://sleeper.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Cameron's Draft Bridge"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.sports.yahoo.com/fantasy/*draft*"],
+      "js": ["content-yahoo.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://fantasy.espn.com/football/draft*"],
+      "js": ["content-espn.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://sleeper.com/draft/*", "https://sleeper.app/draft/*"],
+      "js": ["content-sleeper.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
