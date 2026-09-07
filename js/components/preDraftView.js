@@ -139,19 +139,14 @@ export function renderPreDraftView() {
                                 ${p.name}
                                 ${isDrafted ? '<span class="drafted-badge">DRAFTED</span>' : ''}
                               </div>
-                              <div class="player-team" style="display: flex; flex-direction: column; gap: 1px;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                              <div class="player-team" style="display: flex; flex-direction: column; gap: 2px;">
+                                <div>
                                   <span>${p.team} • Bye ${p.bye}</span>
-                                  ${a.lastYrPpg ? `<span style="font-size: 0.62rem; color: #fb923c; font-weight: 600;" title="Last Year PPG: ${a.lastYrPpg}">${a.lastYrPpg} PPG</span>` : ''}
                                 </div>
-                                <div class="pillar-grades-row" style="display: flex; gap: 2px; flex-wrap: nowrap; margin-top: 2px; line-height: 1;">
-                                  <span style="color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P1 (Volume & Opportunity): Grade ${a.gradeP1}">1:${a.gradeP1}</span>
-                                  <span style="color: #34d399; background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P2 (Efficiency): Grade ${a.gradeP2}">2:${a.gradeP2}</span>
-                                  <span style="color: #facc15; background: rgba(250, 204, 21, 0.12); border: 1px solid rgba(250, 204, 21, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P3 (Environment): Grade ${a.gradeP3}">3:${a.gradeP3}</span>
-                                  <span style="color: #fb7185; background: rgba(251, 113, 133, 0.12); border: 1px solid rgba(251, 113, 133, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P4 (Offensive Line): Grade ${a.gradeP4}">4:${a.gradeP4}</span>
-                                  <span style="color: #c084fc; background: rgba(192, 132, 252, 0.12); border: 1px solid rgba(192, 132, 252, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P5 (Coaching & Pace): Grade ${a.gradeP5}">5:${a.gradeP5}</span>
-                                  <span style="color: #a3e635; background: rgba(163, 230, 53, 0.12); border: 1px solid rgba(163, 230, 53, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P6 (Playoff SoS W15-17: ${a.playoffPts} pts): Grade ${a.gradeP6}">6:${a.gradeP6}</span>
-                                  <span style="color: #fb923c; background: rgba(251, 146, 60, 0.12); border: 1px solid rgba(251, 146, 60, 0.3); font-size: 0.58rem; font-weight: 800; padding: 1px 2px; border-radius: 3px;" title="P7 (Last Year PPG: ${a.lastYrPpg}): Grade ${a.gradeP7}">7:${a.gradeP7}</span>
+                                <div class="pillar-grades-row" style="display: flex; gap: 4px; align-items: center; margin-top: 1px; line-height: 1;">
+                                  <span style="color: #facc15; background: rgba(250, 204, 21, 0.12); border: 1px solid rgba(250, 204, 21, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 3px;" title="Offensive Environment: Grade ${a.gradeP3} (${a.vegasPpg} Vegas Implied PPG · ${a.passRatePct}% Neutral Pass Rate)">Env:${a.gradeP3}</span>
+                                  <span style="color: #fb7185; background: rgba(251, 113, 133, 0.12); border: 1px solid rgba(251, 113, 133, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 3px;" title="Offensive Line: Grade ${a.gradeP4} (PFF Unit Rank #${a.olRank} · ${a.olTier})">OL:${a.gradeP4}</span>
+                                  <span style="color: #a3e635; background: rgba(163, 230, 53, 0.12); border: 1px solid rgba(163, 230, 53, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 3px;" title="Playoff SoS (Weeks 15-17): Grade ${a.gradeP6} (${a.playoffPts} pts · ${a.playoffSos})">SoS:${a.gradeP6}</span>
                                 </div>
                               </div>
                             </div>
@@ -179,31 +174,19 @@ export function renderPreDraftView() {
   };
 
   const renderPillarLegend = (titlePrefix = 'Offense') => `
-    <div class="glass-card pillar-legend-bar" style="padding: 0.45rem 0.85rem; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.72rem;">
-      <div style="font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0;">
-        <span>⚡ 7-Pillar Evaluation Grades (A+ to F):</span>
+    <div class="glass-card pillar-legend-bar" style="padding: 0.45rem 0.85rem; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.74rem;">
+      <div style="font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
+        <span>⚡ 3 Key Context Grades (Not Reflected in ADP):</span>
       </div>
-      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.65rem; flex: 1; justify-content: flex-end;">
-        <span style="color: #38bdf8; display: inline-flex; align-items: center; gap: 0.25rem;" title="Volume is the strongest predictor of fantasy success. Evaluates Opportunity Share, Target Share, and Red Zone touches.">
-          <strong style="background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.35); padding: 0 4px; border-radius: 3px;">1</strong> Volume & Opp (Carries/Tgts/RZ)
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; flex: 1; justify-content: flex-end;">
+        <span style="color: #facc15; display: inline-flex; align-items: center; gap: 0.3rem;" title="Team scoring potential & neutral game script: High-scoring Vegas totals (24+ PPG) yield 40% more red-zone and touchdown opportunities.">
+          <strong style="background: rgba(250, 204, 21, 0.18); border: 1px solid rgba(250, 204, 21, 0.35); padding: 1px 5px; border-radius: 3px; font-weight: 800;">Env</strong> Offensive Environment (Vegas PPG & Pass%)
         </span>
-        <span style="color: #34d399; display: inline-flex; align-items: center; gap: 0.25rem;" title="Measures per-snap dominance over raw totals: YPRR (WR/TE), Explosive Run % (RB), YPA (QB), and Proj PPG.">
-          <strong style="background: rgba(52, 211, 153, 0.18); border: 1px solid rgba(52, 211, 153, 0.35); padding: 0 4px; border-radius: 3px;">2</strong> Efficiency (YPRR/Expl/YPA)
+        <span style="color: #fb7185; display: inline-flex; align-items: center; gap: 0.3rem;" title="Trench push and pocket time: Run-blocking push before contact for RBs, pass-block clean pocket rate for QBs/WRs (PFF Rank 1-32).">
+          <strong style="background: rgba(251, 113, 133, 0.18); border: 1px solid rgba(251, 113, 133, 0.35); padding: 1px 5px; border-radius: 3px; font-weight: 800;">OL</strong> Offensive Line Unit (Rank 1-32)
         </span>
-        <span style="color: #facc15; display: inline-flex; align-items: center; gap: 0.25rem;" title="Position-adjusted Vegas implied totals and neutral game scripts: High pass rates for WR/QB; positive game scripts for RBs.">
-          <strong style="background: rgba(250, 204, 21, 0.18); border: 1px solid rgba(250, 204, 21, 0.35); padding: 0 4px; border-radius: 3px;">3</strong> Environment (Vegas Totals/Pass%)
-        </span>
-        <span style="color: #fb7185; display: inline-flex; align-items: center; gap: 0.25rem;" title="Position-adjusted line play: Run-block push for RBs, pass-block pocket stability for QBs/WRs.">
-          <strong style="background: rgba(251, 113, 133, 0.18); border: 1px solid rgba(251, 113, 133, 0.35); padding: 0 4px; border-radius: 3px;">4</strong> Offensive Line Unit
-        </span>
-        <span style="color: #c084fc; display: inline-flex; align-items: center; gap: 0.25rem;" title="Position-adjusted coaching pace and scheme: 11 spread tempo for WR/QB, outside-zone for RBs, multi-TE for TEs.">
-          <strong style="background: rgba(192, 132, 252, 0.18); border: 1px solid rgba(192, 132, 252, 0.35); padding: 0 4px; border-radius: 3px;">5</strong> Coaching Pace & Scheme
-        </span>
-        <span style="color: #a3e635; display: inline-flex; align-items: center; gap: 0.25rem;" title="Fantasy playoff schedule difficulty and combined Weeks 15-17 projected points.">
-          <strong style="background: rgba(163, 230, 53, 0.18); border: 1px solid rgba(163, 230, 53, 0.35); padding: 0 4px; border-radius: 3px;">6</strong> Playoff SoS (W15-17 Pts)
-        </span>
-        <span style="color: #fb923c; display: inline-flex; align-items: center; gap: 0.25rem;" title="Last year historical fantasy points per game baseline to eliminate one-year fluke bias.">
-          <strong style="background: rgba(251, 146, 60, 0.18); border: 1px solid rgba(251, 146, 60, 0.35); padding: 0 4px; border-radius: 3px;">7</strong> Last Year PPG Baseline
+        <span style="color: #a3e635; display: inline-flex; align-items: center; gap: 0.3rem;" title="Championship equity: Strength of schedule and combined projected points specifically across fantasy playoffs (Weeks 15-17).">
+          <strong style="background: rgba(163, 230, 53, 0.18); border: 1px solid rgba(163, 230, 53, 0.35); padding: 1px 5px; border-radius: 3px; font-weight: 800;">SoS</strong> Playoff SoS (Weeks 15-17 Pts)
         </span>
       </div>
     </div>
