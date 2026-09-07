@@ -612,10 +612,17 @@ const server = http.createServer(async (req, res) => {
       lastBridgeHeartbeat = {
         platform: body.platform || 'yahoo',
         leagueId: body.leagueId || null,
+        userSlot: body.userSlot || null,
         url: body.url || '',
         timestamp: Date.now()
       };
-      return sendJson(res, { success: true, connected: true });
+      if (body.userSlot && body.leagueId) {
+        const session = draftSessions.find(s => s.leagueId === String(body.leagueId) || s.id.includes(String(body.leagueId)));
+        if (session && session.league) {
+          session.league.userSlot = parseInt(body.userSlot, 10);
+        }
+      }
+      return sendJson(res, { success: true, connected: true, userSlot: body.userSlot || null });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }

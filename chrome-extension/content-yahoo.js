@@ -7,10 +7,13 @@
 
   const leagueMatch = window.location.href.match(/\/f1\/(\d+)/);
   const leagueId = leagueMatch ? leagueMatch[1] : null;
+  const slotMatch = window.location.href.match(/\/draftclient\/f1\/\d+\/(\d+)/);
+  const userSlot = slotMatch ? parseInt(slotMatch[1], 10) : null;
   const isDraftClient = window.location.href.includes('draftclient') || window.location.href.includes('draft');
 
   function createStatusPill() {
     if (pillEl) return;
+    if (!document.body) return;
     pillEl = document.createElement('div');
     pillEl.id = 'draft-bridge-pill';
     pillEl.style.cssText = `
@@ -35,7 +38,7 @@
       pointer-events: auto;
     `;
     const label = isDraftClient
-      ? `🟣 Cameron Bridge: Yahoo Draft Sync Active${leagueId ? ` (#${leagueId})` : ''}`
+      ? `🟣 Cameron Bridge: Yahoo Draft Sync Active${leagueId ? ` (#${leagueId})` : ''}${userSlot ? ` • Slot #${userSlot}` : ''}`
       : `🟣 Cameron Bridge: Yahoo League #${leagueId || '1548819'} Linked`;
     pillEl.innerHTML = `
       <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399;"></span>
@@ -156,19 +159,22 @@
 
   // Heartbeat to notify Live War Room that Yahoo tab is open and linked
   function sendHeartbeat() {
-    chrome.runtime.sendMessage({
-      type: 'HEARTBEAT',
-      payload: {
-        platform: 'yahoo',
-        leagueId: leagueId || '1548819',
-        url: window.location.href,
-        isDraftClient
-      }
-    }, () => {});
+    try {
+      chrome.runtime.sendMessage({
+        type: 'HEARTBEAT',
+        payload: {
+          platform: 'yahoo',
+          leagueId: leagueId || '1548819',
+          userSlot: userSlot || null,
+          url: window.location.href,
+          isDraftClient
+        }
+      }, () => {});
+    } catch (e) {}
   }
 
   sendHeartbeat();
-  setInterval(sendHeartbeat, 4000);
+  setInterval(sendHeartbeat, 3000);
 
   // Initial scan and regular periodic poll every 2s
   scanDraftTable();

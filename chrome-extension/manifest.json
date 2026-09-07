@@ -34,6 +34,7 @@
         "https://football.fantasysports.yahoo.com/*",
         "https://*.sports.yahoo.com/*"
       ],
+      "all_frames": true,
       "js": ["content-yahoo.js"],
       "run_at": "document_idle"
     },

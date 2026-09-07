@@ -43,61 +43,80 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function handleHeartbeat(payload) {
   const config = await new Promise(resolve => chrome.storage.local.get(DEFAULT_CONFIG, resolve));
-  const endpoint = `${config.serverUrl.replace(/\/+$/, '')}/api/draft/heartbeat`;
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    return await res.json();
-  } catch (e) {
-    return { success: false, error: e.message };
+  const targets = new Set([
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    (config.serverUrl || '').replace(/\/+$/, ''),
+    'https://fantasy-football-suite.onrender.com'
+  ].filter(Boolean));
+
+  let lastRes = { success: false };
+  for (const base of targets) {
+    try {
+      const res = await fetch(`${base}/api/draft/heartbeat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        lastRes = await res.json();
+      }
+    } catch (e) {}
   }
+  return lastRes;
 }
 
 async function handleDraftPick(pickData) {
   const config = await new Promise(resolve => chrome.storage.local.get(DEFAULT_CONFIG, resolve));
-  if (!config.autoSync) {
+  if (config.autoSync === false) {
     return { success: false, error: 'Auto-sync is disabled in extension settings' };
   }
 
-  const endpoint = `${config.serverUrl.replace(/\/+$/, '')}/api/draft/sync-pick`;
   const payload = {
     ...pickData,
-    sessionId: pickData.sessionId || config.targetSessionId,
-    passCode: config.passCode
+    sessionId: pickData.sessionId || config.targetSessionId || 'yahoo-1',
+    passCode: config.passCode || 'fantasy2025'
   };
 
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-App-Password': config.passCode
-      },
-      body: JSON.stringify(payload)
-    });
+  const targets = new Set([
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    (config.serverUrl || '').replace(/\/+$/, ''),
+    'https://fantasy-football-suite.onrender.com'
+  ].filter(Boolean));
 
-    const data = await res.json();
-    
-    // Log to storage history
+  let lastRes = { success: false };
+  for (const base of targets) {
+    try {
+      const res = await fetch(`${base}/api/draft/sync-pick`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-App-Password': config.passCode || 'fantasy2025'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        lastRes = await res.json();
+      }
+    } catch (e) {}
+  }
+
+  // Log to storage history
+  try {
     const historyRes = await new Promise(resolve => chrome.storage.local.get({ recentPicks: [] }, resolve));
     const recent = historyRes.recentPicks || [];
     recent.unshift({
       timestamp: new Date().toLocaleTimeString(),
-      pickNum: data.pickNum || pickData.pickNum,
+      pickNum: lastRes.pickNum || pickData.pickNum,
       playerName: pickData.playerName,
       platform: pickData.platform,
       sessionId: payload.sessionId,
-      status: data.success ? 'synced' : 'error'
+      status: lastRes.success ? 'synced' : 'error'
     });
     if (recent.length > 25) recent.pop();
     await chrome.storage.local.set({ recentPicks: recent, lastSyncTime: Date.now() });
+  } catch (e) {}
 
-    return data;
-  } catch (err) {
-    console.error('[DraftBridge] Fetch sync failed:', err);
-    return { success: false, error: err.message };
-  }
+  return lastRes;
 }
