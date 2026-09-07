@@ -144,7 +144,8 @@ async function initDb() {
     const sessionCheck = await db.execute('SELECT COUNT(*) as count FROM draft_sessions');
     if (sessionCheck.rows && sessionCheck.rows[0].count === 0) {
       const defaultSessions = [
-        { id: 'yahoo-1', name: 'Yahoo: League 1', platform: 'yahoo', teams_count: 12, user_slot: 1 },
+        { id: 'yahoo-1', name: 'Yahoo: League 1 (1548819)', platform: 'yahoo', league_id: '1548819', teams_count: 12, user_slot: 1 },
+        { id: 'yahoo-1275807', name: 'Yahoo: League 2 (1275807)', platform: 'yahoo', league_id: '1275807', teams_count: 12, user_slot: 1 },
         { id: 'espn-2', name: 'ESPN: League 2', platform: 'espn', teams_count: 10, user_slot: 4 },
         { id: 'sleeper-3', name: 'Sleeper: League 3', platform: 'sleeper', teams_count: 12, user_slot: 2 },
         { id: 'mock', name: 'Manual / Mock', platform: 'manual', teams_count: 12, user_slot: 1 }
@@ -152,8 +153,8 @@ async function initDb() {
       const now = new Date().toISOString();
       for (const s of defaultSessions) {
         await db.execute({
-          sql: 'INSERT INTO draft_sessions (id, name, platform, teams_count, user_slot, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          args: [s.id, s.name, s.platform, s.teams_count, s.user_slot, now, now]
+          sql: 'INSERT INTO draft_sessions (id, name, platform, league_id, teams_count, user_slot, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          args: [s.id, s.name, s.platform, s.league_id || null, s.teams_count, s.user_slot, now, now]
         });
       }
     }
