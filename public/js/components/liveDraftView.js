@@ -652,7 +652,7 @@ function openExtensionHelpModal(currentSession) {
 
   const state = store.getState();
   const linkedId = currentSession?.leagueId || (currentSession?.id?.includes('1548819') ? '1548819' : '1548819');
-  const draftRoomUrl = `https://football.fantasysports.yahoo.com/f1/${linkedId}/draftclient`;
+  const draftRoomUrl = `https://football.fantasysports.yahoo.com/f1/${linkedId}`;
 
   const modal = document.createElement('div');
   modal.id = 'modal-ext-help';
@@ -695,7 +695,7 @@ function openExtensionHelpModal(currentSession) {
               </div>
             </div>
             <a href="${draftRoomUrl}" target="_blank" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-              Open Yahoo Draft Room ↗
+              Open Yahoo League Page ↗
             </a>
           </div>
         </div>
