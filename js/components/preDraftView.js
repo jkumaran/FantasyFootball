@@ -50,6 +50,13 @@ export function renderPreDraftView() {
     return true;
   });
 
+  // Sort players in their consensus ECR ranking order (intermixed across positions when ALL is selected)
+  filteredPlayers.sort((a, b) => {
+    const rankA = a.ecr !== undefined ? a.ecr : (a.customRank !== undefined ? a.customRank : 999);
+    const rankB = b.ecr !== undefined ? b.ecr : (b.customRank !== undefined ? b.customRank : 999);
+    return rankA - rankB;
+  });
+
   const renderPosColumn = (pos) => {
     const posPlayers = players.filter(p => p.pos === pos);
 
