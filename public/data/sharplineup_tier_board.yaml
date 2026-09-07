@@ -4,138 +4,170 @@
 # Source: SharpLineup 2026 Season Rankings (Live Market Data & Props)
 # URL: https://sharplineup.com/rankings?scoring=half_ppr
 # Format: Half-PPR Snake Draft (12 Teams: 2RB / 2WR / 1TE / 1QB / 1FLEX / 1K / 1DST)
-# Exported: 2026-09-05T14:00:00.000Z
+# Exported: 2026-09-07T00:00:00.000Z
 # Column Order: RB -> WR -> TE -> QB -> DST -> K
 # Legend: [ ] = Available, [X] = Drafted
 # ------------------------------------------------------------------------------------------------------------------------
 # VISUAL TIER BOARD MATRIX (Vertical Spacing & Alignment by Pixel Offsets)
 # ------------------------------------------------------------------------------------------------------------------------
-# RB (T1 Gap:0px)          | WR (T1 Gap:45px)         | TE (T1 Gap:160px)        | QB (T1 Gap:140px)        | DST (T1 Gap:450px)       | K (T1 Gap:400px)        
+# RB (T1 Gap:0px)          | WR (T1 Gap:218px)        | TE (T1 Gap:845px)        | QB (T1 Gap:794px)        | DST (T1 Gap:0px)         | K (T1 Gap:0px)          
 # -------------------------+--------------------------+--------------------------+--------------------------+--------------------------+-------------------------
-# === TIER 1 ===           |                          |                          |                          |                          |                         
-# [ ] J. Gibbs (DET)       |                          |                          |                          |                          |                         
-# [ ] B. Robinson (ATL)    | === TIER 1 ===           |                          |                          |                          |                         
-#                          | [ ] J. Chase (CIN)       |                          |                          |                          |                         
-#                          | [ ] P. Nacua (LAR)       |                          |                          |                          |                         
-# === TIER 2 ===           | [ ] J. Smith-Njigba (SE… |                          | === TIER 1 ===           |                          |                         
-# [ ] C. McCaffrey (SF)    | [ ] A. St. Brown (DET)   | === TIER 1 ===           | [ ] J. Allen (BUF)       |                          |                         
-#                          |                          | [ ] T. McBride (ARI)     |                          |                          |                         
-#                          |                          | [ ] B. Bowers (LV)       |                          |                          |                         
-# === TIER 3 ===           | === TIER 2 ===           |                          | === TIER 2 ===           |                          |                         
-# [ ] J. Taylor (IND)      | [ ] C. Lamb (DAL)        |                          | [ ] D. Maye (NE)         |                          |                         
-# [ ] J. Cook (BUF)        | [ ] J. Jefferson (MIN)   |                          | [ ] J. Hurts (PHI)       |                          |                         
-# [ ] D. Henry (BAL)       | [ ] D. London (ATL)      |                          | [ ] T. Lawrence (JAX)    |                          |                         
-# [ ] A. Jeanty (LV)       | [ ] A. Brown (NE)        |                          | [ ] L. Jackson (BAL)     |                          |                         
-# [ ] S. Barkley (PHI)     | [ ] N. Collins (HOU)     |                          | [ ] J. Burrow (CIN)      |                          | === TIER 1 ===          
-# [ ] D. Achane (MIA)      | [ ] R. Rice (KC)         |                          | [ ] P. Mahomes (KC)      |                          | [ ] K. Fairbairn (HOU)  
-# [ ] C. Brown (CIN)       | [ ] G. Pickens (DAL)     |                          | [ ] B. Purdy (SF)        | === TIER 1 ===           | [ ] B. Aubrey (DAL)     
-# [ ] O. Hampton (LAC)     | [ ] C. Olave (NO)        |                          | [ ] J. Daniels (WAS)     | [ ] L. Angeles Rams (LA… | [ ] J. Myers (SEA)      
-#                          |                          |                          |                          | [ ] D. Lions (DET)       | [ ] C. Dicker (LAC)     
-#                          |                          |                          |                          | [ ] S. Seahawks (SEA)    | [ ] T. Loop (BAL)       
-# === TIER 4 ===           | === TIER 3 ===           | === TIER 2 ===           | === TIER 3 ===           | [ ] B. Bills (BUF)       | [ ] L. Havrisik (GB)    
-# [ ] K. Williams (LAR)    | [ ] M. Nabers (NYG)      | [ ] C. Loveland (CHI)    | [ ] C. Williams (CHI)    | [ ] B. Ravens (BAL)      | [ ] G. Plascencia (CHI) 
-# [ ] K. Walker III (KC)   | [ ] D. Smith (PHI)       | [ ] T. Warren (IND)      | [ ] J. Herbert (LAC)     | [ ] P. Eagles (PHI)      | [ ] J. Elliott (PHI)    
-# [ ] B. Hall (NYJ)        | [ ] Z. Flowers (BAL)     | [ ] K. Pitts (ATL)       | [ ] B. Nix (DEN)         | [ ] H. Texans (HOU)      |                         
-# [ ] J. Williams (DAL)    | [ ] G. Wilson (NYJ)      | [ ] G. Kittle (SF)       | [ ] D. Prescott (DAL)    | [ ] K. City Chiefs (KC)  |                         
-# [ ] J. Love (ARI)        | [ ] T. McMillan (CAR)    | [ ] H. Fannin Jr. (CLE)  | [ ] J. Dart (NYG)        |                          | === TIER 2 ===          
-# [ ] T. Etienne (NO)      | [ ] T. Higgins (CIN)     | [ ] T. Kelce (KC)        | [ ] B. Mayfield (TB)     |                          | [ ] W. Reichard (MIN)   
-# [ ] R. Harvey (DEN)      | [ ] E. Egbuka (TB)       | [ ] T. Kraft (GB)        | [ ] J. Goff (DET)        | === TIER 2 ===           | [ ] H. Butker (KC)      
-# [ ] B. Irving (TB)       | [ ] J. Waddle (DEN)      | [ ] S. LaPorta (DET)     | [ ] M. Stafford (LAR)    | [ ] L. Angeles Chargers… | [ ] B. Potter (TB)      
-#                          |                          |                          |                          | [ ] D. Broncos (DEN)     | [ ] H. Mevis (LAR)      
-#                          |                          |                          |                          | [ ] N. England Patriots… | [ ] L. Marjan (PIT)     
-# === TIER 5 ===           | === TIER 4 ===           |                          | === TIER 4 ===           | [ ] S. Francisco 49ers … | [ ] C. Little (JAX)     
-# [ ] D. Montgomery (HOU)  | [ ] D. Moore (BUF)       |                          | [ ] T. Shough (NO)       | [ ] D. Cowboys (DAL)     | [ ] M. Shipley (NO)     
-# [ ] C. Skattebo (NYG)    | [ ] T. McLaurin (WAS)    |                          | [ ] K. Murray (MIN)      | [ ] J. Jaguars (JAX)     | [ ] T. Brown (NO)       
-# [ ] D. Swift (CHI)       | [ ] D. Adams (LAR)       |                          | [ ] J. Love (GB)         | [ ] G. Bay Packers (GB)  |                         
-# [ ] Q. Judkins (CLE)     | [ ] L. McConkey (LAC)    |                          | [ ] C. Stroud (HOU)      | [ ] C. Bears (CHI)       |                         
-# [ ] B. Tuten (JAX)       | [ ] J. Williams (DET)    |                          | [ ] M. Willis (MIA)      |                          | === TIER 3 ===          
-# [ ] J. Price (SEA)       | [ ] L. Burden III (CHI)  |                          | [ ] S. Darnold (SEA)     |                          | [ ] D. Carlson (NO)     
-# [ ] R. Stevenson (NE)    | [ ] A. Pierce (IND)      |                          | [ ] D. Jones (IND)       | === TIER 3 ===           | [ ] C. Santos (CHI)     
-# [ ] K. Gainwell (TB)     | [ ] M. Evans (SF)        |                          | [ ] B. Young (CAR)       | [ ] M. Vikings (MIN)     | [ ] C. Boswell (PIT)    
-#                          |                          |                          |                          | [ ] C. Bengals (CIN)     | [ ] C. McLaughlin (TB)  
-#                          |                          |                          |                          | [ ] T. Bay Buccaneers (… | [ ] J. Bates (DET)      
-# === TIER 6 ===           | === TIER 5 ===           | === TIER 3 ===           | === TIER 5 ===           | [ ] P. Steelers (PIT)    | [ ] N. Folk (ATL)       
-# [ ] T. Henderson (NE)    | [ ] D. Metcalf (PIT)     | [ ] D. Goedert (PHI)     | [ ] C. Ward (TEN)        | [ ] I. Colts (IND)       | [ ] E. McPherson (CIN)  
-# [ ] J. Warren (PIT)      | [ ] M. Harrison Jr. (AR… | [ ] M. Andrews (BAL)     | [ ] G. Smith (NYJ)       | [ ] N. Orleans Saints (… | [ ] S. Shrader (IND)    
-# [ ] C. Hubbard (CAR)     | [ ] R. Odunze (CHI)      | [ ] I. Likely (NYG)      | [ ] A. Rodgers (PIT)     | [ ] N. York Giants (NYG) |                         
-# [ ] R. Dowdle (PIT)      | [ ] C. Watson (GB)       | [ ] J. Ferguson (DAL)    |                          | [ ] C. Panthers (CAR)    |                         
-# [ ] T. Pollard (TEN)     | [ ] C. Sutton (DEN)      | [ ] J. Johnson (NO)      |                          |                          | === TIER 4 ===          
-# [ ] J. Brooks (CAR)      | [ ] P. Washington (JAX)  | [ ] D. Kincaid (BUF)     |                          |                          | [ ] A. Borregales (NE)  
-# [ ] K. Monangai (CHI)    | [ ] B. Thomas Jr. (JAX)  | [ ] H. Henry (NE)        |                          | === TIER 4 ===           | [ ] W. Lutz (DEN)       
-# [ ] A. Jones (MIN)       | [ ] C. Tate (TEN)        | [ ] T. Hockenson (MIN)   |                          | [ ] W. Commanders (WAS)  | [ ] K. Matsuzawa (LV)   
-#                          |                          |                          |                          | [ ] A. Falcons (ATL)     | [ ] E. Pineiro (SF)     
-#                          |                          |                          |                          | [ ] T. Titans (TEN)      | [ ] C. York (NYJ)       
-# === TIER 7 ===           | === TIER 6 ===           | === TIER 4 ===           |                          | [ ] L. Vegas Raiders (L… | [ ] T. Bass (BUF)       
-# [ ] M. Lloyd (GB)        | [ ] M. Pittman (PIT)     | [ ] D. Schultz (HOU)     |                          | [ ] C. Browns (CLE)      | [ ] C. Smyth (NO)       
-# [ ] R. White (WAS)       | [ ] S. Diggs (WAS)       | [ ] B. Strange (JAX)     |                          | [ ] N. York Jets (NYJ)   | [ ] B. Sauls (NYG)      
-# [ ] J. Dobbins (DEN)     | [ ] J. Reed (GB)         | [ ] K. Sadiq (NYJ)       |                          | [ ] M. Dolphins (MIA)    |                         
-# [ ] Z. Charbonnet (SEA)  | [ ] X. Worthy (KC)       | [ ] C. Parkinson (LAR)   |                          | [ ] A. Cardinals (ARI)   |                         
-# [ ] B. Corum (LAR)       | [ ] J. Downs (IND)       | [ ] C. Okonkwo (WAS)     |                          |                          | === TIER 5 ===          
-# [ ] W. Marks (HOU)       | [ ] Q. Johnston (LAC)    | [ ] P. Freiermuth (PIT)  |                          |                          | [ ] J. Moody (WAS)      
-# [ ] M. Washington (LV)   | [ ] C. Godwin Jr. (TB)   | [ ] O. Gadsden II (LAC)  |                          |                          | [ ] J. Sanders (NYJ)    
-# [ ] J. Croskey-Merritt … | [ ] J. Meyers (JAX)      | [ ] T. Ferguson (LAR)    |                          |                          | [ ] T. Smack (GB)       
-#                          |                          |                          |                          |                          | [ ] C. Ryland (ARI)     
+# === TIER 1 ===           |                          |                          |                          | === TIER 1 ===           | === TIER 1 ===          
+# [ ] J. Gibbs (DET)       |                          |                          |                          | [ ] L. Angeles Rams (LA… | [ ] K. Fairbairn (HOU)  
+# [ ] B. Robinson (ATL)    |                          |                          |                          | [ ] D. Lions (DET)       | [ ] B. Aubrey (DAL)     
+#                          |                          |                          |                          | [ ] S. Seahawks (SEA)    | [ ] J. Myers (SEA)      
+# === TIER 2 ===           |                          |                          |                          | [ ] B. Bills (BUF)       | [ ] C. Dicker (LAC)     
+# [ ] C. McCaffrey (SF)    | === TIER 1 ===           |                          |                          | [ ] B. Ravens (BAL)      | [ ] T. Loop (BAL)       
+#                          | [ ] J. Chase (CIN)       |                          |                          | [ ] P. Eagles (PHI)      | [ ] L. Havrisik (GB)    
+#                          | [ ] P. Nacua (LAR)       |                          |                          | [ ] H. Texans (HOU)      | [ ] G. Plascencia (CHI) 
+#                          | [ ] J. Smith-Njigba (SE… |                          |                          | [ ] K. City Chiefs (KC)  | [ ] J. Elliott (PHI)    
+#                          | [ ] A. St. Brown (DET)   |                          |                          |                          |                         
+#                          |                          |                          |                          | === TIER 2 ===           | === TIER 2 ===          
+# === TIER 3 ===           |                          |                          |                          | [ ] L. Angeles Chargers… | [ ] W. Reichard (MIN)   
+# [ ] J. Taylor (IND)      |                          |                          |                          | [ ] D. Broncos (DEN)     | [ ] H. Butker (KC)      
+# [ ] J. Cook (BUF)        |                          |                          |                          | [ ] N. England Patriots… | [ ] B. Potter (TB)      
+# [ ] D. Henry (BAL)       |                          |                          |                          | [ ] S. Francisco 49ers … | [ ] H. Mevis (LAR)      
+# [ ] A. Jeanty (LV)       |                          |                          |                          | [ ] D. Cowboys (DAL)     | [ ] L. Marjan (PIT)     
+# [ ] S. Barkley (PHI)     |                          |                          |                          | [ ] J. Jaguars (JAX)     | [ ] C. Little (JAX)     
+# [ ] D. Achane (MIA)      |                          |                          | === TIER 1 ===           | [ ] G. Bay Packers (GB)  | [ ] M. Shipley (NO)     
+# [ ] C. Brown (CIN)       | === TIER 2 ===           | === TIER 1 ===           | [ ] J. Allen (BUF)       | [ ] C. Bears (CHI)       | [ ] T. Brown (NO)       
+# [ ] O. Hampton (LAC)     | [ ] C. Lamb (DAL)        | [ ] T. McBride (ARI)     |                          |                          |                         
+#                          | [ ] J. Jefferson (MIN)   | [ ] B. Bowers (LV)       |                          | === TIER 3 ===           | === TIER 3 ===          
+#                          | [ ] D. London (ATL)      |                          |                          | [ ] M. Vikings (MIN)     | [ ] D. Carlson (NO)     
+#                          | [ ] A. Brown (NE)        |                          |                          | [ ] C. Bengals (CIN)     | [ ] C. Santos (CHI)     
+#                          | [ ] N. Collins (HOU)     |                          |                          | [ ] T. Bay Buccaneers (… | [ ] C. Boswell (PIT)    
+#                          | [ ] R. Rice (KC)         |                          |                          | [ ] P. Steelers (PIT)    | [ ] C. McLaughlin (TB)  
+#                          | [ ] G. Pickens (DAL)     |                          |                          | [ ] I. Colts (IND)       | [ ] J. Bates (DET)      
+#                          | [ ] C. Olave (NO)        |                          |                          | [ ] N. Orleans Saints (… | [ ] N. Folk (ATL)       
+#                          |                          |                          |                          | [ ] N. York Giants (NYG) | [ ] E. McPherson (CIN)  
+# === TIER 4 ===           |                          |                          |                          | [ ] C. Panthers (CAR)    | [ ] S. Shrader (IND)    
+# [ ] K. Williams (LAR)    |                          |                          |                          |                          |                         
+# [ ] K. Walker III (KC)   |                          |                          |                          | === TIER 4 ===           | === TIER 4 ===          
+# [ ] B. Hall (NYJ)        |                          |                          |                          | [ ] W. Commanders (WAS)  | [ ] A. Borregales (NE)  
+# [ ] J. Williams (DAL)    |                          | === TIER 2 ===           |                          | [ ] A. Falcons (ATL)     | [ ] W. Lutz (DEN)       
+# [ ] J. Love (ARI)        |                          | [ ] C. Loveland (CHI)    |                          | [ ] T. Titans (TEN)      | [ ] K. Matsuzawa (LV)   
+# [ ] T. Etienne (NO)      | === TIER 3 ===           | [ ] T. Warren (IND)      |                          | [ ] L. Vegas Raiders (L… | [ ] E. Pineiro (SF)     
+# [ ] R. Harvey (DEN)      | [ ] M. Nabers (NYG)      | [ ] K. Pitts (ATL)       |                          | [ ] C. Browns (CLE)      | [ ] C. York (NYJ)       
+# [ ] B. Irving (TB)       | [ ] D. Smith (PHI)       | [ ] G. Kittle (SF)       | === TIER 2 ===           | [ ] N. York Jets (NYJ)   | [ ] T. Bass (BUF)       
+#                          | [ ] Z. Flowers (BAL)     | [ ] H. Fannin Jr. (CLE)  | [ ] D. Maye (NE)         | [ ] M. Dolphins (MIA)    | [ ] C. Smyth (NO)       
+#                          | [ ] G. Wilson (NYJ)      | [ ] T. Kelce (KC)        | [ ] J. Hurts (PHI)       | [ ] A. Cardinals (ARI)   | [ ] B. Sauls (NYG)      
+#                          | [ ] T. McMillan (CAR)    | [ ] T. Kraft (GB)        | [ ] T. Lawrence (JAX)    |                          |                         
+#                          | [ ] T. Higgins (CIN)     | [ ] S. LaPorta (DET)     | [ ] L. Jackson (BAL)     |                          | === TIER 5 ===          
+#                          | [ ] E. Egbuka (TB)       |                          | [ ] J. Burrow (CIN)      |                          | [ ] J. Moody (WAS)      
+#                          | [ ] J. Waddle (DEN)      |                          | [ ] P. Mahomes (KC)      |                          | [ ] J. Sanders (NYJ)    
+#                          |                          |                          | [ ] B. Purdy (SF)        |                          | [ ] T. Smack (GB)       
+#                          |                          |                          | [ ] J. Daniels (WAS)     |                          | [ ] C. Ryland (ARI)     
 #                          |                          |                          |                          |                          | [ ] Z. Gonzalez (MIA)   
-# === TIER 8 ===           | === TIER 7 ===           | === TIER 5 ===           |                          |                          | [ ] D. Stevens (WAS)    
-# [ ] A. Kamara (NO)       | [ ] M. Wilson (ARI)      | [ ] Z. Ertz (FA)         |                          |                          | [ ] B. Grupe (IND)      
-# [ ] K. Hunt (KC)         | [ ] J. Addison (MIN)     | [ ] J. Joly (DEN)        |                          |                          | [ ] M. Gay (LV)         
-# [ ] K. Johnson (PIT)     | [ ] J. Tyson (NO)        | [ ] A. Barner (SEA)      |                          |                          |                         
-# [ ] T. Spears (TEN)      | [ ] D. Samuel Sr. (SF)   | [ ] E. Engram (DEN)      |                          |                          |                         
-# [ ] J. Mixon (FA)        | [ ] R. Doubs (NE)        | [ ] C. Otton (TB)        |                          |                          | === TIER 6 ===          
-# [ ] J. Mason (MIN)       | [ ] D. Stribling (SF)    | [ ] G. Dulcich (MIA)     |                          |                          | [ ] J. Slye (TEN)       
-# [ ] N. Singleton (TEN)   | [ ] W. Robinson (TEN)    | [ ] D. Njoku (LAC)       |                          |                          | [ ] R. Fitzgerald (CAR) 
-# [ ] I. Pacheco (DET)     | [ ] M. Lemon (PHI)       | [ ] M. Gesicki (CIN)     |                          |                          | [ ] A. Szmyt (CLE)      
-#                          |                          |                          |                          |                          | [ ] D. Zvada (NYG)      
-#                          |                          |                          |                          |                          | [ ] R. Patterson (MIA)  
-# === TIER 9 ===           | === TIER 8 ===           | === TIER 6 ===           |                          |                          |                         
-# [ ] N. Chubb (FA)        | [ ] K. Shakir (BUF)      | [ ] A. Okwuegbunam (LV)  |                          |                          |                         
-# [ ] C. Rodriguez Jr. (J… | [ ] K. Concepcion (CLE)  | [ ] G. Helm (TEN)        |                          |                          |                         
-# [ ] J. Hill (BAL)        | [ ] R. Bateman (BAL)     | [ ] M. Taylor (NYJ)      |                          |                          |                         
-# [ ] B. Knight (ARI)      | [ ] J. Coker (CAR)       | [ ] T. Hill (NO)         |                          |                          |                         
-# [ ] T. Allgeier (ARI)    | [ ] M. Golden (GB)       | [ ] D. Waller (MIA)      |                          |                          |                         
-# [ ] B. Robinson (ATL)    | [ ] T. Tucker (LV)       | [ ] S. Roush (CHI)       |                          |                          |                         
-# [ ] J. Coleman (DEN)     | [ ] R. Shaheed (SEA)     | [ ] T. Johnson (NYG)     |                          |                          |                         
-# [ ] F. Gore Jr. (BUF)    | [ ] J. McMillan (TB)     | [ ] M. Mayer (LV)        |                          |                          |                         
+# === TIER 5 ===           |                          |                          |                          |                          | [ ] D. Stevens (WAS)    
+# [ ] D. Montgomery (HOU)  |                          |                          |                          |                          | [ ] B. Grupe (IND)      
+# [ ] C. Skattebo (NYG)    |                          |                          |                          |                          | [ ] M. Gay (LV)         
+# [ ] D. Swift (CHI)       |                          |                          |                          |                          |                         
+# [ ] Q. Judkins (CLE)     | === TIER 4 ===           |                          |                          |                          | === TIER 6 ===          
+# [ ] B. Tuten (JAX)       | [ ] D. Moore (BUF)       |                          |                          |                          | [ ] J. Slye (TEN)       
+# [ ] J. Price (SEA)       | [ ] T. McLaurin (WAS)    |                          |                          |                          | [ ] R. Fitzgerald (CAR) 
+# [ ] R. Stevenson (NE)    | [ ] D. Adams (LAR)       |                          |                          |                          | [ ] A. Szmyt (CLE)      
+# [ ] K. Gainwell (TB)     | [ ] L. McConkey (LAC)    |                          |                          |                          | [ ] D. Zvada (NYG)      
+#                          | [ ] J. Williams (DET)    |                          |                          |                          | [ ] R. Patterson (MIA)  
+#                          | [ ] L. Burden III (CHI)  |                          |                          |                          |                         
+#                          | [ ] A. Pierce (IND)      |                          |                          |                          |                         
+#                          | [ ] M. Evans (SF)        |                          |                          |                          |                         
 #                          |                          |                          |                          |                          |                         
+# === TIER 6 ===           |                          |                          |                          |                          |                         
+# [ ] T. Henderson (NE)    | === TIER 5 ===           |                          |                          |                          |                         
+# [ ] J. Warren (PIT)      | [ ] D. Metcalf (PIT)     |                          |                          |                          |                         
+# [ ] C. Hubbard (CAR)     | [ ] M. Harrison Jr. (AR… | === TIER 3 ===           | === TIER 3 ===           |                          |                         
+# [ ] R. Dowdle (PIT)      | [ ] R. Odunze (CHI)      | [ ] D. Goedert (PHI)     | [ ] C. Williams (CHI)    |                          |                         
+# [ ] T. Pollard (TEN)     | [ ] C. Watson (GB)       | [ ] M. Andrews (BAL)     | [ ] J. Herbert (LAC)     |                          |                         
+# [ ] J. Brooks (CAR)      | [ ] C. Sutton (DEN)      | [ ] I. Likely (NYG)      | [ ] B. Nix (DEN)         |                          |                         
+# [ ] K. Monangai (CHI)    | [ ] P. Washington (JAX)  | [ ] J. Ferguson (DAL)    | [ ] D. Prescott (DAL)    |                          |                         
+# [ ] A. Jones (MIN)       | [ ] B. Thomas Jr. (JAX)  | [ ] J. Johnson (NO)      | [ ] J. Dart (NYG)        |                          |                         
+#                          | [ ] C. Tate (TEN)        | [ ] D. Kincaid (BUF)     | [ ] B. Mayfield (TB)     |                          |                         
+#                          |                          | [ ] H. Henry (NE)        | [ ] J. Goff (DET)        |                          |                         
+#                          | === TIER 6 ===           | [ ] T. Hockenson (MIN)   | [ ] M. Stafford (LAR)    |                          |                         
+#                          | [ ] M. Pittman (PIT)     |                          |                          |                          |                         
+#                          | [ ] S. Diggs (WAS)       | === TIER 4 ===           | === TIER 4 ===           |                          |                         
+#                          | [ ] J. Reed (GB)         | [ ] D. Schultz (HOU)     | [ ] T. Shough (NO)       |                          |                         
+#                          | [ ] X. Worthy (KC)       | [ ] B. Strange (JAX)     | [ ] K. Murray (MIN)      |                          |                         
+#                          | [ ] J. Downs (IND)       | [ ] K. Sadiq (NYJ)       | [ ] J. Love (GB)         |                          |                         
+#                          | [ ] Q. Johnston (LAC)    | [ ] C. Parkinson (LAR)   | [ ] C. Stroud (HOU)      |                          |                         
+#                          | [ ] C. Godwin Jr. (TB)   | [ ] C. Okonkwo (WAS)     | [ ] M. Willis (MIA)      |                          |                         
+#                          | [ ] J. Meyers (JAX)      | [ ] P. Freiermuth (PIT)  | [ ] S. Darnold (SEA)     |                          |                         
+#                          |                          | [ ] O. Gadsden II (LAC)  | [ ] D. Jones (IND)       |                          |                         
+#                          | === TIER 7 ===           | [ ] T. Ferguson (LAR)    | [ ] B. Young (CAR)       |                          |                         
+#                          | [ ] M. Wilson (ARI)      |                          |                          |                          |                         
+#                          | [ ] J. Addison (MIN)     |                          |                          |                          |                         
+#                          | [ ] J. Tyson (NO)        |                          |                          |                          |                         
+#                          | [ ] D. Samuel Sr. (SF)   |                          |                          |                          |                         
+#                          | [ ] R. Doubs (NE)        |                          |                          |                          |                         
+#                          | [ ] D. Stribling (SF)    |                          |                          |                          |                         
+#                          | [ ] W. Robinson (TEN)    |                          |                          |                          |                         
+#                          | [ ] M. Lemon (PHI)       |                          |                          |                          |                         
 #                          |                          |                          |                          |                          |                         
-# === TIER 10 ===          | === TIER 9 ===           | === TIER 7 ===           |                          |                          |                         
-# [ ] P. Ricard (NYG)      | [ ] D. Boston (CLE)      | [ ] D. Knox (BUF)        |                          |                          |                         
-# [ ] M. Carter (ARI)      | [ ] C. Ridley (TEN)      | [ ] D. Washington (PIT)  |                          |                          |                         
-# [ ] T. Tracy Jr. (NYG)   | [ ] D. Vele (NO)         | [ ] C. Kmet (CHI)        |                          |                          |                         
-# [ ] J. Williams (TB)     | [ ] J. Jeudy (CLE)       | [ ] T. Higbee (LAR)      |                          |                          |                         
-# [ ] T. Benson (ARI)      | [ ] K. Allen (IND)       |                          |                          |                          |                         
-# [ ] J. McLaughlin (DEN)  | [ ] A. Mitchell (NYJ)    |                          |                          |                          |                         
-#                          | [ ] X. Hutchinson (HOU)  |                          |                          |                          |                         
-#                          | [ ] J. Jennings (MIN)    |                          |                          |                          |                         
+# === TIER 7 ===           |                          |                          |                          |                          |                         
+# [ ] M. Lloyd (GB)        |                          |                          |                          |                          |                         
+# [ ] R. White (WAS)       |                          |                          |                          |                          |                         
+# [ ] J. Dobbins (DEN)     |                          |                          |                          |                          |                         
+# [ ] Z. Charbonnet (SEA)  | === TIER 8 ===           | === TIER 5 ===           |                          |                          |                         
+# [ ] B. Corum (LAR)       | [ ] K. Shakir (BUF)      | [ ] Z. Ertz (FA)         |                          |                          |                         
+# [ ] W. Marks (HOU)       | [ ] K. Concepcion (CLE)  | [ ] J. Joly (DEN)        |                          |                          |                         
+# [ ] M. Washington (LV)   | [ ] R. Bateman (BAL)     | [ ] A. Barner (SEA)      |                          |                          |                         
+# [ ] J. Croskey-Merritt … | [ ] J. Coker (CAR)       | [ ] E. Engram (DEN)      |                          |                          |                         
+#                          | [ ] M. Golden (GB)       | [ ] C. Otton (TB)        |                          |                          |                         
+#                          | [ ] T. Tucker (LV)       | [ ] G. Dulcich (MIA)     |                          |                          |                         
+#                          | [ ] R. Shaheed (SEA)     | [ ] D. Njoku (LAC)       |                          |                          |                         
+#                          | [ ] J. McMillan (TB)     | [ ] M. Gesicki (CIN)     |                          |                          |                         
 #                          |                          |                          |                          |                          |                         
+# === TIER 8 ===           |                          |                          |                          |                          |                         
+# [ ] A. Kamara (NO)       |                          |                          |                          |                          |                         
+# [ ] K. Hunt (KC)         |                          |                          |                          |                          |                         
+# [ ] K. Johnson (PIT)     |                          |                          |                          |                          |                         
+# [ ] T. Spears (TEN)      |                          |                          |                          |                          |                         
+# [ ] J. Mixon (FA)        |                          |                          |                          |                          |                         
+# [ ] J. Mason (MIN)       | === TIER 9 ===           | === TIER 6 ===           | === TIER 5 ===           |                          |                         
+# [ ] N. Singleton (TEN)   | [ ] D. Boston (CLE)      | [ ] A. Okwuegbunam (LV)  | [ ] C. Ward (TEN)        |                          |                         
+# [ ] I. Pacheco (DET)     | [ ] C. Ridley (TEN)      | [ ] G. Helm (TEN)        | [ ] G. Smith (NYJ)       |                          |                         
+#                          | [ ] D. Vele (NO)         | [ ] M. Taylor (NYJ)      | [ ] A. Rodgers (PIT)     |                          |                         
+#                          | [ ] J. Jeudy (CLE)       | [ ] T. Hill (NO)         |                          |                          |                         
+#                          | [ ] K. Allen (IND)       | [ ] D. Waller (MIA)      |                          |                          |                         
+#                          | [ ] A. Mitchell (NYJ)    | [ ] S. Roush (CHI)       |                          |                          |                         
+#                          | [ ] X. Hutchinson (HOU)  | [ ] T. Johnson (NYG)     |                          |                          |                         
+#                          | [ ] J. Jennings (MIN)    | [ ] M. Mayer (LV)        |                          |                          |                         
 #                          |                          |                          |                          |                          |                         
-#                          | === TIER 10 ===          |                          |                          |                          |                         
-#                          | [ ] K. Wetjen (PIT)      |                          |                          |                          |                         
-#                          | [ ] B. Means (NO)        |                          |                          |                          |                         
-#                          | [ ] D. Montgomery (IND)  |                          |                          |                          |                         
-#                          | [ ] O. Beckham Jr. (NYG) |                          |                          |                          |                         
+#                          | === TIER 10 ===          | === TIER 7 ===           |                          |                          |                         
+#                          | [ ] K. Wetjen (PIT)      | [ ] D. Knox (BUF)        |                          |                          |                         
+#                          | [ ] B. Means (NO)        | [ ] D. Washington (PIT)  |                          |                          |                         
+#                          | [ ] D. Montgomery (IND)  | [ ] C. Kmet (CHI)        |                          |                          |                         
+#                          | [ ] O. Beckham Jr. (NYG) | [ ] T. Higbee (LAR)      |                          |                          |                         
 #                          | [ ] D. Wicks (GB)        |                          |                          |                          |                         
 #                          | [ ] J. Lane (BAL)        |                          |                          |                          |                         
 #                          | [ ] J. Nailor (LV)       |                          |                          |                          |                         
 #                          | [ ] T. Franklin (DEN)    |                          |                          |                          |                         
 #                          |                          |                          |                          |                          |                         
-#                          |                          |                          |                          |                          |                         
-#                          | === TIER 11 ===          |                          |                          |                          |                         
-#                          | [ ] L. Wester (BAL)      |                          |                          |                          |                         
-#                          | [ ] C. Kupp (SEA)        |                          |                          |                          |                         
-#                          | [ ] R. Flournoy (DAL)    |                          |                          |                          |                         
-#                          | [ ] M. Washington (MIA)  |                          |                          |                          |                         
-#                          | [ ] O. Cooper (NYJ)      |                          |                          |                          |                         
-#                          | [ ] T. Hill (FA)         |                          |                          |                          |                         
+# === TIER 9 ===           |                          |                          |                          |                          |                         
+# [ ] N. Chubb (FA)        |                          |                          |                          |                          |                         
+# [ ] C. Rodriguez Jr. (J… | === TIER 11 ===          |                          |                          |                          |                         
+# [ ] J. Hill (BAL)        | [ ] L. Wester (BAL)      |                          |                          |                          |                         
+# [ ] B. Knight (ARI)      | [ ] C. Kupp (SEA)        |                          |                          |                          |                         
+# [ ] T. Allgeier (ARI)    | [ ] R. Flournoy (DAL)    |                          |                          |                          |                         
+# [ ] B. Robinson (ATL)    | [ ] M. Washington (MIA)  |                          |                          |                          |                         
+# [ ] J. Coleman (DEN)     | [ ] O. Cooper (NYJ)      |                          |                          |                          |                         
+# [ ] F. Gore Jr. (BUF)    | [ ] T. Hill (FA)         |                          |                          |                          |                         
 #                          | [ ] J. Noel (HOU)        |                          |                          |                          |                         
 #                          | [ ] D. Slayton (NYG)     |                          |                          |                          |                         
 #                          |                          |                          |                          |                          |                         
-# ======================================================================================================================== |                          |                          |                          |                          |                         
+# === TIER 10 ===          |                          |                          |                          |                          |                         
+# [ ] P. Ricard (NYG)      |                          |                          |                          |                          |                         
+# [ ] M. Carter (ARI)      |                          |                          |                          |                          |                         
+# [ ] T. Tracy Jr. (NYG)   |                          |                          |                          |                          |                         
+# [ ] J. Williams (TB)     |                          |                          |                          |                          |                         
+# [ ] T. Benson (ARI)      |                          |                          |                          |                          |                         
+# [ ] J. McLaughlin (DEN)  |                          |                          |                          |                          |                         
+# ========================================================================================================================
 
 metadata:
   version: "1.0"
-  exported_at: "2026-09-05T14:00:00.000Z"
   source: "https://sharplineup.com/rankings?scoring=half_ppr"
+  exported_at: "2026-09-07T00:00:00.000Z"
   scoring_format: "Half-PPR"
   draft_type: "Snake"
   teams_count: 12
@@ -159,53 +191,53 @@ metadata:
 vertical_tier_gaps_px:
   RB:
     tier_1: 0
-    tier_2: 28
-    tier_3: 28
-    tier_4: 28
-    tier_5: 28
-    tier_6: 28
-    tier_7: 28
-    tier_8: 28
-    tier_9: 28
-    tier_10: 28
+    tier_2: 30
+    tier_3: 220
+    tier_4: 373
+    tier_5: 425
+    tier_6: 220
+    tier_7: 1043
+    tier_8: 220
+    tier_9: 810
+    tier_10: 118
   WR:
-    tier_1: 45
-    tier_2: 28
-    tier_3: 28
-    tier_4: 28
-    tier_5: 28
-    tier_6: 28
-    tier_7: 28
-    tier_8: 28
-    tier_9: 28
-    tier_10: 28
-    tier_11: 28
+    tier_1: 218
+    tier_2: 373
+    tier_3: 322
+    tier_4: 323
+    tier_5: 67
+    tier_6: 30
+    tier_7: 30
+    tier_8: 220
+    tier_9: 322
+    tier_10: 30
+    tier_11: 118
   TE:
-    tier_1: 160
-    tier_2: 382
-    tier_3: 28
-    tier_4: 28
-    tier_5: 28
-    tier_6: 28
-    tier_7: 28
+    tier_1: 845
+    tier_2: 526
+    tier_3: 1052
+    tier_4: 30
+    tier_5: 606
+    tier_6: 322
+    tier_7: 30
   QB:
-    tier_1: 140
-    tier_2: 28
-    tier_3: 28
-    tier_4: 28
-    tier_5: 28
+    tier_1: 794
+    tier_2: 833
+    tier_3: 847
+    tier_4: 30
+    tier_5: 1386
   DST:
-    tier_1: 450
-    tier_2: 28
-    tier_3: 28
-    tier_4: 28
+    tier_1: 0
+    tier_2: 30
+    tier_3: 30
+    tier_4: 30
   K:
-    tier_1: 400
-    tier_2: 28
-    tier_3: 28
-    tier_4: 28
-    tier_5: 28
-    tier_6: 28
+    tier_1: 0
+    tier_2: 30
+    tier_3: 30
+    tier_4: 30
+    tier_5: 30
+    tier_6: 30
 
 positions:
   RB:
@@ -220,8 +252,6 @@ positions:
           drafted: false
           projected_pts: 297.5
           ecr: 1
-          value_rank: 1
-          vorp: 151.0
         - rank_in_tier: 2
           name: "Bijan Robinson"
           team: "ATL"
@@ -229,10 +259,8 @@ positions:
           drafted: false
           projected_pts: 281.7
           ecr: 2
-          value_rank: 2
-          vorp: 135.1
     tier_2:
-      offset_gap_px: 382
+      offset_gap_px: 30
       player_count: 1
       players:
         - rank_in_tier: 1
@@ -242,10 +270,8 @@ positions:
           drafted: false
           projected_pts: 261.9
           ecr: 3
-          value_rank: 3
-          vorp: 115.3
     tier_3:
-      offset_gap_px: 28
+      offset_gap_px: 220
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -255,8 +281,6 @@ positions:
           drafted: false
           projected_pts: 242.5
           ecr: 6
-          value_rank: 6
-          vorp: 96.0
         - rank_in_tier: 2
           name: "James Cook"
           team: "BUF"
@@ -264,8 +288,6 @@ positions:
           drafted: false
           projected_pts: 230.0
           ecr: 9
-          value_rank: 9
-          vorp: 83.5
         - rank_in_tier: 3
           name: "Derrick Henry"
           team: "BAL"
@@ -273,8 +295,6 @@ positions:
           drafted: false
           projected_pts: 227.7
           ecr: 10
-          value_rank: 10
-          vorp: 81.2
         - rank_in_tier: 4
           name: "Ashton Jeanty"
           team: "LV"
@@ -282,8 +302,6 @@ positions:
           drafted: false
           projected_pts: 226.2
           ecr: 11
-          value_rank: 11
-          vorp: 79.7
         - rank_in_tier: 5
           name: "Saquon Barkley"
           team: "PHI"
@@ -291,8 +309,6 @@ positions:
           drafted: false
           projected_pts: 225.9
           ecr: 12
-          value_rank: 12
-          vorp: 79.4
         - rank_in_tier: 6
           name: "De'Von Achane"
           team: "MIA"
@@ -300,8 +316,6 @@ positions:
           drafted: false
           projected_pts: 219.3
           ecr: 13
-          value_rank: 13
-          vorp: 72.8
         - rank_in_tier: 7
           name: "Chase Brown"
           team: "CIN"
@@ -309,8 +323,6 @@ positions:
           drafted: false
           projected_pts: 217.8
           ecr: 15
-          value_rank: 15
-          vorp: 71.3
         - rank_in_tier: 8
           name: "Omarion Hampton"
           team: "LAC"
@@ -318,10 +330,8 @@ positions:
           drafted: false
           projected_pts: 204.3
           ecr: 21
-          value_rank: 21
-          vorp: 57.8
     tier_4:
-      offset_gap_px: 28
+      offset_gap_px: 373
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -331,8 +341,6 @@ positions:
           drafted: false
           projected_pts: 201.8
           ecr: 22
-          value_rank: 22
-          vorp: 55.3
         - rank_in_tier: 2
           name: "Kenneth Walker III"
           team: "KC"
@@ -340,8 +348,6 @@ positions:
           drafted: false
           projected_pts: 197.3
           ecr: 24
-          value_rank: 24
-          vorp: 50.8
         - rank_in_tier: 3
           name: "Breece Hall"
           team: "NYJ"
@@ -349,8 +355,6 @@ positions:
           drafted: false
           projected_pts: 189.6
           ecr: 27
-          value_rank: 27
-          vorp: 43.1
         - rank_in_tier: 4
           name: "Javonte Williams"
           team: "DAL"
@@ -358,8 +362,6 @@ positions:
           drafted: false
           projected_pts: 189.4
           ecr: 28
-          value_rank: 28
-          vorp: 42.9
         - rank_in_tier: 5
           name: "Jeremiyah Love"
           team: "ARI"
@@ -367,8 +369,6 @@ positions:
           drafted: false
           projected_pts: 184.1
           ecr: 32
-          value_rank: 32
-          vorp: 37.6
         - rank_in_tier: 6
           name: "Travis Etienne"
           team: "NO"
@@ -376,8 +376,6 @@ positions:
           drafted: false
           projected_pts: 183.6
           ecr: 33
-          value_rank: 33
-          vorp: 37.1
         - rank_in_tier: 7
           name: "RJ Harvey"
           team: "DEN"
@@ -385,8 +383,6 @@ positions:
           drafted: false
           projected_pts: 178.0
           ecr: 38
-          value_rank: 38
-          vorp: 31.5
         - rank_in_tier: 8
           name: "Bucky Irving"
           team: "TB"
@@ -394,10 +390,8 @@ positions:
           drafted: false
           projected_pts: 177.9
           ecr: 39
-          value_rank: 39
-          vorp: 31.3
     tier_5:
-      offset_gap_px: 28
+      offset_gap_px: 425
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -407,8 +401,6 @@ positions:
           drafted: false
           projected_pts: 175.1
           ecr: 42
-          value_rank: 42
-          vorp: 28.5
         - rank_in_tier: 2
           name: "Cam Skattebo"
           team: "NYG"
@@ -416,8 +408,6 @@ positions:
           drafted: false
           projected_pts: 174.9
           ecr: 44
-          value_rank: 44
-          vorp: 28.4
         - rank_in_tier: 3
           name: "D'Andre Swift"
           team: "CHI"
@@ -425,8 +415,6 @@ positions:
           drafted: false
           projected_pts: 171.9
           ecr: 48
-          value_rank: 48
-          vorp: 25.4
         - rank_in_tier: 4
           name: "Quinshon Judkins"
           team: "CLE"
@@ -434,8 +422,6 @@ positions:
           drafted: false
           projected_pts: 169.0
           ecr: 52
-          value_rank: 52
-          vorp: 22.4
         - rank_in_tier: 5
           name: "Bhayshul Tuten"
           team: "JAX"
@@ -443,8 +429,6 @@ positions:
           drafted: false
           projected_pts: 159.9
           ecr: 64
-          value_rank: 64
-          vorp: 13.4
         - rank_in_tier: 6
           name: "Jadarian Price"
           team: "SEA"
@@ -452,8 +436,6 @@ positions:
           drafted: false
           projected_pts: 159.6
           ecr: 66
-          value_rank: 66
-          vorp: 13.0
         - rank_in_tier: 7
           name: "Rhamondre Stevenson"
           team: "NE"
@@ -461,8 +443,6 @@ positions:
           drafted: false
           projected_pts: 158.7
           ecr: 67
-          value_rank: 67
-          vorp: 12.2
         - rank_in_tier: 8
           name: "Kenny Gainwell"
           team: "TB"
@@ -470,10 +450,8 @@ positions:
           drafted: false
           projected_pts: 155.9
           ecr: 72
-          value_rank: 72
-          vorp: 9.4
     tier_6:
-      offset_gap_px: 28
+      offset_gap_px: 220
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -483,8 +461,6 @@ positions:
           drafted: false
           projected_pts: 155.4
           ecr: 73
-          value_rank: 73
-          vorp: 8.9
         - rank_in_tier: 2
           name: "Jaylen Warren"
           team: "PIT"
@@ -492,8 +468,6 @@ positions:
           drafted: false
           projected_pts: 152.8
           ecr: 78
-          value_rank: 78
-          vorp: 6.3
         - rank_in_tier: 3
           name: "Chuba Hubbard"
           team: "CAR"
@@ -501,8 +475,6 @@ positions:
           drafted: false
           projected_pts: 152.6
           ecr: 79
-          value_rank: 79
-          vorp: 6.1
         - rank_in_tier: 4
           name: "Rico Dowdle"
           team: "PIT"
@@ -510,8 +482,6 @@ positions:
           drafted: false
           projected_pts: 147.5
           ecr: 91
-          value_rank: 91
-          vorp: 1.0
         - rank_in_tier: 5
           name: "Tony Pollard"
           team: "TEN"
@@ -519,8 +489,6 @@ positions:
           drafted: false
           projected_pts: 146.8
           ecr: 92
-          value_rank: 92
-          vorp: 0.3
         - rank_in_tier: 6
           name: "Jonathon Brooks"
           team: "CAR"
@@ -528,8 +496,6 @@ positions:
           drafted: false
           projected_pts: 145.2
           ecr: 101
-          value_rank: 101
-          vorp: -1.3
         - rank_in_tier: 7
           name: "Kyle Monangai"
           team: "CHI"
@@ -537,8 +503,6 @@ positions:
           drafted: false
           projected_pts: 144.7
           ecr: 107
-          value_rank: 107
-          vorp: -1.8
         - rank_in_tier: 8
           name: "Aaron Jones"
           team: "MIN"
@@ -546,10 +510,8 @@ positions:
           drafted: false
           projected_pts: 132.2
           ecr: 155
-          value_rank: 155
-          vorp: -14.4
     tier_7:
-      offset_gap_px: 28
+      offset_gap_px: 1043
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -559,8 +521,6 @@ positions:
           drafted: false
           projected_pts: 127.4
           ecr: 172
-          value_rank: 172
-          vorp: -19.1
         - rank_in_tier: 2
           name: "Rachaad White"
           team: "WAS"
@@ -568,8 +528,6 @@ positions:
           drafted: false
           projected_pts: 125.2
           ecr: 180
-          value_rank: 180
-          vorp: -21.3
         - rank_in_tier: 3
           name: "J.K. Dobbins"
           team: "DEN"
@@ -577,8 +535,6 @@ positions:
           drafted: false
           projected_pts: 124.9
           ecr: 181
-          value_rank: 181
-          vorp: -21.6
         - rank_in_tier: 4
           name: "Zach Charbonnet"
           team: "SEA"
@@ -586,8 +542,6 @@ positions:
           drafted: false
           projected_pts: 122.4
           ecr: 188
-          value_rank: 188
-          vorp: -24.1
         - rank_in_tier: 5
           name: "Blake Corum"
           team: "LAR"
@@ -595,8 +549,6 @@ positions:
           drafted: false
           projected_pts: 120.9
           ecr: 199
-          value_rank: 199
-          vorp: -25.6
         - rank_in_tier: 6
           name: "Woody Marks"
           team: "HOU"
@@ -604,8 +556,6 @@ positions:
           drafted: false
           projected_pts: 119.1
           ecr: 202
-          value_rank: 202
-          vorp: -27.4
         - rank_in_tier: 7
           name: "Mike Washington"
           team: "LV"
@@ -613,8 +563,6 @@ positions:
           drafted: false
           projected_pts: 118.1
           ecr: 208
-          value_rank: 208
-          vorp: -28.4
         - rank_in_tier: 8
           name: "Jacory Croskey-Merritt"
           team: "WAS"
@@ -622,10 +570,8 @@ positions:
           drafted: false
           projected_pts: 112.0
           ecr: 224
-          value_rank: 224
-          vorp: -34.5
     tier_8:
-      offset_gap_px: 28
+      offset_gap_px: 220
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -635,8 +581,6 @@ positions:
           drafted: false
           projected_pts: 111.2
           ecr: 225
-          value_rank: 225
-          vorp: -35.3
         - rank_in_tier: 2
           name: "Kareem Hunt"
           team: "KC"
@@ -644,8 +588,6 @@ positions:
           drafted: false
           projected_pts: 110.7
           ecr: 226
-          value_rank: 226
-          vorp: -35.8
         - rank_in_tier: 3
           name: "Kaleb Johnson"
           team: "PIT"
@@ -653,8 +595,6 @@ positions:
           drafted: false
           projected_pts: 6.1
           ecr: 229
-          value_rank: 229
-          vorp: -37.5
         - rank_in_tier: 4
           name: "Tyjae Spears"
           team: "TEN"
@@ -662,8 +602,6 @@ positions:
           drafted: false
           projected_pts: 108.1
           ecr: 233
-          value_rank: 233
-          vorp: -38.4
         - rank_in_tier: 5
           name: "Joe Mixon"
           team: "FA"
@@ -671,8 +609,6 @@ positions:
           drafted: false
           projected_pts: 108.1
           ecr: 234
-          value_rank: 234
-          vorp: -38.4
         - rank_in_tier: 6
           name: "Jordan Mason"
           team: "MIN"
@@ -680,8 +616,6 @@ positions:
           drafted: false
           projected_pts: 106.3
           ecr: 238
-          value_rank: 238
-          vorp: -40.3
         - rank_in_tier: 7
           name: "Nicholas Singleton"
           team: "TEN"
@@ -689,8 +623,6 @@ positions:
           drafted: false
           projected_pts: 13.7
           ecr: 263
-          value_rank: 263
-          vorp: -52.3
         - rank_in_tier: 8
           name: "Isiah Pacheco"
           team: "DET"
@@ -698,10 +630,8 @@ positions:
           drafted: false
           projected_pts: 92.6
           ecr: 268
-          value_rank: 268
-          vorp: -54.0
     tier_9:
-      offset_gap_px: 28
+      offset_gap_px: 810
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -711,8 +641,6 @@ positions:
           drafted: false
           projected_pts: 90.1
           ecr: 273
-          value_rank: 273
-          vorp: -56.4
         - rank_in_tier: 2
           name: "Chris Rodriguez Jr."
           team: "JAX"
@@ -720,8 +648,6 @@ positions:
           drafted: false
           projected_pts: 89.6
           ecr: 274
-          value_rank: 274
-          vorp: -56.9
         - rank_in_tier: 3
           name: "Justice Hill"
           team: "BAL"
@@ -729,8 +655,6 @@ positions:
           drafted: false
           projected_pts: 87.8
           ecr: 278
-          value_rank: 278
-          vorp: -58.7
         - rank_in_tier: 4
           name: "Bam Knight"
           team: "ARI"
@@ -738,8 +662,6 @@ positions:
           drafted: false
           projected_pts: 87.1
           ecr: 280
-          value_rank: 280
-          vorp: -59.4
         - rank_in_tier: 5
           name: "Tyler Allgeier"
           team: "ARI"
@@ -747,8 +669,6 @@ positions:
           drafted: false
           projected_pts: 86.3
           ecr: 281
-          value_rank: 281
-          vorp: -60.2
         - rank_in_tier: 6
           name: "Brian Robinson"
           team: "ATL"
@@ -756,8 +676,6 @@ positions:
           drafted: false
           projected_pts: 85.6
           ecr: 282
-          value_rank: 282
-          vorp: -60.9
         - rank_in_tier: 7
           name: "Jonah Coleman"
           team: "DEN"
@@ -765,8 +683,6 @@ positions:
           drafted: false
           projected_pts: 85.0
           ecr: 284
-          value_rank: 284
-          vorp: -61.5
         - rank_in_tier: 8
           name: "Frank Gore Jr."
           team: "BUF"
@@ -774,10 +690,8 @@ positions:
           drafted: false
           projected_pts: 82.5
           ecr: 285
-          value_rank: 285
-          vorp: -61.5
     tier_10:
-      offset_gap_px: 28
+      offset_gap_px: 118
       player_count: 6
       players:
         - rank_in_tier: 1
@@ -787,8 +701,6 @@ positions:
           drafted: false
           projected_pts: 4.5
           ecr: 292
-          value_rank: 292
-          vorp: -64.0
         - rank_in_tier: 2
           name: "Michael Carter"
           team: "ARI"
@@ -796,8 +708,6 @@ positions:
           drafted: false
           projected_pts: 82.5
           ecr: 293
-          value_rank: 293
-          vorp: -64.0
         - rank_in_tier: 3
           name: "Tyrone Tracy Jr."
           team: "NYG"
@@ -805,8 +715,6 @@ positions:
           drafted: false
           projected_pts: 81.8
           ecr: 294
-          value_rank: 294
-          vorp: -64.7
         - rank_in_tier: 4
           name: "Josh Williams"
           team: "TB"
@@ -814,8 +722,6 @@ positions:
           drafted: false
           projected_pts: 82.5
           ecr: 295
-          value_rank: 295
-          vorp: -64.7
         - rank_in_tier: 5
           name: "Trey Benson"
           team: "ARI"
@@ -823,8 +729,6 @@ positions:
           drafted: false
           projected_pts: 80.0
           ecr: 298
-          value_rank: 298
-          vorp: -66.5
         - rank_in_tier: 6
           name: "Jaleel McLaughlin"
           team: "DEN"
@@ -832,11 +736,9 @@ positions:
           drafted: false
           projected_pts: 79.9
           ecr: 299
-          value_rank: 299
-          vorp: -66.7
   WR:
     tier_1:
-      offset_gap_px: 45
+      offset_gap_px: 218
       player_count: 4
       players:
         - rank_in_tier: 1
@@ -846,8 +748,6 @@ positions:
           drafted: false
           projected_pts: 249.5
           ecr: 4
-          value_rank: 4
-          vorp: 104.0
         - rank_in_tier: 2
           name: "Puka Nacua"
           team: "LAR"
@@ -855,8 +755,6 @@ positions:
           drafted: false
           projected_pts: 248.2
           ecr: 5
-          value_rank: 5
-          vorp: 102.6
         - rank_in_tier: 3
           name: "Jaxon Smith-Njigba"
           team: "SEA"
@@ -864,8 +762,6 @@ positions:
           drafted: false
           projected_pts: 237.1
           ecr: 7
-          value_rank: 7
-          vorp: 91.6
         - rank_in_tier: 4
           name: "Amon-Ra St. Brown"
           team: "DET"
@@ -873,10 +769,8 @@ positions:
           drafted: false
           projected_pts: 236.3
           ecr: 8
-          value_rank: 8
-          vorp: 90.8
     tier_2:
-      offset_gap_px: 28
+      offset_gap_px: 373
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -886,8 +780,6 @@ positions:
           drafted: false
           projected_pts: 212.7
           ecr: 18
-          value_rank: 18
-          vorp: 67.2
         - rank_in_tier: 2
           name: "Justin Jefferson"
           team: "MIN"
@@ -895,8 +787,6 @@ positions:
           drafted: false
           projected_pts: 209.7
           ecr: 19
-          value_rank: 19
-          vorp: 64.2
         - rank_in_tier: 3
           name: "Drake London"
           team: "ATL"
@@ -904,8 +794,6 @@ positions:
           drafted: false
           projected_pts: 206.2
           ecr: 20
-          value_rank: 20
-          vorp: 60.7
         - rank_in_tier: 4
           name: "A.J. Brown"
           team: "NE"
@@ -913,8 +801,6 @@ positions:
           drafted: false
           projected_pts: 198.2
           ecr: 23
-          value_rank: 23
-          vorp: 52.6
         - rank_in_tier: 5
           name: "Nico Collins"
           team: "HOU"
@@ -922,8 +808,6 @@ positions:
           drafted: false
           projected_pts: 193.9
           ecr: 25
-          value_rank: 25
-          vorp: 48.3
         - rank_in_tier: 6
           name: "Rashee Rice"
           team: "KC"
@@ -931,8 +815,6 @@ positions:
           drafted: false
           projected_pts: 190.4
           ecr: 26
-          value_rank: 26
-          vorp: 44.9
         - rank_in_tier: 7
           name: "George Pickens"
           team: "DAL"
@@ -940,8 +822,6 @@ positions:
           drafted: false
           projected_pts: 186.8
           ecr: 29
-          value_rank: 29
-          vorp: 41.2
         - rank_in_tier: 8
           name: "Chris Olave"
           team: "NO"
@@ -949,10 +829,8 @@ positions:
           drafted: false
           projected_pts: 184.6
           ecr: 30
-          value_rank: 30
-          vorp: 39.1
     tier_3:
-      offset_gap_px: 28
+      offset_gap_px: 322
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -962,8 +840,6 @@ positions:
           drafted: false
           projected_pts: 180.8
           ecr: 34
-          value_rank: 34
-          vorp: 35.3
         - rank_in_tier: 2
           name: "DeVonta Smith"
           team: "PHI"
@@ -971,8 +847,6 @@ positions:
           drafted: false
           projected_pts: 180.0
           ecr: 35
-          value_rank: 35
-          vorp: 34.5
         - rank_in_tier: 3
           name: "Zay Flowers"
           team: "BAL"
@@ -980,8 +854,6 @@ positions:
           drafted: false
           projected_pts: 178.4
           ecr: 37
-          value_rank: 37
-          vorp: 32.8
         - rank_in_tier: 4
           name: "Garrett Wilson"
           team: "NYJ"
@@ -989,8 +861,6 @@ positions:
           drafted: false
           projected_pts: 175.2
           ecr: 41
-          value_rank: 41
-          vorp: 29.7
         - rank_in_tier: 5
           name: "Tetairoa McMillan"
           team: "CAR"
@@ -998,8 +868,6 @@ positions:
           drafted: false
           projected_pts: 174.1
           ecr: 43
-          value_rank: 43
-          vorp: 28.5
         - rank_in_tier: 6
           name: "Tee Higgins"
           team: "CIN"
@@ -1007,8 +875,6 @@ positions:
           drafted: false
           projected_pts: 173.2
           ecr: 45
-          value_rank: 45
-          vorp: 27.7
         - rank_in_tier: 7
           name: "Emeka Egbuka"
           team: "TB"
@@ -1016,8 +882,6 @@ positions:
           drafted: false
           projected_pts: 171.1
           ecr: 47
-          value_rank: 47
-          vorp: 25.6
         - rank_in_tier: 8
           name: "Jaylen Waddle"
           team: "DEN"
@@ -1025,10 +889,8 @@ positions:
           drafted: false
           projected_pts: 166.3
           ecr: 54
-          value_rank: 54
-          vorp: 20.8
     tier_4:
-      offset_gap_px: 28
+      offset_gap_px: 323
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1038,8 +900,6 @@ positions:
           drafted: false
           projected_pts: 165.3
           ecr: 55
-          value_rank: 55
-          vorp: 19.8
         - rank_in_tier: 2
           name: "Terry McLaurin"
           team: "WAS"
@@ -1047,8 +907,6 @@ positions:
           drafted: false
           projected_pts: 164.8
           ecr: 57
-          value_rank: 57
-          vorp: 19.3
         - rank_in_tier: 3
           name: "Davante Adams"
           team: "LAR"
@@ -1056,8 +914,6 @@ positions:
           drafted: false
           projected_pts: 164.5
           ecr: 58
-          value_rank: 58
-          vorp: 19.0
         - rank_in_tier: 4
           name: "Ladd McConkey"
           team: "LAC"
@@ -1065,8 +921,6 @@ positions:
           drafted: false
           projected_pts: 164.0
           ecr: 60
-          value_rank: 60
-          vorp: 18.5
         - rank_in_tier: 5
           name: "Jameson Williams"
           team: "DET"
@@ -1074,8 +928,6 @@ positions:
           drafted: false
           projected_pts: 159.7
           ecr: 63
-          value_rank: 63
-          vorp: 14.2
         - rank_in_tier: 6
           name: "Luther Burden III"
           team: "CHI"
@@ -1083,8 +935,6 @@ positions:
           drafted: false
           projected_pts: 156.1
           ecr: 71
-          value_rank: 71
-          vorp: 10.6
         - rank_in_tier: 7
           name: "Alec Pierce"
           team: "IND"
@@ -1092,8 +942,6 @@ positions:
           drafted: false
           projected_pts: 153.9
           ecr: 74
-          value_rank: 74
-          vorp: 8.4
         - rank_in_tier: 8
           name: "Mike Evans"
           team: "SF"
@@ -1101,10 +949,8 @@ positions:
           drafted: false
           projected_pts: 153.3
           ecr: 75
-          value_rank: 75
-          vorp: 7.8
     tier_5:
-      offset_gap_px: 28
+      offset_gap_px: 67
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1114,8 +960,6 @@ positions:
           drafted: false
           projected_pts: 152.0
           ecr: 77
-          value_rank: 77
-          vorp: 6.4
         - rank_in_tier: 2
           name: "Marvin Harrison Jr."
           team: "ARI"
@@ -1123,8 +967,6 @@ positions:
           drafted: false
           projected_pts: 149.3
           ecr: 85
-          value_rank: 85
-          vorp: 3.8
         - rank_in_tier: 3
           name: "Rome Odunze"
           team: "CHI"
@@ -1132,8 +974,6 @@ positions:
           drafted: false
           projected_pts: 147.5
           ecr: 90
-          value_rank: 90
-          vorp: 2.0
         - rank_in_tier: 4
           name: "Christian Watson"
           team: "GB"
@@ -1141,8 +981,6 @@ positions:
           drafted: false
           projected_pts: 145.2
           ecr: 97
-          value_rank: 97
-          vorp: -0.3
         - rank_in_tier: 5
           name: "Courtland Sutton"
           team: "DEN"
@@ -1150,8 +988,6 @@ positions:
           drafted: false
           projected_pts: 143.9
           ecr: 104
-          value_rank: 104
-          vorp: -1.7
         - rank_in_tier: 6
           name: "Parker Washington"
           team: "JAX"
@@ -1159,8 +995,6 @@ positions:
           drafted: false
           projected_pts: 143.2
           ecr: 111
-          value_rank: 111
-          vorp: -2.3
         - rank_in_tier: 7
           name: "Brian Thomas Jr."
           team: "JAX"
@@ -1168,8 +1002,6 @@ positions:
           drafted: false
           projected_pts: 139.3
           ecr: 126
-          value_rank: 126
-          vorp: -6.3
         - rank_in_tier: 8
           name: "Carnell Tate"
           team: "TEN"
@@ -1177,10 +1009,8 @@ positions:
           drafted: false
           projected_pts: 138.4
           ecr: 128
-          value_rank: 128
-          vorp: -7.1
     tier_6:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1190,8 +1020,6 @@ positions:
           drafted: false
           projected_pts: 136.6
           ecr: 132
-          value_rank: 132
-          vorp: -8.9
         - rank_in_tier: 2
           name: "Stefon Diggs"
           team: "WAS"
@@ -1199,8 +1027,6 @@ positions:
           drafted: false
           projected_pts: 134.3
           ecr: 138
-          value_rank: 138
-          vorp: -11.2
         - rank_in_tier: 3
           name: "Jayden Reed"
           team: "GB"
@@ -1208,8 +1034,6 @@ positions:
           drafted: false
           projected_pts: 134.3
           ecr: 139
-          value_rank: 139
-          vorp: -11.2
         - rank_in_tier: 4
           name: "Xavier Worthy"
           team: "KC"
@@ -1217,8 +1041,6 @@ positions:
           drafted: false
           projected_pts: 134.1
           ecr: 140
-          value_rank: 140
-          vorp: -11.4
         - rank_in_tier: 5
           name: "Josh Downs"
           team: "IND"
@@ -1226,8 +1048,6 @@ positions:
           drafted: false
           projected_pts: 133.3
           ecr: 143
-          value_rank: 143
-          vorp: -12.2
         - rank_in_tier: 6
           name: "Quentin Johnston"
           team: "LAC"
@@ -1235,8 +1055,6 @@ positions:
           drafted: false
           projected_pts: 132.7
           ecr: 148
-          value_rank: 148
-          vorp: -12.9
         - rank_in_tier: 7
           name: "Chris Godwin Jr."
           team: "TB"
@@ -1244,8 +1062,6 @@ positions:
           drafted: false
           projected_pts: 132.2
           ecr: 151
-          value_rank: 151
-          vorp: -13.4
         - rank_in_tier: 8
           name: "Jakobi Meyers"
           team: "JAX"
@@ -1253,10 +1069,8 @@ positions:
           drafted: false
           projected_pts: 130.8
           ecr: 157
-          value_rank: 157
-          vorp: -14.7
     tier_7:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1266,8 +1080,6 @@ positions:
           drafted: false
           projected_pts: 129.2
           ecr: 161
-          value_rank: 161
-          vorp: -16.3
         - rank_in_tier: 2
           name: "Jordan Addison"
           team: "MIN"
@@ -1275,8 +1087,6 @@ positions:
           drafted: false
           projected_pts: 128.9
           ecr: 162
-          value_rank: 162
-          vorp: -16.7
         - rank_in_tier: 3
           name: "Jordyn Tyson"
           team: "NO"
@@ -1284,8 +1094,6 @@ positions:
           drafted: false
           projected_pts: 128.2
           ecr: 165
-          value_rank: 165
-          vorp: -17.3
         - rank_in_tier: 4
           name: "Deebo Samuel Sr."
           team: "SF"
@@ -1293,8 +1101,6 @@ positions:
           drafted: false
           projected_pts: 125.7
           ecr: 175
-          value_rank: 175
-          vorp: -19.8
         - rank_in_tier: 5
           name: "Romeo Doubs"
           team: "NE"
@@ -1302,8 +1108,6 @@ positions:
           drafted: false
           projected_pts: 125.7
           ecr: 176
-          value_rank: 176
-          vorp: -19.8
         - rank_in_tier: 6
           name: "De'Zhaun Stribling"
           team: "SF"
@@ -1311,8 +1115,6 @@ positions:
           drafted: false
           projected_pts: 125.1
           ecr: 177
-          value_rank: 177
-          vorp: -20.5
         - rank_in_tier: 7
           name: "Wan'Dale Robinson"
           team: "TEN"
@@ -1320,8 +1122,6 @@ positions:
           drafted: false
           projected_pts: 124.9
           ecr: 178
-          value_rank: 178
-          vorp: -20.6
         - rank_in_tier: 8
           name: "Makai Lemon"
           team: "PHI"
@@ -1329,10 +1129,8 @@ positions:
           drafted: false
           projected_pts: 124.6
           ecr: 179
-          value_rank: 179
-          vorp: -21.0
     tier_8:
-      offset_gap_px: 28
+      offset_gap_px: 220
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1342,8 +1140,6 @@ positions:
           drafted: false
           projected_pts: 120.3
           ecr: 197
-          value_rank: 197
-          vorp: -25.2
         - rank_in_tier: 2
           name: "K.C. Concepcion"
           team: "CLE"
@@ -1351,8 +1147,6 @@ positions:
           drafted: false
           projected_pts: 119.3
           ecr: 200
-          value_rank: 200
-          vorp: -26.2
         - rank_in_tier: 3
           name: "Rashod Bateman"
           team: "BAL"
@@ -1360,8 +1154,6 @@ positions:
           drafted: false
           projected_pts: 117.5
           ecr: 206
-          value_rank: 206
-          vorp: -28.1
         - rank_in_tier: 4
           name: "Jalen Coker"
           team: "CAR"
@@ -1369,8 +1161,6 @@ positions:
           drafted: false
           projected_pts: 116.2
           ecr: 213
-          value_rank: 213
-          vorp: -29.4
         - rank_in_tier: 5
           name: "Matthew Golden"
           team: "GB"
@@ -1378,8 +1168,6 @@ positions:
           drafted: false
           projected_pts: 114.3
           ecr: 217
-          value_rank: 217
-          vorp: -31.2
         - rank_in_tier: 6
           name: "Tre Tucker"
           team: "LV"
@@ -1387,8 +1175,6 @@ positions:
           drafted: false
           projected_pts: 108.6
           ecr: 227
-          value_rank: 227
-          vorp: -37.0
         - rank_in_tier: 7
           name: "Rashid Shaheed"
           team: "SEA"
@@ -1396,8 +1182,6 @@ positions:
           drafted: false
           projected_pts: 107.9
           ecr: 231
-          value_rank: 231
-          vorp: -37.6
         - rank_in_tier: 8
           name: "Jalen McMillan"
           team: "TB"
@@ -1405,10 +1189,8 @@ positions:
           drafted: false
           projected_pts: 105.4
           ecr: 237
-          value_rank: 237
-          vorp: -40.1
     tier_9:
-      offset_gap_px: 28
+      offset_gap_px: 322
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1418,8 +1200,6 @@ positions:
           drafted: false
           projected_pts: 103.6
           ecr: 241
-          value_rank: 241
-          vorp: -41.9
         - rank_in_tier: 2
           name: "Calvin Ridley"
           team: "TEN"
@@ -1427,8 +1207,6 @@ positions:
           drafted: false
           projected_pts: 98.8
           ecr: 249
-          value_rank: 249
-          vorp: -46.7
         - rank_in_tier: 3
           name: "Devaughn Vele"
           team: "NO"
@@ -1436,8 +1214,6 @@ positions:
           drafted: false
           projected_pts: 98.3
           ecr: 251
-          value_rank: 251
-          vorp: -47.2
         - rank_in_tier: 4
           name: "Jerry Jeudy"
           team: "CLE"
@@ -1445,8 +1221,6 @@ positions:
           drafted: false
           projected_pts: 98.2
           ecr: 252
-          value_rank: 252
-          vorp: -47.4
         - rank_in_tier: 5
           name: "Keenan Allen"
           team: "IND"
@@ -1454,8 +1228,6 @@ positions:
           drafted: false
           projected_pts: 96.4
           ecr: 254
-          value_rank: 254
-          vorp: -49.2
         - rank_in_tier: 6
           name: "Adonai Mitchell"
           team: "NYJ"
@@ -1463,8 +1235,6 @@ positions:
           drafted: false
           projected_pts: 94.4
           ecr: 259
-          value_rank: 259
-          vorp: -51.1
         - rank_in_tier: 7
           name: "Xavier Hutchinson"
           team: "HOU"
@@ -1472,8 +1242,6 @@ positions:
           drafted: false
           projected_pts: 94.4
           ecr: 261
-          value_rank: 261
-          vorp: -51.1
         - rank_in_tier: 8
           name: "Jauan Jennings"
           team: "MIN"
@@ -1481,10 +1249,8 @@ positions:
           drafted: false
           projected_pts: 93.7
           ecr: 262
-          value_rank: 262
-          vorp: -51.8
     tier_10:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1494,8 +1260,6 @@ positions:
           drafted: false
           projected_pts: 0.7
           ecr: 264
-          value_rank: 264
-          vorp: -53.1
         - rank_in_tier: 2
           name: "Bub Means"
           team: "NO"
@@ -1503,8 +1267,6 @@ positions:
           drafted: false
           projected_pts: 92.1
           ecr: 265
-          value_rank: 265
-          vorp: -53.5
         - rank_in_tier: 3
           name: "D.J. Montgomery"
           team: "IND"
@@ -1512,8 +1274,6 @@ positions:
           drafted: false
           projected_pts: 91.9
           ecr: 267
-          value_rank: 267
-          vorp: -53.6
         - rank_in_tier: 4
           name: "Odell Beckham Jr."
           team: "NYG"
@@ -1521,8 +1281,6 @@ positions:
           drafted: false
           projected_pts: 9.2
           ecr: 269
-          value_rank: 269
-          vorp: -54.3
         - rank_in_tier: 5
           name: "Dontayvion Wicks"
           team: "GB"
@@ -1530,8 +1288,6 @@ positions:
           drafted: false
           projected_pts: 90.8
           ecr: 270
-          value_rank: 270
-          vorp: -54.8
         - rank_in_tier: 6
           name: "Ja'Kobi Lane"
           team: "BAL"
@@ -1539,8 +1295,6 @@ positions:
           drafted: false
           projected_pts: 90.6
           ecr: 271
-          value_rank: 271
-          vorp: -54.9
         - rank_in_tier: 7
           name: "Jalen Nailor"
           team: "LV"
@@ -1548,8 +1302,6 @@ positions:
           drafted: false
           projected_pts: 89.1
           ecr: 272
-          value_rank: 272
-          vorp: -56.4
         - rank_in_tier: 8
           name: "Troy Franklin"
           team: "DEN"
@@ -1557,10 +1309,8 @@ positions:
           drafted: false
           projected_pts: 88.6
           ecr: 275
-          value_rank: 275
-          vorp: -56.9
     tier_11:
-      offset_gap_px: 28
+      offset_gap_px: 118
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1570,8 +1320,6 @@ positions:
           drafted: false
           projected_pts: 82.5
           ecr: 277
-          value_rank: 277
-          vorp: -58.4
         - rank_in_tier: 2
           name: "Cooper Kupp"
           team: "SEA"
@@ -1579,8 +1327,6 @@ positions:
           drafted: false
           projected_pts: 86.5
           ecr: 279
-          value_rank: 279
-          vorp: -59.1
         - rank_in_tier: 3
           name: "Ryan Flournoy"
           team: "DAL"
@@ -1588,8 +1334,6 @@ positions:
           drafted: false
           projected_pts: 82.7
           ecr: 288
-          value_rank: 288
-          vorp: -62.9
         - rank_in_tier: 4
           name: "Malik Washington"
           team: "MIA"
@@ -1597,8 +1341,6 @@ positions:
           drafted: false
           projected_pts: 82.3
           ecr: 289
-          value_rank: 289
-          vorp: -63.2
         - rank_in_tier: 5
           name: "Omar Cooper"
           team: "NYJ"
@@ -1606,8 +1348,6 @@ positions:
           drafted: false
           projected_pts: 81.7
           ecr: 290
-          value_rank: 290
-          vorp: -63.9
         - rank_in_tier: 6
           name: "Tyreek Hill"
           team: "FA"
@@ -1615,8 +1355,6 @@ positions:
           drafted: false
           projected_pts: 81.7
           ecr: 291
-          value_rank: 291
-          vorp: -63.9
         - rank_in_tier: 7
           name: "Jaylin Noel"
           team: "HOU"
@@ -1624,8 +1362,6 @@ positions:
           drafted: false
           projected_pts: 80.0
           ecr: 296
-          value_rank: 296
-          vorp: -65.5
         - rank_in_tier: 8
           name: "Darius Slayton"
           team: "NYG"
@@ -1633,11 +1369,9 @@ positions:
           drafted: false
           projected_pts: 78.9
           ecr: 300
-          value_rank: 300
-          vorp: -66.7
   TE:
     tier_1:
-      offset_gap_px: 160
+      offset_gap_px: 845
       player_count: 2
       players:
         - rank_in_tier: 1
@@ -1647,8 +1381,6 @@ positions:
           drafted: false
           projected_pts: 186.6
           ecr: 16
-          value_rank: 16
-          vorp: 70.6
         - rank_in_tier: 2
           name: "Brock Bowers"
           team: "LV"
@@ -1656,10 +1388,8 @@ positions:
           drafted: false
           projected_pts: 184.6
           ecr: 17
-          value_rank: 17
-          vorp: 68.6
     tier_2:
-      offset_gap_px: 382
+      offset_gap_px: 526
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1669,8 +1399,6 @@ positions:
           drafted: false
           projected_pts: 154.3
           ecr: 31
-          value_rank: 31
-          vorp: 38.3
         - rank_in_tier: 2
           name: "Tyler Warren"
           team: "IND"
@@ -1678,8 +1406,6 @@ positions:
           drafted: false
           projected_pts: 148.8
           ecr: 36
-          value_rank: 36
-          vorp: 32.8
         - rank_in_tier: 3
           name: "Kyle Pitts"
           team: "ATL"
@@ -1687,8 +1413,6 @@ positions:
           drafted: false
           projected_pts: 141.2
           ecr: 49
-          value_rank: 49
-          vorp: 25.2
         - rank_in_tier: 4
           name: "George Kittle"
           team: "SF"
@@ -1696,8 +1420,6 @@ positions:
           drafted: false
           projected_pts: 137.1
           ecr: 53
-          value_rank: 53
-          vorp: 21.1
         - rank_in_tier: 5
           name: "Harold Fannin Jr."
           team: "CLE"
@@ -1705,8 +1427,6 @@ positions:
           drafted: false
           projected_pts: 135.8
           ecr: 56
-          value_rank: 56
-          vorp: 19.8
         - rank_in_tier: 6
           name: "Travis Kelce"
           team: "KC"
@@ -1714,8 +1434,6 @@ positions:
           drafted: false
           projected_pts: 129.4
           ecr: 65
-          value_rank: 65
-          vorp: 13.4
         - rank_in_tier: 7
           name: "Tucker Kraft"
           team: "GB"
@@ -1723,8 +1441,6 @@ positions:
           drafted: false
           projected_pts: 128.0
           ecr: 69
-          value_rank: 69
-          vorp: 12.0
         - rank_in_tier: 8
           name: "Sam LaPorta"
           team: "DET"
@@ -1732,10 +1448,8 @@ positions:
           drafted: false
           projected_pts: 126.7
           ecr: 70
-          value_rank: 70
-          vorp: 10.7
     tier_3:
-      offset_gap_px: 28
+      offset_gap_px: 1052
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1745,8 +1459,6 @@ positions:
           drafted: false
           projected_pts: 122.1
           ecr: 80
-          value_rank: 80
-          vorp: 6.1
         - rank_in_tier: 2
           name: "Mark Andrews"
           team: "BAL"
@@ -1754,8 +1466,6 @@ positions:
           drafted: false
           projected_pts: 120.6
           ecr: 83
-          value_rank: 83
-          vorp: 4.6
         - rank_in_tier: 3
           name: "Isaiah Likely"
           team: "NYG"
@@ -1763,8 +1473,6 @@ positions:
           drafted: false
           projected_pts: 119.6
           ecr: 86
-          value_rank: 86
-          vorp: 3.6
         - rank_in_tier: 4
           name: "Jake Ferguson"
           team: "DAL"
@@ -1772,8 +1480,6 @@ positions:
           drafted: false
           projected_pts: 115.2
           ecr: 100
-          value_rank: 100
-          vorp: -0.8
         - rank_in_tier: 5
           name: "Juwan Johnson"
           team: "NO"
@@ -1781,8 +1487,6 @@ positions:
           drafted: false
           projected_pts: 113.4
           ecr: 115
-          value_rank: 115
-          vorp: -2.6
         - rank_in_tier: 6
           name: "Dalton Kincaid"
           team: "BUF"
@@ -1790,8 +1494,6 @@ positions:
           drafted: false
           projected_pts: 110.2
           ecr: 124
-          value_rank: 124
-          vorp: -5.8
         - rank_in_tier: 7
           name: "Hunter Henry"
           team: "NE"
@@ -1799,8 +1501,6 @@ positions:
           drafted: false
           projected_pts: 108.4
           ecr: 129
-          value_rank: 129
-          vorp: -7.6
         - rank_in_tier: 8
           name: "T.J. Hockenson"
           team: "MIN"
@@ -1808,10 +1508,8 @@ positions:
           drafted: false
           projected_pts: 102.3
           ecr: 152
-          value_rank: 152
-          vorp: -13.7
     tier_4:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1821,8 +1519,6 @@ positions:
           drafted: false
           projected_pts: 101.8
           ecr: 154
-          value_rank: 154
-          vorp: -14.2
         - rank_in_tier: 2
           name: "Brenton Strange"
           team: "JAX"
@@ -1830,8 +1526,6 @@ positions:
           drafted: false
           projected_pts: 101.0
           ecr: 159
-          value_rank: 159
-          vorp: -15.0
         - rank_in_tier: 3
           name: "Kenyon Sadiq"
           team: "NYJ"
@@ -1839,8 +1533,6 @@ positions:
           drafted: false
           projected_pts: 96.7
           ecr: 174
-          value_rank: 174
-          vorp: -19.3
         - rank_in_tier: 4
           name: "Colby Parkinson"
           team: "LAR"
@@ -1848,8 +1540,6 @@ positions:
           drafted: false
           projected_pts: 93.9
           ecr: 182
-          value_rank: 182
-          vorp: -22.1
         - rank_in_tier: 5
           name: "Chig Okonkwo"
           team: "WAS"
@@ -1857,8 +1547,6 @@ positions:
           drafted: false
           projected_pts: 93.4
           ecr: 184
-          value_rank: 184
-          vorp: -22.6
         - rank_in_tier: 6
           name: "Pat Freiermuth"
           team: "PIT"
@@ -1866,8 +1554,6 @@ positions:
           drafted: false
           projected_pts: 92.2
           ecr: 186
-          value_rank: 186
-          vorp: -23.8
         - rank_in_tier: 7
           name: "Oronde Gadsden II"
           team: "LAC"
@@ -1875,8 +1561,6 @@ positions:
           drafted: false
           projected_pts: 91.7
           ecr: 189
-          value_rank: 189
-          vorp: -24.3
         - rank_in_tier: 8
           name: "Terrance Ferguson"
           team: "LAR"
@@ -1884,10 +1568,8 @@ positions:
           drafted: false
           projected_pts: 91.4
           ecr: 193
-          value_rank: 193
-          vorp: -24.6
     tier_5:
-      offset_gap_px: 28
+      offset_gap_px: 606
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1897,8 +1579,6 @@ positions:
           drafted: false
           projected_pts: 91.1
           ecr: 195
-          value_rank: 195
-          vorp: -24.9
         - rank_in_tier: 2
           name: "Justin Joly"
           team: "DEN"
@@ -1906,8 +1586,6 @@ positions:
           drafted: false
           projected_pts: 82.5
           ecr: 198
-          value_rank: 198
-          vorp: -25.4
         - rank_in_tier: 3
           name: "AJ Barner"
           team: "SEA"
@@ -1915,8 +1593,6 @@ positions:
           drafted: false
           projected_pts: 88.1
           ecr: 204
-          value_rank: 204
-          vorp: -27.9
         - rank_in_tier: 4
           name: "Evan Engram"
           team: "DEN"
@@ -1924,8 +1600,6 @@ positions:
           drafted: false
           projected_pts: 88.1
           ecr: 205
-          value_rank: 205
-          vorp: -27.9
         - rank_in_tier: 5
           name: "Cade Otton"
           team: "TB"
@@ -1933,8 +1607,6 @@ positions:
           drafted: false
           projected_pts: 87.9
           ecr: 207
-          value_rank: 207
-          vorp: -28.1
         - rank_in_tier: 6
           name: "Greg Dulcich"
           team: "MIA"
@@ -1942,8 +1614,6 @@ positions:
           drafted: false
           projected_pts: 87.5
           ecr: 209
-          value_rank: 209
-          vorp: -28.5
         - rank_in_tier: 7
           name: "David Njoku"
           team: "LAC"
@@ -1951,8 +1621,6 @@ positions:
           drafted: false
           projected_pts: 87.5
           ecr: 210
-          value_rank: 210
-          vorp: -28.5
         - rank_in_tier: 8
           name: "Mike Gesicki"
           team: "CIN"
@@ -1960,10 +1628,8 @@ positions:
           drafted: false
           projected_pts: 85.6
           ecr: 216
-          value_rank: 216
-          vorp: -30.4
     tier_6:
-      offset_gap_px: 28
+      offset_gap_px: 322
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -1973,8 +1639,6 @@ positions:
           drafted: false
           projected_pts: 75.6
           ecr: 239
-          value_rank: 239
-          vorp: -40.4
         - rank_in_tier: 2
           name: "Gunnar Helm"
           team: "TEN"
@@ -1982,8 +1646,6 @@ positions:
           drafted: false
           projected_pts: 73.9
           ecr: 242
-          value_rank: 242
-          vorp: -42.1
         - rank_in_tier: 3
           name: "Mason Taylor"
           team: "NYJ"
@@ -1991,8 +1653,6 @@ positions:
           drafted: false
           projected_pts: 73.3
           ecr: 243
-          value_rank: 243
-          vorp: -42.7
         - rank_in_tier: 4
           name: "Taysom Hill"
           team: "NO"
@@ -2000,8 +1660,6 @@ positions:
           drafted: false
           projected_pts: 70.8
           ecr: 247
-          value_rank: 247
-          vorp: -45.2
         - rank_in_tier: 5
           name: "Darren Waller"
           team: "MIA"
@@ -2009,8 +1667,6 @@ positions:
           drafted: false
           projected_pts: 70.3
           ecr: 248
-          value_rank: 248
-          vorp: -45.7
         - rank_in_tier: 6
           name: "Sam Roush"
           team: "CHI"
@@ -2018,8 +1674,6 @@ positions:
           drafted: false
           projected_pts: 5.1
           ecr: 250
-          value_rank: 250
-          vorp: -46.7
         - rank_in_tier: 7
           name: "Theo Johnson"
           team: "NYG"
@@ -2027,8 +1681,6 @@ positions:
           drafted: false
           projected_pts: 66.5
           ecr: 257
-          value_rank: 257
-          vorp: -49.5
         - rank_in_tier: 8
           name: "Michael Mayer"
           team: "LV"
@@ -2036,10 +1688,8 @@ positions:
           drafted: false
           projected_pts: 66.2
           ecr: 258
-          value_rank: 258
-          vorp: -49.8
     tier_7:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 4
       players:
         - rank_in_tier: 1
@@ -2049,8 +1699,6 @@ positions:
           drafted: false
           projected_pts: 62.4
           ecr: 266
-          value_rank: 266
-          vorp: -53.6
         - rank_in_tier: 2
           name: "Darnell Washington"
           team: "PIT"
@@ -2058,8 +1706,6 @@ positions:
           drafted: false
           projected_pts: 54.9
           ecr: 283
-          value_rank: 283
-          vorp: -61.1
         - rank_in_tier: 3
           name: "Cole Kmet"
           team: "CHI"
@@ -2067,8 +1713,6 @@ positions:
           drafted: false
           projected_pts: 54.3
           ecr: 286
-          value_rank: 286
-          vorp: -61.7
         - rank_in_tier: 4
           name: "Tyler Higbee"
           team: "LAR"
@@ -2076,11 +1720,9 @@ positions:
           drafted: false
           projected_pts: 49.8
           ecr: 297
-          value_rank: 297
-          vorp: -66.2
   QB:
     tier_1:
-      offset_gap_px: 140
+      offset_gap_px: 794
       player_count: 1
       players:
         - rank_in_tier: 1
@@ -2090,10 +1732,8 @@ positions:
           drafted: false
           projected_pts: 344.7
           ecr: 14
-          value_rank: 14
-          vorp: 72.3
     tier_2:
-      offset_gap_px: 28
+      offset_gap_px: 833
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2103,8 +1743,6 @@ positions:
           drafted: false
           projected_pts: 303.1
           ecr: 40
-          value_rank: 40
-          vorp: 30.7
         - rank_in_tier: 2
           name: "Jalen Hurts"
           team: "PHI"
@@ -2112,8 +1750,6 @@ positions:
           drafted: false
           projected_pts: 299.3
           ecr: 46
-          value_rank: 46
-          vorp: 26.9
         - rank_in_tier: 3
           name: "Trevor Lawrence"
           team: "JAX"
@@ -2121,8 +1757,6 @@ positions:
           drafted: false
           projected_pts: 296.7
           ecr: 50
-          value_rank: 50
-          vorp: 24.3
         - rank_in_tier: 4
           name: "Lamar Jackson"
           team: "BAL"
@@ -2130,8 +1764,6 @@ positions:
           drafted: false
           projected_pts: 295.3
           ecr: 51
-          value_rank: 51
-          vorp: 22.9
         - rank_in_tier: 5
           name: "Joe Burrow"
           team: "CIN"
@@ -2139,8 +1771,6 @@ positions:
           drafted: false
           projected_pts: 291.1
           ecr: 59
-          value_rank: 59
-          vorp: 18.6
         - rank_in_tier: 6
           name: "Patrick Mahomes"
           team: "KC"
@@ -2148,8 +1778,6 @@ positions:
           drafted: false
           projected_pts: 290.2
           ecr: 61
-          value_rank: 61
-          vorp: 17.8
         - rank_in_tier: 7
           name: "Brock Purdy"
           team: "SF"
@@ -2157,8 +1785,6 @@ positions:
           drafted: false
           projected_pts: 287.9
           ecr: 62
-          value_rank: 62
-          vorp: 15.5
         - rank_in_tier: 8
           name: "Jayden Daniels"
           team: "WAS"
@@ -2166,10 +1792,8 @@ positions:
           drafted: false
           projected_pts: 284.6
           ecr: 68
-          value_rank: 68
-          vorp: 12.2
     tier_3:
-      offset_gap_px: 28
+      offset_gap_px: 847
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2179,8 +1803,6 @@ positions:
           drafted: false
           projected_pts: 277.4
           ecr: 81
-          value_rank: 81
-          vorp: 5.0
         - rank_in_tier: 2
           name: "Justin Herbert"
           team: "LAC"
@@ -2188,8 +1810,6 @@ positions:
           drafted: false
           projected_pts: 276.4
           ecr: 84
-          value_rank: 84
-          vorp: 4.0
         - rank_in_tier: 3
           name: "Bo Nix"
           team: "DEN"
@@ -2197,8 +1817,6 @@ positions:
           drafted: false
           projected_pts: 275.6
           ecr: 87
-          value_rank: 87
-          vorp: 3.1
         - rank_in_tier: 4
           name: "Dak Prescott"
           team: "DAL"
@@ -2206,8 +1824,6 @@ positions:
           drafted: false
           projected_pts: 274.7
           ecr: 89
-          value_rank: 89
-          vorp: 2.3
         - rank_in_tier: 5
           name: "Jaxson Dart"
           team: "NYG"
@@ -2215,8 +1831,6 @@ positions:
           drafted: false
           projected_pts: 272.4
           ecr: 94
-          value_rank: 94
-          vorp: 0.0
         - rank_in_tier: 6
           name: "Baker Mayfield"
           team: "TB"
@@ -2224,8 +1838,6 @@ positions:
           drafted: false
           projected_pts: 270.3
           ecr: 108
-          value_rank: 108
-          vorp: -2.1
         - rank_in_tier: 7
           name: "Jared Goff"
           team: "DET"
@@ -2233,8 +1845,6 @@ positions:
           drafted: false
           projected_pts: 267.1
           ecr: 121
-          value_rank: 121
-          vorp: -5.3
         - rank_in_tier: 8
           name: "Matthew Stafford"
           team: "LAR"
@@ -2242,10 +1852,8 @@ positions:
           drafted: false
           projected_pts: 260.2
           ecr: 142
-          value_rank: 142
-          vorp: -12.2
     tier_4:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2255,8 +1863,6 @@ positions:
           drafted: false
           projected_pts: 259.4
           ecr: 150
-          value_rank: 150
-          vorp: -13.0
         - rank_in_tier: 2
           name: "Kyler Murray"
           team: "MIN"
@@ -2264,8 +1870,6 @@ positions:
           drafted: false
           projected_pts: 253.9
           ecr: 171
-          value_rank: 171
-          vorp: -18.5
         - rank_in_tier: 3
           name: "Jordan Love"
           team: "GB"
@@ -2273,8 +1877,6 @@ positions:
           drafted: false
           projected_pts: 248.0
           ecr: 191
-          value_rank: 191
-          vorp: -24.4
         - rank_in_tier: 4
           name: "C.J. Stroud"
           team: "HOU"
@@ -2282,8 +1884,6 @@ positions:
           drafted: false
           projected_pts: 246.0
           ecr: 201
-          value_rank: 201
-          vorp: -26.4
         - rank_in_tier: 5
           name: "Malik Willis"
           team: "MIA"
@@ -2291,8 +1891,6 @@ positions:
           drafted: false
           projected_pts: 244.9
           ecr: 203
-          value_rank: 203
-          vorp: -27.6
         - rank_in_tier: 6
           name: "Sam Darnold"
           team: "SEA"
@@ -2300,8 +1898,6 @@ positions:
           drafted: false
           projected_pts: 243.4
           ecr: 212
-          value_rank: 212
-          vorp: -29.0
         - rank_in_tier: 7
           name: "Daniel Jones"
           team: "IND"
@@ -2309,8 +1905,6 @@ positions:
           drafted: false
           projected_pts: 240.4
           ecr: 219
-          value_rank: 219
-          vorp: -32.0
         - rank_in_tier: 8
           name: "Bryce Young"
           team: "CAR"
@@ -2318,10 +1912,8 @@ positions:
           drafted: false
           projected_pts: 229.5
           ecr: 244
-          value_rank: 244
-          vorp: -42.9
     tier_5:
-      offset_gap_px: 28
+      offset_gap_px: 1386
       player_count: 3
       players:
         - rank_in_tier: 1
@@ -2331,8 +1923,6 @@ positions:
           drafted: false
           projected_pts: 221.3
           ecr: 260
-          value_rank: 260
-          vorp: -51.1
         - rank_in_tier: 2
           name: "Geno Smith"
           team: "NYJ"
@@ -2340,8 +1930,6 @@ positions:
           drafted: false
           projected_pts: 214.7
           ecr: 276
-          value_rank: 276
-          vorp: -57.8
         - rank_in_tier: 3
           name: "Aaron Rodgers"
           team: "PIT"
@@ -2349,11 +1937,9 @@ positions:
           drafted: false
           projected_pts: 210.4
           ecr: 287
-          value_rank: 287
-          vorp: -62.0
   DST:
     tier_1:
-      offset_gap_px: 450
+      offset_gap_px: 0
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2363,8 +1949,6 @@ positions:
           drafted: false
           projected_pts: 107.9
           ecr: 88
-          value_rank: 88
-          vorp: 3.0
         - rank_in_tier: 2
           name: "Detroit Lions"
           team: "DET"
@@ -2372,8 +1956,6 @@ positions:
           drafted: false
           projected_pts: 105.1
           ecr: 93
-          value_rank: 93
-          vorp: 0.2
         - rank_in_tier: 3
           name: "Seattle Seahawks"
           team: "SEA"
@@ -2381,8 +1963,6 @@ positions:
           drafted: false
           projected_pts: 104.8
           ecr: 95
-          value_rank: 95
-          vorp: -0.2
         - rank_in_tier: 4
           name: "Buffalo Bills"
           team: "BUF"
@@ -2390,8 +1970,6 @@ positions:
           drafted: false
           projected_pts: 104.8
           ecr: 96
-          value_rank: 96
-          vorp: -0.2
         - rank_in_tier: 5
           name: "Baltimore Ravens"
           team: "BAL"
@@ -2399,8 +1977,6 @@ positions:
           drafted: false
           projected_pts: 104.4
           ecr: 98
-          value_rank: 98
-          vorp: -0.5
         - rank_in_tier: 6
           name: "Philadelphia Eagles"
           team: "PHI"
@@ -2408,8 +1984,6 @@ positions:
           drafted: false
           projected_pts: 104.1
           ecr: 99
-          value_rank: 99
-          vorp: -0.8
         - rank_in_tier: 7
           name: "Houston Texans"
           team: "HOU"
@@ -2417,8 +1991,6 @@ positions:
           drafted: false
           projected_pts: 103.5
           ecr: 102
-          value_rank: 102
-          vorp: -1.5
         - rank_in_tier: 8
           name: "Kansas City Chiefs"
           team: "KC"
@@ -2426,10 +1998,8 @@ positions:
           drafted: false
           projected_pts: 103.5
           ecr: 103
-          value_rank: 103
-          vorp: -1.5
     tier_2:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2439,8 +2009,6 @@ positions:
           drafted: false
           projected_pts: 103.3
           ecr: 105
-          value_rank: 105
-          vorp: -1.7
         - rank_in_tier: 2
           name: "Denver Broncos"
           team: "DEN"
@@ -2448,8 +2016,6 @@ positions:
           drafted: false
           projected_pts: 103.1
           ecr: 106
-          value_rank: 106
-          vorp: -1.8
         - rank_in_tier: 3
           name: "New England Patriots"
           team: "NE"
@@ -2457,8 +2023,6 @@ positions:
           drafted: false
           projected_pts: 102.8
           ecr: 109
-          value_rank: 109
-          vorp: -2.1
         - rank_in_tier: 4
           name: "San Francisco 49ers"
           team: "SF"
@@ -2466,8 +2030,6 @@ positions:
           drafted: false
           projected_pts: 102.8
           ecr: 110
-          value_rank: 110
-          vorp: -2.1
         - rank_in_tier: 5
           name: "Dallas Cowboys"
           team: "DAL"
@@ -2475,8 +2037,6 @@ positions:
           drafted: false
           projected_pts: 102.6
           ecr: 113
-          value_rank: 113
-          vorp: -2.3
         - rank_in_tier: 6
           name: "Jacksonville Jaguars"
           team: "JAX"
@@ -2484,8 +2044,6 @@ positions:
           drafted: false
           projected_pts: 102.0
           ecr: 116
-          value_rank: 116
-          vorp: -3.0
         - rank_in_tier: 7
           name: "Green Bay Packers"
           team: "GB"
@@ -2493,8 +2051,6 @@ positions:
           drafted: false
           projected_pts: 101.8
           ecr: 117
-          value_rank: 117
-          vorp: -3.1
         - rank_in_tier: 8
           name: "Chicago Bears"
           team: "CHI"
@@ -2502,10 +2058,8 @@ positions:
           drafted: false
           projected_pts: 101.5
           ecr: 118
-          value_rank: 118
-          vorp: -3.5
     tier_3:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2515,8 +2069,6 @@ positions:
           drafted: false
           projected_pts: 100.8
           ecr: 119
-          value_rank: 119
-          vorp: -4.1
         - rank_in_tier: 2
           name: "Cincinnati Bengals"
           team: "CIN"
@@ -2524,8 +2076,6 @@ positions:
           drafted: false
           projected_pts: 100.8
           ecr: 120
-          value_rank: 120
-          vorp: -4.1
         - rank_in_tier: 3
           name: "Tampa Bay Buccaneers"
           team: "TB"
@@ -2533,8 +2083,6 @@ positions:
           drafted: false
           projected_pts: 99.7
           ecr: 122
-          value_rank: 122
-          vorp: -5.3
         - rank_in_tier: 4
           name: "Pittsburgh Steelers"
           team: "PIT"
@@ -2542,8 +2090,6 @@ positions:
           drafted: false
           projected_pts: 99.3
           ecr: 123
-          value_rank: 123
-          vorp: -5.6
         - rank_in_tier: 5
           name: "Indianapolis Colts"
           team: "IND"
@@ -2551,8 +2097,6 @@ positions:
           drafted: false
           projected_pts: 98.8
           ecr: 125
-          value_rank: 125
-          vorp: -6.1
         - rank_in_tier: 6
           name: "New Orleans Saints"
           team: "NO"
@@ -2560,8 +2104,6 @@ positions:
           drafted: false
           projected_pts: 98.2
           ecr: 127
-          value_rank: 127
-          vorp: -6.8
         - rank_in_tier: 7
           name: "New York Giants"
           team: "NYG"
@@ -2569,8 +2111,6 @@ positions:
           drafted: false
           projected_pts: 97.2
           ecr: 130
-          value_rank: 130
-          vorp: -7.8
         - rank_in_tier: 8
           name: "Carolina Panthers"
           team: "CAR"
@@ -2578,10 +2118,8 @@ positions:
           drafted: false
           projected_pts: 95.9
           ecr: 133
-          value_rank: 133
-          vorp: -9.1
     tier_4:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2591,8 +2129,6 @@ positions:
           drafted: false
           projected_pts: 95.7
           ecr: 134
-          value_rank: 134
-          vorp: -9.2
         - rank_in_tier: 2
           name: "Atlanta Falcons"
           team: "ATL"
@@ -2600,8 +2136,6 @@ positions:
           drafted: false
           projected_pts: 95.0
           ecr: 135
-          value_rank: 135
-          vorp: -9.9
         - rank_in_tier: 3
           name: "Tennessee Titans"
           team: "TEN"
@@ -2609,8 +2143,6 @@ positions:
           drafted: false
           projected_pts: 93.2
           ecr: 141
-          value_rank: 141
-          vorp: -11.7
         - rank_in_tier: 4
           name: "Las Vegas Raiders"
           team: "LV"
@@ -2618,8 +2150,6 @@ positions:
           drafted: false
           projected_pts: 92.7
           ecr: 144
-          value_rank: 144
-          vorp: -12.2
         - rank_in_tier: 5
           name: "Cleveland Browns"
           team: "CLE"
@@ -2627,8 +2157,6 @@ positions:
           drafted: false
           projected_pts: 92.2
           ecr: 146
-          value_rank: 146
-          vorp: -12.7
         - rank_in_tier: 6
           name: "New York Jets"
           team: "NYJ"
@@ -2636,8 +2164,6 @@ positions:
           drafted: false
           projected_pts: 92.2
           ecr: 147
-          value_rank: 147
-          vorp: -12.7
         - rank_in_tier: 7
           name: "Miami Dolphins"
           team: "MIA"
@@ -2645,8 +2171,6 @@ positions:
           drafted: false
           projected_pts: 88.3
           ecr: 163
-          value_rank: 163
-          vorp: -16.7
         - rank_in_tier: 8
           name: "Arizona Cardinals"
           team: "ARI"
@@ -2654,11 +2178,9 @@ positions:
           drafted: false
           projected_pts: 88.3
           ecr: 164
-          value_rank: 164
-          vorp: -16.7
   K:
     tier_1:
-      offset_gap_px: 400
+      offset_gap_px: 0
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2668,8 +2190,6 @@ positions:
           drafted: false
           projected_pts: 141.6
           ecr: 76
-          value_rank: 76
-          vorp: 6.6
         - rank_in_tier: 2
           name: "Brandon Aubrey"
           team: "DAL"
@@ -2677,8 +2197,6 @@ positions:
           drafted: false
           projected_pts: 139.6
           ecr: 82
-          value_rank: 82
-          vorp: 4.6
         - rank_in_tier: 3
           name: "Jason Myers"
           team: "SEA"
@@ -2686,8 +2204,6 @@ positions:
           drafted: false
           projected_pts: 132.7
           ecr: 112
-          value_rank: 112
-          vorp: -2.3
         - rank_in_tier: 4
           name: "Cameron Dicker"
           team: "LAC"
@@ -2695,8 +2211,6 @@ positions:
           drafted: false
           projected_pts: 132.5
           ecr: 114
-          value_rank: 114
-          vorp: -2.5
         - rank_in_tier: 5
           name: "Tyler Loop"
           team: "BAL"
@@ -2704,8 +2218,6 @@ positions:
           drafted: false
           projected_pts: 126.7
           ecr: 131
-          value_rank: 131
-          vorp: -8.2
         - rank_in_tier: 6
           name: "Lucas Havrisik"
           team: "GB"
@@ -2713,8 +2225,6 @@ positions:
           drafted: false
           projected_pts: 124.9
           ecr: 136
-          value_rank: 136
-          vorp: -10.1
         - rank_in_tier: 7
           name: "Gabriel Plascencia"
           team: "CHI"
@@ -2722,8 +2232,6 @@ positions:
           drafted: false
           projected_pts: 124.2
           ecr: 137
-          value_rank: 137
-          vorp: -10.7
         - rank_in_tier: 8
           name: "Jake Elliott"
           team: "PHI"
@@ -2731,10 +2239,8 @@ positions:
           drafted: false
           projected_pts: 122.4
           ecr: 145
-          value_rank: 145
-          vorp: -12.5
     tier_2:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2744,8 +2250,6 @@ positions:
           drafted: false
           projected_pts: 122.1
           ecr: 149
-          value_rank: 149
-          vorp: -12.9
         - rank_in_tier: 2
           name: "Harrison Butker"
           team: "KC"
@@ -2753,8 +2257,6 @@ positions:
           drafted: false
           projected_pts: 121.1
           ecr: 153
-          value_rank: 153
-          vorp: -13.9
         - rank_in_tier: 3
           name: "B.T. Potter"
           team: "TB"
@@ -2762,8 +2264,6 @@ positions:
           drafted: false
           projected_pts: 120.6
           ecr: 156
-          value_rank: 156
-          vorp: -14.4
         - rank_in_tier: 4
           name: "Harrison Mevis"
           team: "LAR"
@@ -2771,8 +2271,6 @@ positions:
           drafted: false
           projected_pts: 120.1
           ecr: 158
-          value_rank: 158
-          vorp: -14.8
         - rank_in_tier: 5
           name: "Laith Marjan"
           team: "PIT"
@@ -2780,8 +2278,6 @@ positions:
           drafted: false
           projected_pts: 119.6
           ecr: 160
-          value_rank: 160
-          vorp: -15.3
         - rank_in_tier: 6
           name: "Cam Little"
           team: "JAX"
@@ -2789,8 +2285,6 @@ positions:
           drafted: false
           projected_pts: 117.5
           ecr: 166
-          value_rank: 166
-          vorp: -17.5
         - rank_in_tier: 7
           name: "Mason Shipley"
           team: "NO"
@@ -2798,8 +2292,6 @@ positions:
           drafted: false
           projected_pts: 117.5
           ecr: 167
-          value_rank: 167
-          vorp: -17.5
         - rank_in_tier: 8
           name: "Tanner Brown"
           team: "NO"
@@ -2807,10 +2299,8 @@ positions:
           drafted: false
           projected_pts: 117.5
           ecr: 168
-          value_rank: 168
-          vorp: -17.5
     tier_3:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2820,8 +2310,6 @@ positions:
           drafted: false
           projected_pts: 117.5
           ecr: 169
-          value_rank: 169
-          vorp: -17.5
         - rank_in_tier: 2
           name: "Cairo Santos"
           team: "CHI"
@@ -2829,8 +2317,6 @@ positions:
           drafted: false
           projected_pts: 116.7
           ecr: 170
-          value_rank: 170
-          vorp: -18.3
         - rank_in_tier: 3
           name: "Chris Boswell"
           team: "PIT"
@@ -2838,8 +2324,6 @@ positions:
           drafted: false
           projected_pts: 115.7
           ecr: 173
-          value_rank: 173
-          vorp: -19.3
         - rank_in_tier: 4
           name: "Chase McLaughlin"
           team: "TB"
@@ -2847,8 +2331,6 @@ positions:
           drafted: false
           projected_pts: 112.5
           ecr: 183
-          value_rank: 183
-          vorp: -22.4
         - rank_in_tier: 5
           name: "Jake Bates"
           team: "DET"
@@ -2856,8 +2338,6 @@ positions:
           drafted: false
           projected_pts: 111.9
           ecr: 185
-          value_rank: 185
-          vorp: -23.1
         - rank_in_tier: 6
           name: "Nick Folk"
           team: "ATL"
@@ -2865,8 +2345,6 @@ positions:
           drafted: false
           projected_pts: 111.0
           ecr: 187
-          value_rank: 187
-          vorp: -23.9
         - rank_in_tier: 7
           name: "Evan McPherson"
           team: "CIN"
@@ -2874,8 +2352,6 @@ positions:
           drafted: false
           projected_pts: 110.7
           ecr: 190
-          value_rank: 190
-          vorp: -24.3
         - rank_in_tier: 8
           name: "Spencer Shrader"
           team: "IND"
@@ -2883,10 +2359,8 @@ positions:
           drafted: false
           projected_pts: 110.5
           ecr: 192
-          value_rank: 192
-          vorp: -24.4
     tier_4:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2896,8 +2370,6 @@ positions:
           drafted: false
           projected_pts: 110.4
           ecr: 194
-          value_rank: 194
-          vorp: -24.6
         - rank_in_tier: 2
           name: "Wil Lutz"
           team: "DEN"
@@ -2905,8 +2377,6 @@ positions:
           drafted: false
           projected_pts: 109.9
           ecr: 196
-          value_rank: 196
-          vorp: -25.1
         - rank_in_tier: 3
           name: "Kansei Matsuzawa"
           team: "LV"
@@ -2914,8 +2384,6 @@ positions:
           drafted: false
           projected_pts: 106.1
           ecr: 211
-          value_rank: 211
-          vorp: -28.9
         - rank_in_tier: 4
           name: "Eddy Pineiro"
           team: "SF"
@@ -2923,8 +2391,6 @@ positions:
           drafted: false
           projected_pts: 105.1
           ecr: 214
-          value_rank: 214
-          vorp: -29.9
         - rank_in_tier: 5
           name: "Cade York"
           team: "NYJ"
@@ -2932,8 +2398,6 @@ positions:
           drafted: false
           projected_pts: 104.9
           ecr: 215
-          value_rank: 215
-          vorp: -30.0
         - rank_in_tier: 6
           name: "Tyler Bass"
           team: "BUF"
@@ -2941,8 +2405,6 @@ positions:
           drafted: false
           projected_pts: 103.8
           ecr: 218
-          value_rank: 218
-          vorp: -31.2
         - rank_in_tier: 7
           name: "Charlie Smyth"
           team: "NO"
@@ -2950,8 +2412,6 @@ positions:
           drafted: false
           projected_pts: 102.5
           ecr: 220
-          value_rank: 220
-          vorp: -32.5
         - rank_in_tier: 8
           name: "Ben Sauls"
           team: "NYG"
@@ -2959,10 +2419,8 @@ positions:
           drafted: false
           projected_pts: 102.0
           ecr: 221
-          value_rank: 221
-          vorp: -33.0
     tier_5:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 8
       players:
         - rank_in_tier: 1
@@ -2972,8 +2430,6 @@ positions:
           drafted: false
           projected_pts: 101.8
           ecr: 222
-          value_rank: 222
-          vorp: -33.2
         - rank_in_tier: 2
           name: "Jason Sanders"
           team: "NYJ"
@@ -2981,8 +2437,6 @@ positions:
           drafted: false
           projected_pts: 101.0
           ecr: 223
-          value_rank: 223
-          vorp: -34.0
         - rank_in_tier: 3
           name: "Trey Smack"
           team: "GB"
@@ -2990,8 +2444,6 @@ positions:
           drafted: false
           projected_pts: 98.0
           ecr: 228
-          value_rank: 228
-          vorp: -37.0
         - rank_in_tier: 4
           name: "Chad Ryland"
           team: "ARI"
@@ -2999,8 +2451,6 @@ positions:
           drafted: false
           projected_pts: 97.5
           ecr: 230
-          value_rank: 230
-          vorp: -37.5
         - rank_in_tier: 5
           name: "Zane Gonzalez"
           team: "MIA"
@@ -3008,8 +2458,6 @@ positions:
           drafted: false
           projected_pts: 96.7
           ecr: 232
-          value_rank: 232
-          vorp: -38.3
         - rank_in_tier: 6
           name: "Drew Stevens"
           team: "WAS"
@@ -3017,8 +2465,6 @@ positions:
           drafted: false
           projected_pts: 95.5
           ecr: 235
-          value_rank: 235
-          vorp: -39.4
         - rank_in_tier: 7
           name: "Blake Grupe"
           team: "IND"
@@ -3026,8 +2472,6 @@ positions:
           drafted: false
           projected_pts: 95.2
           ecr: 236
-          value_rank: 236
-          vorp: -39.8
         - rank_in_tier: 8
           name: "Matt Gay"
           team: "LV"
@@ -3035,10 +2479,8 @@ positions:
           drafted: false
           projected_pts: 93.9
           ecr: 240
-          value_rank: 240
-          vorp: -41.1
     tier_6:
-      offset_gap_px: 28
+      offset_gap_px: 30
       player_count: 5
       players:
         - rank_in_tier: 1
@@ -3048,8 +2490,6 @@ positions:
           drafted: false
           projected_pts: 90.3
           ecr: 245
-          value_rank: 245
-          vorp: -44.7
         - rank_in_tier: 2
           name: "Ryan Fitzgerald"
           team: "CAR"
@@ -3057,8 +2497,6 @@ positions:
           drafted: false
           projected_pts: 89.9
           ecr: 246
-          value_rank: 246
-          vorp: -45.0
         - rank_in_tier: 3
           name: "Andre Szmyt"
           team: "CLE"
@@ -3066,8 +2504,6 @@ positions:
           drafted: false
           projected_pts: 87.1
           ecr: 253
-          value_rank: 253
-          vorp: -47.9
         - rank_in_tier: 4
           name: "Dominic Zvada"
           team: "NYG"
@@ -3075,8 +2511,6 @@ positions:
           drafted: false
           projected_pts: 85.6
           ecr: 255
-          value_rank: 255
-          vorp: -49.3
         - rank_in_tier: 5
           name: "Riley Patterson"
           team: "MIA"
@@ -3084,5 +2518,3 @@ positions:
           drafted: false
           projected_pts: 85.5
           ecr: 256
-          value_rank: 256
-          vorp: -49.5
