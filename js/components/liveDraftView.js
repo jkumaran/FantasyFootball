@@ -426,20 +426,24 @@ function openAddSessionModal() {
   modal.id = 'modal-add-session';
   modal.className = 'modal-overlay';
   modal.innerHTML = `
-    <div class="modal-card" style="max-width: 440px; width: 90%;">
+    <div class="modal-card" style="max-width: 460px; width: 92%;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
         <h3 style="margin: 0; color: #fff; font-size: 1.15rem; font-weight: 800;">➕ Add Fantasy League Draft</h3>
         <button id="close-add-modal" style="background: transparent; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
       </div>
       <form id="form-add-session" style="display: flex; flex-direction: column; gap: 0.9rem;">
         <div>
+          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">LEAGUE URL OR ID (OPTIONAL)</label>
+          <input type="text" id="session-league-url" placeholder="e.g. 1548819 or paste Yahoo invite link" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
+        </div>
+        <div>
           <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">LEAGUE / DRAFT NAME</label>
-          <input type="text" id="session-name" required placeholder="e.g. Yahoo: Work League" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
+          <input type="text" id="session-name" required placeholder="e.g. Yahoo: League 1548819" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
         </div>
         <div>
           <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">DRAFT PLATFORM</label>
           <select id="session-platform" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;">
-            <option value="yahoo">🟣 Yahoo Fantasy</option>
+            <option value="yahoo" selected>🟣 Yahoo Fantasy</option>
             <option value="espn">🔴 ESPN Fantasy</option>
             <option value="sleeper">🔵 Sleeper Fantasy</option>
             <option value="manual">🎲 Manual / Mock Draft</option>
@@ -482,20 +486,41 @@ function openAddSessionModal() {
   const closeModal = () => modal.remove();
   modal.querySelector('#close-add-modal').addEventListener('click', closeModal);
   modal.querySelector('#btn-cancel-add').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  const urlInput = modal.querySelector('#session-league-url');
+  const nameInput = modal.querySelector('#session-name');
+  const platSelect = modal.querySelector('#session-platform');
+  urlInput.addEventListener('input', () => {
+    const val = urlInput.value.trim();
+    const yahooMatch = val.match(/\/f1\/(\d+)/) || val.match(/lid=(\d+)/) || (val.match(/^\d{5,8}$/) ? [null, val] : null);
+    if (yahooMatch) {
+      platSelect.value = 'yahoo';
+      if (!nameInput.value || nameInput.value.startsWith('Yahoo')) {
+        nameInput.value = `Yahoo: League ${yahooMatch[1]}`;
+      }
+    }
+  });
 
   modal.querySelector('#form-add-session').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('session-name').value.trim();
-    const platform = document.getElementById('session-platform').value;
+    const name = nameInput.value.trim();
+    const platform = platSelect.value;
     const teamsCount = parseInt(document.getElementById('session-teams').value, 10);
     const userSlot = parseInt(document.getElementById('session-slot').value, 10);
     const scoring = document.getElementById('session-scoring').value;
-    const id = `${platform}-${Date.now().toString(36)}`;
+    const rawUrl = urlInput.value.trim();
+    const matchLid = rawUrl.match(/\/f1\/(\d+)/) || rawUrl.match(/lid=(\d+)/) || (rawUrl.match(/^\d{5,8}$/) ? [null, rawUrl] : null);
+    const leagueId = matchLid ? matchLid[1] : null;
+    const id = leagueId ? `${platform}-${leagueId}` : `${platform}-${Date.now().toString(36)}`;
 
     await store.createDraftSession({
       id,
       name,
       platform,
+      leagueId,
       teamsCount,
       userSlot,
       scoring
@@ -512,12 +537,24 @@ function openLeagueSettingsModal(session) {
   modal.id = 'modal-league-settings';
   modal.className = 'modal-overlay';
   modal.innerHTML = `
-    <div class="modal-card" style="max-width: 440px; width: 90%;">
+    <div class="modal-card" style="max-width: 460px; width: 92%;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
         <h3 style="margin: 0; color: #fff; font-size: 1.15rem; font-weight: 800;">⚙️ League & Draft Settings</h3>
         <button id="close-settings-modal" style="background: transparent; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
       </div>
       <form id="form-edit-session" style="display: flex; flex-direction: column; gap: 0.9rem;">
+        <div>
+          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">YAHOO LEAGUE ID OR INVITE LINK</label>
+          <input type="text" id="edit-session-league-url" value="${session?.leagueId || ''}" placeholder="e.g. 1548819 or paste Yahoo invite link" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
+          ${session?.leagueId ? `
+            <div style="font-size: 0.76rem; color: #34d399; margin-top: 5px; display: flex; align-items: center; justify-content: space-between;">
+              <span>✅ Linked to Yahoo League <strong>#${session.leagueId}</strong></span>
+              <a href="https://football.fantasysports.yahoo.com/f1/${session.leagueId}/draftclient" target="_blank" style="color: #38bdf8; font-weight: 700; text-decoration: underline;">Open Draft Room ↗</a>
+            </div>
+          ` : `
+            <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">Enter your league ID (e.g. <code>1548819</code>) to link the Chrome extension.</div>
+          `}
+        </div>
         <div>
           <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">LEAGUE NAME</label>
           <input type="text" id="edit-session-name" value="${session?.name || ''}" required style="width: 100%; padding: 0.55rem 0.75rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem;" />
@@ -562,6 +599,19 @@ function openLeagueSettingsModal(session) {
   const closeModal = () => modal.remove();
   modal.querySelector('#close-settings-modal').addEventListener('click', closeModal);
   modal.querySelector('#btn-cancel-edit').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  const urlInput = modal.querySelector('#edit-session-league-url');
+  const nameInput = modal.querySelector('#edit-session-name');
+  urlInput.addEventListener('input', () => {
+    const val = urlInput.value.trim();
+    const match = val.match(/\/f1\/(\d+)/) || val.match(/lid=(\d+)/) || (val.match(/^\d{5,8}$/) ? [null, val] : null);
+    if (match && nameInput.value.startsWith('Yahoo')) {
+      nameInput.value = `Yahoo: League ${match[1]}`;
+    }
+  });
 
   modal.querySelector('#btn-delete-session').addEventListener('click', async () => {
     if (confirm(`Are you sure you want to delete "${session?.name}" and all its picks?`)) {
@@ -572,9 +622,14 @@ function openLeagueSettingsModal(session) {
 
   modal.querySelector('#form-edit-session').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const rawUrl = urlInput.value.trim();
+    const matchLid = rawUrl.match(/\/f1\/(\d+)/) || rawUrl.match(/lid=(\d+)/) || (rawUrl.match(/^\d{5,8}$/) ? [null, rawUrl] : null);
+    const leagueId = matchLid ? matchLid[1] : (rawUrl || session?.leagueId || null);
+
     const updated = {
       ...session,
-      name: document.getElementById('edit-session-name').value.trim(),
+      name: nameInput.value.trim(),
+      leagueId: leagueId,
       teamsCount: parseInt(document.getElementById('edit-session-teams').value, 10),
       userSlot: parseInt(document.getElementById('edit-session-slot').value, 10),
       scoring: document.getElementById('edit-session-scoring').value
@@ -588,17 +643,20 @@ function openExtensionHelpModal(currentSession) {
   const existing = document.getElementById('modal-ext-help');
   if (existing) existing.remove();
 
+  const linkedId = currentSession?.leagueId || (currentSession?.id?.includes('1548819') ? '1548819' : '1548819');
+  const draftRoomUrl = `https://football.fantasysports.yahoo.com/f1/${linkedId}/draftclient`;
+
   const modal = document.createElement('div');
   modal.id = 'modal-ext-help';
   modal.className = 'modal-overlay';
   modal.innerHTML = `
-    <div class="modal-card" style="max-width: 580px; width: 92%; max-height: 88vh; overflow-y: auto;">
+    <div class="modal-card" style="max-width: 600px; width: 92%; max-height: 88vh; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <span style="font-size: 1.4rem;">🔌</span>
           <div>
             <h3 style="margin: 0; color: #fff; font-size: 1.15rem; font-weight: 800;">Real-Time Chrome Extension Bridge</h3>
-            <div style="font-size: 0.74rem; color: #38bdf8;">Sync live picks automatically from Yahoo, ESPN & Sleeper drafts</div>
+            <div style="font-size: 0.74rem; color: #38bdf8;">Automatic pick syncing from Yahoo, ESPN & Sleeper drafts</div>
           </div>
         </div>
         <button id="close-ext-modal" style="background: transparent; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
@@ -606,33 +664,39 @@ function openExtensionHelpModal(currentSession) {
 
       <div style="display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.82rem; color: var(--text-color); line-height: 1.5;">
         <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
-          <strong style="color: #38bdf8; display: block; margin-bottom: 0.25rem;">Active Target Draft Room:</strong>
-          <span style="color: #fff; font-weight: 700;">${currentSession?.name || 'Yahoo: League 1'}</span>
-          <span style="color: var(--text-dim); font-size: 0.75rem; margin-left: 0.5rem;">(${currentSession?.platform?.toUpperCase() || 'YAHOO'} • ID: <code>${currentSession?.id || 'yahoo-1'}</code>)</span>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <strong style="color: #38bdf8; display: block; font-size: 0.85rem;">Active Target Draft Room:</strong>
+              <div style="color: #fff; font-weight: 800; font-size: 1rem; margin-top: 2px;">${currentSession?.name || 'Yahoo: League 1'}</div>
+              <div style="color: #34d399; font-size: 0.75rem; margin-top: 3px; font-weight: 700;">
+                🟣 Linked Yahoo League ID: <code>${linkedId}</code>
+              </div>
+            </div>
+            <a href="${draftRoomUrl}" target="_blank" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+              Open Yahoo Draft Room ↗
+            </a>
+          </div>
         </div>
 
-        <div style="font-weight: 700; color: #fff; margin-top: 0.25rem;">How to install the extension in 30 seconds:</div>
+        <div style="font-weight: 700; color: #fff; margin-top: 0.1rem;">Setup in 3 simple steps:</div>
         
         <ol style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
-          <li>Open <strong>Google Chrome</strong> (or Brave / Edge) and navigate to <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #38bdf8;">chrome://extensions</code>.</li>
-          <li>Turn ON <strong>"Developer mode"</strong> in the top-right corner.</li>
-          <li>Click the <strong>"Load unpacked"</strong> button in the top-left corner.</li>
-          <li>Select the <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #34d399;">chrome-extension</code> folder inside this repository:
-            <div style="margin-top: 4px; padding: 4px 8px; background: rgba(0,0,0,0.3); border-radius: 4px; font-family: monospace; font-size: 0.74rem; color: #fbbf24;">
+          <li>Open <strong>Google Chrome</strong> and navigate to <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #38bdf8;">chrome://extensions</code>.</li>
+          <li>Turn ON <strong>"Developer mode"</strong> (toggle in top right corner), then click <strong>"Load unpacked"</strong>.</li>
+          <li>Select the <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #34d399;">chrome-extension</code> folder from your project:
+            <div style="margin-top: 4px; padding: 5px 8px; background: rgba(0,0,0,0.35); border-radius: 4px; font-family: monospace; font-size: 0.75rem; color: #fbbf24; word-break: break-all;">
               /Users/kumaran/Documents/FantasyFootball/chrome-extension
             </div>
           </li>
-          <li>Pin the <strong>"Cameron's Fantasy Draft Bridge"</strong> icon in your browser bar.</li>
-          <li>Click the extension icon to verify the <strong>Server URL</strong> (<code style="color: #38bdf8;">http://localhost:3000</code>) and Passcode (<code style="color: #38bdf8;">fantasy2025</code>), and pick your target session.</li>
         </ol>
 
         <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
-          <strong style="color: #34d399; display: block; margin-bottom: 0.25rem;">⚡ Zero-Effort Automation:</strong>
-          Keep your Yahoo, ESPN, or Sleeper draft room open in one tab, and this Live Draft War Room open in another. Every time someone makes a pick in the draft room, the extension instantly detects it and crosses the player off your board, updates survival odds, and recommends your best pick!
+          <strong style="color: #34d399; display: block; margin-bottom: 0.25rem;">⚡ How Live Sync Works:</strong>
+          Keep your Yahoo draft room (<code style="color: #38bdf8;">football.fantasysports.yahoo.com</code>) open in one tab, and this Live Draft War Room open in another. When you are on Yahoo, a floating badge <strong>"🟣 Cameron Bridge: Yahoo Draft Sync Active"</strong> will appear in the bottom-right corner. Every time a pick occurs, it is instantly crossed off your board with zero manual work!
         </div>
 
-        <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
-          <button type="button" id="btn-done-ext" class="btn-primary" style="padding: 0.45rem 1rem;">Got It, Let's Draft!</button>
+        <div style="display: flex; justify-content: flex-end; margin-top: 0.25rem;">
+          <button type="button" id="btn-done-ext" class="btn-primary" style="padding: 0.45rem 1rem;">Got It, Ready to Draft!</button>
         </div>
       </div>
     </div>
@@ -643,4 +707,7 @@ function openExtensionHelpModal(currentSession) {
   const closeModal = () => modal.remove();
   modal.querySelector('#close-ext-modal').addEventListener('click', closeModal);
   modal.querySelector('#btn-done-ext').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
 }

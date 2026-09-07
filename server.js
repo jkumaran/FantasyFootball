@@ -597,11 +597,19 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, { success: false, error: 'Authentication required. Invalid or missing passcode.' }, 401);
       }
 
-      let { sessionId, platform, pickNum, round, teamId, playerName, playerId, team, pos, isUserPick } = body;
+      let { sessionId, platform, leagueId, pickNum, round, teamId, playerName, playerId, team, pos, isUserPick } = body;
       const activeSessionId = await db.getActiveDraftSessionId();
       let targetSessionId = sessionId;
 
       const { sessions } = await db.getDraftSessions();
+      if (leagueId) {
+        const leagueMatch = sessions.find(s =>
+          (s.leagueId && s.leagueId.toString() === leagueId.toString()) ||
+          (s.id && s.id.includes(leagueId.toString())) ||
+          (s.name && s.name.includes(leagueId.toString()))
+        );
+        if (leagueMatch) targetSessionId = leagueMatch.id;
+      }
       if (!targetSessionId && platform) {
         const platformMatch = sessions.find(s => s.platform.toLowerCase() === platform.toLowerCase());
         if (platformMatch) targetSessionId = platformMatch.id;

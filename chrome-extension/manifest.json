@@ -13,6 +13,8 @@
     "https://fantasy-football-suite.onrender.com/*",
     "https://*.onrender.com/*",
     "https://*.sports.yahoo.com/*",
+    "https://*.fantasysports.yahoo.com/*",
+    "https://football.fantasysports.yahoo.com/*",
     "https://fantasy.espn.com/*",
     "https://sleeper.com/*",
     "https://sleeper.app/*"
@@ -26,7 +28,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*.sports.yahoo.com/fantasy/*draft*"],
+      "matches": [
+        "https://*.fantasysports.yahoo.com/*draft*",
+        "https://*.fantasysports.yahoo.com/f1/*",
+        "https://football.fantasysports.yahoo.com/*",
+        "https://*.sports.yahoo.com/*"
+      ],
       "js": ["content-yahoo.js"],
       "run_at": "document_idle"
     },

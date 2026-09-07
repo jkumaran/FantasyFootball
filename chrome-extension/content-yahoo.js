@@ -5,6 +5,10 @@
   const seenPicks = new Set();
   let pillEl = null;
 
+  const leagueMatch = window.location.href.match(/\/f1\/(\d+)/);
+  const leagueId = leagueMatch ? leagueMatch[1] : null;
+  const isDraftClient = window.location.href.includes('draftclient') || window.location.href.includes('draft');
+
   function createStatusPill() {
     if (pillEl) return;
     pillEl = document.createElement('div');
@@ -16,9 +20,9 @@
       z-index: 999999;
       background: rgba(15, 23, 42, 0.95);
       border: 1px solid #38bdf8;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.6);
       border-radius: 20px;
-      padding: 6px 14px;
+      padding: 6px 15px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 12px;
       font-weight: 700;
@@ -27,11 +31,15 @@
       align-items: center;
       gap: 8px;
       backdrop-filter: blur(8px);
-      pointer-events: none;
+      user-select: none;
+      pointer-events: auto;
     `;
+    const label = isDraftClient
+      ? `🟣 Cameron Bridge: Yahoo Draft Sync Active${leagueId ? ` (#${leagueId})` : ''}`
+      : `🟣 Cameron Bridge: Yahoo League #${leagueId || '1548819'} Linked`;
     pillEl.innerHTML = `
       <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399;"></span>
-      <span>🟣 Cameron Bridge: Yahoo Draft Sync Active</span>
+      <span>${label}</span>
     `;
     document.body.appendChild(pillEl);
   }
@@ -56,27 +64,56 @@
       '.ysf-draft-picks tr',
       'div[data-tst="draft-result"]',
       'li.draft-result',
-      'table.draft-board td.picked'
+      'table.draft-board td.picked',
+      '[data-tst="draft-board-cell"]',
+      '[data-tst="draft-results-table"] tr',
+      'div[class*="draftResult"]',
+      'div[class*="DraftResult"]',
+      'div[class*="PickRow"]',
+      'div[class*="pick-row"]',
+      'div[class*="completedPick"]',
+      'div[class*="CompletedPick"]',
+      'ul[class*="Picks"] li',
+      '.draft-history-list li',
+      '.draft-history li',
+      'table.draft-board td[data-player]',
+      'div[class*="GridCell"][class*="picked"]',
+      'div[class*="DraftPick"]'
     ];
 
     const elements = document.querySelectorAll(selectors.join(','));
     elements.forEach(row => {
       try {
         const text = row.innerText.trim();
-        if (!text || text.length < 5) return;
+        if (!text || text.length < 3) return;
 
         // Try extracting Pick # and Player Name
         let pickNum = null;
-        const pickMatch = text.match(/(?:Pick|#)\s*(\d+)/i) || text.match(/^(\d+)\.?\s+/);
+        const pickMatch = text.match(/(?:Pick|#)\s*(\d+)/i) || 
+                          text.match(/^(\d+)\.?\s+/) ||
+                          text.match(/Round\s*\d+,\s*Pick\s*\d+\s*\((\d+)\s*overall\)/i) ||
+                          text.match(/\((\d+)\s*overall\)/i);
         if (pickMatch) {
           pickNum = parseInt(pickMatch[1], 10);
         }
 
-        // Search for name and pos
-        // Yahoo format typically: "1. Ja'Marr Chase (Cin - WR)" or similar
-        const nameMatch = text.match(/([A-Z][a-zA-Z'.\-]+(?:\s+[A-Z][a-zA-Z'.\-]+)+)/);
-        if (!nameMatch) return;
-        const playerName = nameMatch[1].trim();
+        // Search for name
+        let playerName = null;
+        const linkEl = row.querySelector('a[href*="/nfl/players/"], a[href*="sports.yahoo.com/nfl/players/"], .name, .player-name, [class*="playerName"], [class*="PlayerName"]');
+        if (linkEl && linkEl.innerText.trim() && linkEl.innerText.trim().length > 2) {
+          playerName = linkEl.innerText.trim();
+        }
+        if (!playerName) {
+          const nameAttr = row.getAttribute('data-player-name') || row.querySelector('[data-player-name]')?.getAttribute('data-player-name');
+          if (nameAttr) playerName = nameAttr.trim();
+        }
+        if (!playerName) {
+          // Yahoo format typically: "1. Ja'Marr Chase (Cin - WR)" or similar
+          const nameMatch = text.match(/([A-Z][a-zA-Z'.\-]+(?:\s+[A-Z][a-zA-Z'.\-]+)+)/);
+          if (nameMatch) playerName = nameMatch[1].trim();
+        }
+
+        if (!playerName) return;
 
         // Extract pos if present
         let pos = null;
@@ -94,6 +131,7 @@
 
         const payload = {
           platform: 'yahoo',
+          leagueId,
           pickNum,
           playerName,
           pos,
@@ -116,6 +154,7 @@
   });
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // Regular periodic poll every 2.5s
-  setInterval(scanDraftTable, 2500);
+  // Initial scan and regular periodic poll every 2s
+  scanDraftTable();
+  setInterval(scanDraftTable, 2000);
 })();

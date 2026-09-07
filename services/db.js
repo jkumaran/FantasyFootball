@@ -137,6 +137,10 @@ async function initDb() {
 
   // Seed default draft sessions if empty
   try {
+    try {
+      await db.execute('ALTER TABLE draft_sessions ADD COLUMN league_id TEXT');
+    } catch (e) {}
+
     const sessionCheck = await db.execute('SELECT COUNT(*) as count FROM draft_sessions');
     if (sessionCheck.rows && sessionCheck.rows[0].count === 0) {
       const defaultSessions = [
@@ -406,6 +410,7 @@ async function getDraftSessions() {
       id: r.id,
       name: r.name,
       platform: r.platform,
+      leagueId: r.league_id || null,
       teamsCount: r.teams_count,
       userSlot: r.user_slot,
       scoring: r.scoring || 'Half-PPR',
@@ -420,18 +425,34 @@ async function getDraftSessions() {
 
 async function saveDraftSession(s) {
   const now = new Date().toISOString();
-  await db.execute({
-    sql: `INSERT INTO draft_sessions (id, name, platform, teams_count, user_slot, scoring, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          ON CONFLICT(id) DO UPDATE SET
-            name = excluded.name,
-            platform = excluded.platform,
-            teams_count = excluded.teams_count,
-            user_slot = excluded.user_slot,
-            scoring = excluded.scoring,
-            updated_at = excluded.updated_at`,
-    args: [s.id, s.name, s.platform, s.teamsCount || 12, s.userSlot || 1, s.scoring || 'Half-PPR', now, now]
-  });
+  try {
+    await db.execute({
+      sql: `INSERT INTO draft_sessions (id, name, platform, teams_count, user_slot, scoring, league_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+              name = excluded.name,
+              platform = excluded.platform,
+              teams_count = excluded.teams_count,
+              user_slot = excluded.user_slot,
+              scoring = excluded.scoring,
+              league_id = excluded.league_id,
+              updated_at = excluded.updated_at`,
+      args: [s.id, s.name, s.platform, s.teamsCount || 12, s.userSlot || 1, s.scoring || 'Half-PPR', s.leagueId || null, now, now]
+    });
+  } catch (e) {
+    await db.execute({
+      sql: `INSERT INTO draft_sessions (id, name, platform, teams_count, user_slot, scoring, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+              name = excluded.name,
+              platform = excluded.platform,
+              teams_count = excluded.teams_count,
+              user_slot = excluded.user_slot,
+              scoring = excluded.scoring,
+              updated_at = excluded.updated_at`,
+      args: [s.id, s.name, s.platform, s.teamsCount || 12, s.userSlot || 1, s.scoring || 'Half-PPR', now, now]
+    });
+  }
 }
 
 async function deleteDraftSession(sessionId) {
