@@ -123,7 +123,7 @@ export const INITIAL_PLAYERS = [
     bye: 14,
     ecr: 6,
     customRank: 6,
-    tier: 3,
+    tier: 2,
     projectedPts: 242.5,
     floorPts: 9.6,
     ceilingPts: 21.3,

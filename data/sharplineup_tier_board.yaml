@@ -19,11 +19,11 @@
 #                          | [ ] P. Nacua (LAR)       |                          |                          |                          |                         
 # === TIER 2 ===           | [ ] J. Smith-Njigba (SE… |                          | === TIER 1 ===           |                          |                         
 # [ ] C. McCaffrey (SF)    | [ ] A. St. Brown (DET)   | === TIER 1 ===           | [ ] J. Allen (BUF)       |                          |                         
-#                          |                          | [ ] T. McBride (ARI)     |                          |                          |                         
+# [ ] J. Taylor (IND)      |                          | [ ] T. McBride (ARI)     |                          |                          |                         
 #                          |                          | [ ] B. Bowers (LV)       |                          |                          |                         
 # === TIER 3 ===           | === TIER 2 ===           |                          | === TIER 2 ===           |                          |                         
-# [ ] J. Taylor (IND)      | [ ] C. Lamb (DAL)        |                          | [ ] D. Maye (NE)         |                          |                         
-# [ ] J. Cook (BUF)        | [ ] J. Jefferson (MIN)   | === TIER 2 ===           | [ ] J. Hurts (PHI)       |                          |                         
+# [ ] J. Cook (BUF)        | [ ] C. Lamb (DAL)        |                          | [ ] D. Maye (NE)         |                          |                         
+# [ ] D. Henry (BAL)       | [ ] J. Jefferson (MIN)   | === TIER 2 ===           | [ ] J. Hurts (PHI)       |                          |                         
 # [ ] D. Henry (BAL)       | [ ] D. London (ATL)      | [ ] C. Loveland (CHI)    | [ ] T. Lawrence (JAX)    |                          |                         
 # [ ] A. Jeanty (LV)       | [ ] A. Brown (NE)        | [ ] T. Warren (IND)      | [ ] L. Jackson (BAL)     |                          |                         
 # [ ] S. Barkley (PHI)     | [ ] N. Collins (HOU)     | [ ] K. Pitts (ATL)       | [ ] J. Burrow (CIN)      |                          | === TIER 1 ===          
@@ -233,7 +233,7 @@ positions:
           vorp: 135.1
     tier_2:
       offset_gap_px: 28
-      player_count: 1
+      player_count: 2
       players:
         - rank_in_tier: 1
           name: "Christian McCaffrey"
@@ -244,11 +244,7 @@ positions:
           ecr: 3
           value_rank: 3
           vorp: 115.3
-    tier_3:
-      offset_gap_px: 28
-      player_count: 8
-      players:
-        - rank_in_tier: 1
+        - rank_in_tier: 2
           name: "Jonathan Taylor"
           team: "IND"
           bye: 14
@@ -257,7 +253,11 @@ positions:
           ecr: 6
           value_rank: 6
           vorp: 96.0
-        - rank_in_tier: 2
+    tier_3:
+      offset_gap_px: 28
+      player_count: 7
+      players:
+        - rank_in_tier: 1
           name: "James Cook"
           team: "BUF"
           bye: 12
@@ -266,7 +266,7 @@ positions:
           ecr: 9
           value_rank: 9
           vorp: 83.5
-        - rank_in_tier: 3
+        - rank_in_tier: 2
           name: "Derrick Henry"
           team: "BAL"
           bye: 14
@@ -275,7 +275,7 @@ positions:
           ecr: 10
           value_rank: 10
           vorp: 81.2
-        - rank_in_tier: 4
+        - rank_in_tier: 3
           name: "Ashton Jeanty"
           team: "LV"
           bye: 10
@@ -284,7 +284,7 @@ positions:
           ecr: 11
           value_rank: 11
           vorp: 79.7
-        - rank_in_tier: 5
+        - rank_in_tier: 4
           name: "Saquon Barkley"
           team: "PHI"
           bye: 5
@@ -293,7 +293,7 @@ positions:
           ecr: 12
           value_rank: 12
           vorp: 79.4
-        - rank_in_tier: 6
+        - rank_in_tier: 5
           name: "De'Von Achane"
           team: "MIA"
           bye: 6
@@ -302,7 +302,7 @@ positions:
           ecr: 13
           value_rank: 13
           vorp: 72.8
-        - rank_in_tier: 7
+        - rank_in_tier: 6
           name: "Chase Brown"
           team: "CIN"
           bye: 12
@@ -311,7 +311,7 @@ positions:
           ecr: 15
           value_rank: 15
           vorp: 71.3
-        - rank_in_tier: 8
+        - rank_in_tier: 7
           name: "Omarion Hampton"
           team: "LAC"
           bye: 5

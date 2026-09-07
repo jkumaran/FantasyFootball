@@ -1,7 +1,6 @@
 import { store } from '../store.js';
 import { api } from '../api.js';
 import { renderAuthModal } from './authModal.js';
-import { openSharpLineupModal } from './sharpLineupModal.js';
 
 function downloadFile(content, filename, mimeType = 'text/yaml;charset=utf-8;') {
   const blob = new Blob([content], { type: mimeType });
@@ -163,8 +162,8 @@ export function renderPreDraftView() {
               📊 Load Jody/Koerner
             </button>
 
-            <button class="btn-secondary" id="btn-view-rankings" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="View and compare SharpLineup and Jody/Koerner rankings without modifying board">
-              👁️ View Rankings
+            <button class="btn-secondary" id="btn-load-board" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="Load active tier_board.yaml from server">
+              📂 Load Board
             </button>
 
             <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
@@ -181,7 +180,7 @@ export function renderPreDraftView() {
             </button>
             <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
             <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Load tier board from a local YAML file">
-              📂 Load YAML
+              📥 Import File
             </button>
             <button class="btn-secondary" id="btn-clean-empty-tiers" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Remove all tiers with no players">
               🗑️ Remove Empty
@@ -351,11 +350,34 @@ export function renderPreDraftView() {
     });
   }
 
-  // View Rankings Modal
-  const btnViewRankings = container.querySelector('#btn-view-rankings');
-  if (btnViewRankings) {
-    btnViewRankings.addEventListener('click', () => {
-      openSharpLineupModal('sharplineup');
+  // Load Board Button (Loads server in-use tier_board.yaml)
+  const btnLoadBoard = container.querySelector('#btn-load-board');
+  if (btnLoadBoard) {
+    btnLoadBoard.addEventListener('click', async () => {
+      if (!store.getState().isAuthenticated) {
+        renderAuthModal();
+        return;
+      }
+      if (store.getHasUnsavedChanges()) {
+        const confirmed = confirm(
+          'Load saved board from server?\\n\\nThis will reload tier_board.yaml and discard any unsaved changes in your browser.'
+        );
+        if (!confirmed) return;
+      }
+      btnLoadBoard.disabled = true;
+      btnLoadBoard.innerHTML = '⏳ Loading...';
+      const ok = await store.loadSavedBoard();
+      if (ok) {
+        btnLoadBoard.innerHTML = '✅ Loaded!';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 800);
+      } else {
+        btnLoadBoard.innerHTML = '❌ Failed';
+        setTimeout(() => {
+          renderPreDraftView();
+        }, 1200);
+      }
     });
   }
 

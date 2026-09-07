@@ -596,6 +596,22 @@ class Store {
     }
   }
 
+  async loadSavedBoard() {
+    try {
+      const res = await api.getBoardYaml();
+      if (res && res.success && res.yaml) {
+        this.loadFromYaml(res.yaml, true, false);
+        this.hasUnsavedChanges = false;
+        this.notify();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('loadSavedBoard error:', e);
+      return false;
+    }
+  }
+
   async resetToDefaultRankings() {
     return this.loadPreset('sharplineup');
   }

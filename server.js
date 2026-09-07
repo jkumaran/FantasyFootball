@@ -370,26 +370,7 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, { success: false, error: `Preset YAML file for "${preset}" not found` }, 404);
       }
 
-      // Overwrite active tier board files
-      const paths = [
-        path.join(__dirname, 'tier_board.yaml'),
-        path.join(__dirname, 'data', 'tier_board.yaml'),
-        path.join(__dirname, 'public', 'data', 'tier_board.yaml')
-      ];
-      paths.forEach(p => {
-        try {
-          fs.mkdirSync(path.dirname(p), { recursive: true });
-          fs.writeFileSync(p, presetYaml, 'utf8');
-        } catch (e) {}
-      });
-
-      // Overwrite DB active board
-      try {
-        await db.saveBoardYaml(presetYaml);
-      } catch (dbErr) {
-        console.warn('DB load-preset saveBoardYaml error:', dbErr);
-      }
-
+      // Presets are read-only: return the preset content without overwriting tier_board.yaml
       return sendJson(res, { success: true, yaml: presetYaml, preset });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
