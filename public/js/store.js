@@ -327,7 +327,7 @@ class Store {
           }
           match.tier = yp.tier || match.tier || 1;
           match.pos = yp.pos || match.pos;
-          match.customRank = index + 1;
+          match.customRank = yp.ecr !== undefined ? yp.ecr : (index + 1);
           if (yp.projectedPts !== undefined) match.projectedPts = yp.projectedPts;
           if (yp.ecr !== undefined) match.ecr = yp.ecr;
           if (yp.bye !== undefined) match.bye = yp.bye;
@@ -348,7 +348,7 @@ class Store {
             bye: yp.bye || 8,
             tier: yp.tier || 1,
             ecr: yp.ecr || (index + 1),
-            customRank: index + 1,
+            customRank: yp.ecr !== undefined ? yp.ecr : (index + 1),
             projectedPts: yp.projectedPts || 200,
             floorPts: 10,
             ceilingPts: 22,

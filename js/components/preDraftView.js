@@ -28,14 +28,8 @@ export function renderPreDraftView() {
   const bottomPositions = ['DST', 'K'];
   const availableTiers = [1, 2, 3, 4, 5];
 
-  let searchQuery = container.dataset.searchQuery || '';
-
   const renderPosColumn = (pos) => {
-    const posPlayers = players.filter(p => {
-      const matchesPos = p.pos === pos;
-      const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.team.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesPos && matchesSearch;
-    });
+    const posPlayers = players.filter(p => p.pos === pos);
 
     const posTiers = store.getTiersForPos(pos);
     const nextTier = (posTiers.length > 0 ? Math.max(...posTiers) : 0) + 1;
@@ -103,6 +97,7 @@ export function renderPreDraftView() {
 
                   ${tierPlayers.map((p, idx) => {
                     const isDrafted = store.isPlayerDrafted(p.id);
+                    const overallRank = p.ecr || p.customRank || (idx + 1);
                     return `
                       <div class="draggable-player-card ${isDrafted ? 'card-drafted' : ''}" draggable="true" data-id="${p.id}" data-pos="${pos}" data-tier="${tierNum}" data-index="${idx}">
                         <div class="player-card-left">
@@ -119,7 +114,7 @@ export function renderPreDraftView() {
                           </div>
                         </div>
 
-                        <span style="font-size: 0.65rem; font-weight: 700; color: ${isDrafted ? '#64748b' : '#34d399'}; flex-shrink: 0;"><span style="opacity:0.6;">#</span>${idx + 1}</span>
+                        <span style="font-size: 0.65rem; font-weight: 700; color: ${isDrafted ? '#64748b' : '#34d399'}; flex-shrink: 0;" title="Overall Rank #${overallRank}"><span style="opacity:0.6;">#</span>${overallRank}</span>
                       </div>
                     `;
                   }).join('')}
@@ -141,59 +136,48 @@ export function renderPreDraftView() {
 
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-      <!-- Control Bar -->
-      <div class="glass-card" style="padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-          <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">🏆 Positional Tier Board</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">
-              Check boxes to mark players drafted. Drag players to reorder within a tier. Adjust vertical gaps using <strong>↕ Gap Handles</strong>. Click <strong>💾 Save Current</strong> or toggle <strong>Autosave</strong> to persist your board to server YAML.
-            </p>
-          </div>
-        </div>
+      <!-- Sticky Action Bar (Always Visible) -->
+      <div class="glass-card sticky-tier-toolbar">
+        <button class="btn-secondary" id="btn-load-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="Load active tier_board.yaml from server">
+          📂 Load Current
+        </button>
 
-        <!-- Row 1: Load Current, Save Current, Autosave, Load Jody/Koerner, Load SharpLineup -->
-        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-          <button class="btn-secondary" id="btn-load-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="Load active tier_board.yaml from server">
-            📂 Load Current
-          </button>
+        <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
+          💾 Save Current ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
+        </button>
 
-          <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
-            💾 Save Current ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
-          </button>
+        <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
+          <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
+          <span>Autosave</span>
+        </label>
 
-          <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
-            <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
-            <span>Autosave</span>
-          </label>
+        <button class="btn-secondary" id="btn-load-jody-koerner" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Load Jody Smith & Sean Koerner consensus expert rankings">
+          📊 Load Jody/Koerner
+        </button>
 
-          <button class="btn-secondary" id="btn-load-jody-koerner" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Load Jody Smith & Sean Koerner consensus expert rankings">
-            📊 Load Jody/Koerner
-          </button>
+        <button class="btn-secondary" id="btn-load-sharplineup" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Load SharpLineup Market Implied Top 300 rankings">
+          🏈 Load SharpLineup
+        </button>
 
-          <button class="btn-secondary" id="btn-load-sharplineup" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Load SharpLineup Market Implied Top 300 rankings">
-            🏈 Load SharpLineup
-          </button>
-        </div>
+        <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
+        <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Load tier board from a local YAML file">
+          📥 Import YAML
+        </button>
+        <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
+          📤 Export YAML
+        </button>
 
-        <!-- Row 2: Import YAML, Export YAML -->
-        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-          <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
-          <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Load tier board from a local YAML file">
-            📥 Import YAML
-          </button>
-          <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
-            📤 Export YAML
-          </button>
-        </div>
+        <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Jump down to DST & K tiers">
+          🛡️ DST & K ↓
+        </button>
 
-        <!-- Row 3: Search player, DST & K link -->
-        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-          <input type="text" class="search-input" id="board-search" placeholder="🔍 Search player..." value="${searchQuery}" style="max-width: 280px;">
-          <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Jump down to DST & K tiers">
-            🛡️ DST & K ↓
-          </button>
-        </div>
+        <button class="btn-secondary" id="btn-jump-player-db" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #a78bfa; border-color: rgba(167, 139, 250, 0.4);" title="Jump down to Player Database & Evaluation Framework">
+          📋 Player DB ↓
+        </button>
+
+        <button class="btn-secondary" id="btn-jump-top-bar" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #facc15; border-color: rgba(250, 204, 21, 0.4);" title="Scroll back to top">
+          ⬆️ Back to Top
+        </button>
       </div>
 
       <!-- Primary 4-Column Offense Board (RB, WR, TE, QB) -->
@@ -212,21 +196,101 @@ export function renderPreDraftView() {
               Specialist positions kept separate for late-round drafting. Full tier dragging, gap adjustments, and drafting features enabled.
             </p>
           </div>
-          <button id="btn-jump-top" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; cursor: pointer;">
-            ↑ Back to Top Board
-          </button>
         </div>
         <div class="specialists-grid">
           ${bottomPositions.map(renderPosColumn).join('')}
         </div>
       </div>
 
-      <!-- Stat Table Section -->
-      <div class="glass-card">
-        <div class="card-title">
-          <span>📊 Player Database & Rankings</span>
+      <!-- Player Database & Rankings Section with Strategy Framework -->
+      <div class="glass-card" id="section-player-db" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="font-size: 1.15rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+            📊 Player Database & Rankings
+          </span>
+          <span class="tier-badge" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">${players.length} Players Tracked</span>
         </div>
 
+        <!-- Evaluation Framework Guidance Cards -->
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: var(--radius-md); padding: 1.1rem; display: flex; flex-direction: column; gap: 0.9rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.1rem;">🧠</span>
+            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #e0e7ff;">Advanced Draft Strategy & Player Evaluation Framework</h4>
+          </div>
+          <p style="margin: 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.45;">
+            Integrate these core analytical pillars to identify draft value, breakout candidates, regression risks, and tier leverage:
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; margin-top: 0.25rem;">
+            <!-- Pillar 1 -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.85rem;">🎯</span>
+                <strong style="font-size: 0.82rem; color: #38bdf8;">Volume & Opportunity Share</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                Volume is the strongest predictor of fantasy success. For running backs, evaluate <strong>Opportunity Share</strong> (carries + targets) and high-value touches (red-zone carries & goal-line work). For receivers, focus on <strong>Target Share</strong> (<em>20%+</em> is solid, <em>25%+</em> is elite) and <strong>Air Yards / WOPR</strong> (Weighted Opportunity Rating) revealing true downfield intent regardless of completion rate.
+              </p>
+            </div>
+
+            <!-- Pillar 2 -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.85rem;">⚡</span>
+                <strong style="font-size: 0.82rem; color: #34d399;">Per-Game Efficiency Over Total Points</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                Total points from previous seasons penalize players who missed time with fluky injuries. Always examine <strong>Fantasy Points Per Game (PPG)</strong> and <strong>Targets / Carries Per Route Run (TPRR/CPRR)</strong> to measure true efficiency and per-snap dominance when on the field.
+              </p>
+            </div>
+
+            <!-- Pillar 3 -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.85rem;">🏟️</span>
+                <strong style="font-size: 0.82rem; color: #facc15;">Offensive Environment & Game Script</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                Rather than simply looking at raw offensive vs defensive strength, examine <strong>Projected Team Implied Point Totals</strong> (via Vegas win totals / over-unders) and <strong>Neutral-Situation Pass/Run Rates</strong>. High-scoring offenses generate significantly more red-zone drives, boosting touchdown upside across all skill positions.
+              </p>
+            </div>
+
+            <!-- Pillar 4 -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.85rem;">🛡️</span>
+                <strong style="font-size: 0.82rem; color: #fb7185;">Offensive Line Rankings</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                A weak offensive line degrades pocket time for QBs, delays deep-developing routes for WRs, and crushes RB yards before contact. Look at <strong>run-block and pass-block win rates</strong> or unit composite grades when drafting skill position players.
+              </p>
+            </div>
+
+            <!-- Pillar 5 -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.85rem;">📋</span>
+                <strong style="font-size: 0.82rem; color: #c084fc;">Coaching & Play-Calling Trends</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                Coaching changes drive massive shifts in <strong>pace of play</strong> (total plays per game) and offensive scheme (e.g., heavy 2-TE sets vs 3-WR spread, or zone-read rushing vs power-gap blocking). Target coaches who rank top-10 in neutral offensive tempo.
+              </p>
+            </div>
+
+            <!-- Pillar 6 -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.85rem;">📅</span>
+                <strong style="font-size: 0.82rem; color: #a3e635;">Strength of Schedule (SoS)</strong>
+              </div>
+              <p style="margin: 0; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                Useful primarily as a tiebreaker between adjacent tier picks. Note that pre-season SoS has a high rate of decay as defenses fluctuate drastically year-to-year. <strong>Late-season / playoff SoS (Weeks 15–17)</strong> is most actionable for deep benches or trading targets mid-season rather than early-round draft picks.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stat Table -->
         <div class="stat-table-wrapper">
           <table class="stat-table">
             <thead>
@@ -238,6 +302,7 @@ export function renderPreDraftView() {
                 <th>Tier</th>
                 <th>ECR</th>
                 <th>Proj Pts</th>
+                <th>Proj PPG</th>
                 <th>Target Share</th>
                 <th>RZ Touches</th>
                 <th>Air Yards</th>
@@ -246,16 +311,17 @@ export function renderPreDraftView() {
             <tbody>
               ${players.map((p, idx) => `
                 <tr>
-                  <td style="font-weight: 700; color: var(--accent-primary);">${idx + 1}</td>
+                  <td style="font-weight: 700; color: var(--accent-primary);">${p.ecr || p.customRank || (idx + 1)}</td>
                   <td style="font-weight: 700; color: #fff;">${p.name}</td>
                   <td><span class="pos-badge pos-${p.pos.toLowerCase()}">${p.pos}</span></td>
                   <td>${p.team}</td>
                   <td><span class="tier-badge">T${p.tier}</span></td>
-                  <td style="color: var(--text-muted);">${p.ecr}</td>
+                  <td style="color: var(--text-muted);">${p.ecr || '-'}</td>
                   <td style="font-weight: 700; color: #34d399;">${p.projectedPts}</td>
-                  <td>${p.targetShare}%</td>
-                  <td>${p.redzoneTouches}</td>
-                  <td>${p.airYardsShare}%</td>
+                  <td style="font-weight: 600; color: #38bdf8;">${(p.projectedPts / 17).toFixed(1)}</td>
+                  <td>${p.targetShare || 0}%</td>
+                  <td>${p.redzoneTouches || 0}</td>
+                  <td>${p.airYardsShare || 0}%</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -267,16 +333,7 @@ export function renderPreDraftView() {
 
   // --- ATTACH EVENT LISTENERS ---
 
-  // Search Filter
-  const searchInput = container.querySelector('#board-search');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      container.dataset.searchQuery = e.target.value;
-      renderPreDraftView();
-    });
-  }
-
-  // Jump to DST & K and Back to Top
+  // Jump to DST & K
   const btnJumpDstK = container.querySelector('#btn-jump-dst-k');
   if (btnJumpDstK) {
     btnJumpDstK.addEventListener('click', () => {
@@ -287,10 +344,22 @@ export function renderPreDraftView() {
     });
   }
 
-  const btnJumpTop = container.querySelector('#btn-jump-top');
-  if (btnJumpTop) {
-    btnJumpTop.addEventListener('click', () => {
-      container.scrollIntoView({ behavior: 'smooth' });
+  // Jump to Player Database
+  const btnJumpPlayerDb = container.querySelector('#btn-jump-player-db');
+  if (btnJumpPlayerDb) {
+    btnJumpPlayerDb.addEventListener('click', () => {
+      const target = document.getElementById('section-player-db');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  // Jump Back to Top
+  const btnJumpTopBar = container.querySelector('#btn-jump-top-bar');
+  if (btnJumpTopBar) {
+    btnJumpTopBar.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
