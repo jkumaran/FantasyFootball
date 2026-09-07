@@ -15,6 +15,13 @@ export const DEFAULT_TIER_GAPS = {
   K: { 1: 500 }
 };
 
+export function normalizePlayerName(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.toLowerCase()
+    .replace(/\s+(?:jr\.?|sr\.?|ii|iii|iv|v)$/i, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
 export function parseBoardYaml(yamlText) {
   if (!yamlText || typeof yamlText !== 'string') return null;
 
@@ -284,12 +291,18 @@ class Store {
       const yamlDraftedMap = new Map(); // playerId -> boolean
 
       parsed.players.forEach((yp, index) => {
-        let match = this.state.players.find(p => p.name.toLowerCase() === yp.name.toLowerCase() && p.pos.toUpperCase() === yp.pos.toUpperCase());
+        const ypNorm = normalizePlayerName(yp.name);
+        let match = this.state.players.find(p => 
+          normalizePlayerName(p.name) === ypNorm && p.pos.toUpperCase() === yp.pos.toUpperCase()
+        );
         if (!match) {
-          match = this.state.players.find(p => p.name.toLowerCase() === yp.name.toLowerCase());
+          match = this.state.players.find(p => normalizePlayerName(p.name) === ypNorm);
         }
 
-        const slug = (yp.name || 'player').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const slug = (yp.name || 'player').toLowerCase()
+          .replace(/\s+(?:jr\.?|sr\.?|ii|iii|iv|v)$/i, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
         const deterministicId = `${yp.pos.toLowerCase()}-${slug}`;
 
         if (!match) {
@@ -297,6 +310,9 @@ class Store {
         }
 
         if (match) {
+          if (yp.name && !yp.name.match(/\b(?:Sr\.?|II|III|IV|V)$/i)) {
+            match.name = yp.name;
+          }
           match.tier = yp.tier || match.tier || 1;
           match.pos = yp.pos || match.pos;
           match.customRank = index + 1;
@@ -340,9 +356,9 @@ class Store {
         }
       });
 
-      // Retain any remaining players in state that were not explicitly listed in YAML
+      // Only retain user-created custom players that were not in YAML
       this.state.players.forEach(p => {
-        if (!usedIds.has(p.id)) {
+        if (p.isCustom && !usedIds.has(p.id)) {
           orderedPlayers.push(p);
         }
       });
