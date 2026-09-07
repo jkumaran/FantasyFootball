@@ -182,9 +182,6 @@ export function renderPreDraftView() {
             <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Load tier board from a local YAML file">
               📥 Import File
             </button>
-            <button class="btn-secondary" id="btn-clean-empty-tiers" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Remove all tiers with no players">
-              🗑️ Remove Empty
-            </button>
             <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
               📥 Export YAML
             </button>
@@ -465,18 +462,7 @@ export function renderPreDraftView() {
     });
   }
 
-  // Remove Empty Tiers Button
-  const btnCleanEmpty = container.querySelector('#btn-clean-empty-tiers');
-  if (btnCleanEmpty) {
-    btnCleanEmpty.addEventListener('click', () => {
-      if (!store.getState().isAuthenticated) {
-        renderAuthModal();
-        return;
-      }
-      store.removeEmptyTiers();
-      renderPreDraftView();
-    });
-  }
+
 
   // Quick Add Player
   const handleAddPlayer = (pos, inputEl) => {
