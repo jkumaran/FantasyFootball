@@ -261,14 +261,12 @@ class Store {
         if (localYaml) {
           this.loadFromYaml(localYaml, true);
         }
-        return;
-      }
-
-      // If user has NOT customized yet, load the fixed tier_board.yaml from the server
-      const yamlResult = await api.getBoardYaml();
-      if (yamlResult && yamlResult.success && yamlResult.yaml) {
-        this.loadFromYaml(yamlResult.yaml, true);
-        return;
+      } else {
+        // If user has NOT customized yet, load the fixed tier_board.yaml from the server
+        const yamlResult = await api.getBoardYaml();
+        if (yamlResult && yamlResult.success && yamlResult.yaml) {
+          this.loadFromYaml(yamlResult.yaml, true);
+        }
       }
     } catch (e) {
       console.warn('YAML server load check:', e);
@@ -301,6 +299,8 @@ class Store {
             this.state.league = { ...this.state.league, ...draftRes.league };
           }
         }
+        this.saveState(false, true);
+        this.notify();
       }
     } catch (e) {
       console.warn('Draft sessions sync error:', e);

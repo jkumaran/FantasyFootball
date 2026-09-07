@@ -28,7 +28,7 @@ export function renderLiveDraftView() {
 
   // Available draft sessions (fallback defaults if backend hasn't populated yet)
   const defaultSessions = [
-    { id: 'yahoo-1', name: 'Yahoo: League 1', platform: 'yahoo', teamsCount: 12, userSlot: 1 },
+    { id: 'yahoo-1', name: 'Yahoo: League 1 (1548819)', platform: 'yahoo', leagueId: '1548819', teamsCount: 12, userSlot: 1 },
     { id: 'espn-2', name: 'ESPN: League 2', platform: 'espn', teamsCount: 10, userSlot: 4 },
     { id: 'sleeper-3', name: 'Sleeper: League 3', platform: 'sleeper', teamsCount: 12, userSlot: 2 },
     { id: 'mock', name: 'Manual / Mock', platform: 'manual', teamsCount: 12, userSlot: 1 }
@@ -95,9 +95,11 @@ export function renderLiveDraftView() {
           ${sessions.map(s => {
             const isActive = s.id === activeSessionId;
             const icon = getPlatformIcon(s.platform);
+            const effectiveLid = s.leagueId || (s.id === 'yahoo-1' ? '1548819' : null);
+            const displayName = effectiveLid && !s.name.includes(effectiveLid) ? `${s.name} (${effectiveLid})` : s.name;
             return `
               <button class="btn-secondary btn-switch-session" data-id="${s.id}" style="padding: 0.28rem 0.65rem; font-size: 0.76rem; font-weight: 700; ${isActive ? 'background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #fff; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);' : 'color: var(--text-muted);'}">
-                ${icon} ${s.name} ${isActive ? '<span style="color: #38bdf8; font-size: 0.68rem; margin-left: 3px;">●</span>' : ''}
+                ${icon} ${displayName} ${isActive ? '<span style="color: #38bdf8; font-size: 0.68rem; margin-left: 3px;">●</span>' : ''}
               </button>
             `;
           }).join('')}
@@ -111,7 +113,7 @@ export function renderLiveDraftView() {
           <div style="display: flex; align-items: center; gap: 0.35rem;">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: pulse 2s infinite;"></span>
             <span style="font-size: 0.74rem; font-weight: 700; color: #fff;">
-              ${getPlatformIcon(currentSession?.platform)} ${currentSession?.platform?.toUpperCase() || 'LIVE'}: Pick #${currentPick}
+              ${getPlatformIcon(currentSession?.platform)} ${currentSession?.platform?.toUpperCase() || 'LIVE'}${currentSession?.leagueId || (currentSession?.id === 'yahoo-1' ? ' #1548819' : '')}: Pick #${currentPick}
             </span>
           </div>
           <button class="btn-secondary" id="btn-extension-guide" style="padding: 0.24rem 0.55rem; font-size: 0.72rem; font-weight: 700; color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1);">
@@ -140,7 +142,9 @@ export function renderLiveDraftView() {
           <div class="glass-card" style="border-color: ${isUserTurn ? 'var(--accent-primary)' : 'var(--border-color)'};">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <div style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">CURRENT PICK • ${currentSession?.name || 'League 1'}</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">
+                  CURRENT PICK • ${currentSession?.name || 'Yahoo: League 1'} ${currentSession?.leagueId || (currentSession?.id === 'yahoo-1' ? '(Yahoo #1548819)' : '')}
+                </div>
                 <div style="font-size: 1.4rem; font-weight: 900; color: #fff;">Round ${round} • Pick ${pickInRound}</div>
                 <div style="font-size: 0.8rem; color: var(--text-muted);">Overall Pick #${currentPick} (${currentSession?.scoring || 'Half-PPR'} Snake • ${teamsCount} Teams)</div>
               </div>
