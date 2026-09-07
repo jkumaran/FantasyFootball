@@ -143,10 +143,11 @@ export function renderPreDraftView() {
                                 <div>
                                   <span>${p.team} • Bye ${p.bye}</span>
                                 </div>
-                                <div class="pillar-grades-row" style="display: flex; gap: 4px; align-items: center; margin-top: 1px; line-height: 1;">
-                                  <span style="color: #facc15; background: rgba(250, 204, 21, 0.12); border: 1px solid rgba(250, 204, 21, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 3px;" title="Offensive Environment: Grade ${a.gradeP3} (${a.vegasPpg} Vegas Implied PPG · ${a.passRatePct}% Neutral Pass Rate)">Env:${a.gradeP3}</span>
-                                  <span style="color: #fb7185; background: rgba(251, 113, 133, 0.12); border: 1px solid rgba(251, 113, 133, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 3px;" title="Offensive Line: Grade ${a.gradeP4} (PFF Unit Rank #${a.olRank} · ${a.olTier})">OL:${a.gradeP4}</span>
-                                  <span style="color: #a3e635; background: rgba(163, 230, 53, 0.12); border: 1px solid rgba(163, 230, 53, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 3px;" title="Playoff SoS (Weeks 15-17): Grade ${a.gradeP6} (${a.playoffPts} pts · ${a.playoffSos})">SoS:${a.gradeP6}</span>
+                                <div class="pillar-grades-row" style="display: flex; gap: 3px; align-items: center; margin-top: 1px; line-height: 1;">
+                                  <span style="color: #34d399; background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 3px; border-radius: 3px;" title="Per-Play Efficiency: Grade ${a.gradeP2} (${a.effLabel})">Eff:${a.gradeP2}</span>
+                                  <span style="color: #facc15; background: rgba(250, 204, 21, 0.12); border: 1px solid rgba(250, 204, 21, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 3px; border-radius: 3px;" title="Offensive Environment: Grade ${a.gradeP3} (${a.vegasPpg} Vegas Implied PPG · ${a.passRatePct}% Neutral Pass Rate)">Env:${a.gradeP3}</span>
+                                  <span style="color: #fb7185; background: rgba(251, 113, 133, 0.12); border: 1px solid rgba(251, 113, 133, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 3px; border-radius: 3px;" title="Offensive Line: Grade ${a.gradeP4} (PFF Unit Rank #${a.olRank} · ${a.olTier})">OL:${a.gradeP4}</span>
+                                  <span style="color: #a3e635; background: rgba(163, 230, 53, 0.12); border: 1px solid rgba(163, 230, 53, 0.32); font-size: 0.62rem; font-weight: 800; padding: 1px 3px; border-radius: 3px;" title="Playoff SoS (Weeks 15-17): Grade ${a.gradeP6} (${a.playoffPts} pts · ${a.playoffSos})">SoS:${a.gradeP6}</span>
                                 </div>
                               </div>
                             </div>
@@ -176,16 +177,19 @@ export function renderPreDraftView() {
   const renderPillarLegend = (titlePrefix = 'Offense') => `
     <div class="glass-card pillar-legend-bar" style="padding: 0.45rem 0.85rem; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.74rem;">
       <div style="font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
-        <span>⚡ 3 Key Context Grades (Not Reflected in ADP):</span>
+        <span>⚡ 4 Key Context Grades (Not Reflected in ADP):</span>
       </div>
-      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; flex: 1; justify-content: flex-end;">
-        <span style="color: #facc15; display: inline-flex; align-items: center; gap: 0.3rem;" title="Team scoring potential & neutral game script: High-scoring Vegas totals (24+ PPG) yield 40% more red-zone and touchdown opportunities.">
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.85rem; flex: 1; justify-content: flex-end;">
+        <span style="color: #34d399; display: inline-flex; align-items: center; gap: 0.25rem;" title="Per-play dominance over raw totals: YPRR for WR/TE, Explosive Run % for RB, YPA for QB. Exposes volume traps and identifies breakout stars.">
+          <strong style="background: rgba(52, 211, 153, 0.18); border: 1px solid rgba(52, 211, 153, 0.35); padding: 1px 5px; border-radius: 3px; font-weight: 800;">Eff</strong> Efficiency (YPRR / Expl% / YPA)
+        </span>
+        <span style="color: #facc15; display: inline-flex; align-items: center; gap: 0.25rem;" title="Team scoring potential & neutral game script: High-scoring Vegas totals (24+ PPG) yield 40% more red-zone and touchdown opportunities.">
           <strong style="background: rgba(250, 204, 21, 0.18); border: 1px solid rgba(250, 204, 21, 0.35); padding: 1px 5px; border-radius: 3px; font-weight: 800;">Env</strong> Offensive Environment (Vegas PPG & Pass%)
         </span>
-        <span style="color: #fb7185; display: inline-flex; align-items: center; gap: 0.3rem;" title="Trench push and pocket time: Run-blocking push before contact for RBs, pass-block clean pocket rate for QBs/WRs (PFF Rank 1-32).">
+        <span style="color: #fb7185; display: inline-flex; align-items: center; gap: 0.25rem;" title="Trench push and pocket time: Run-blocking push before contact for RBs, pass-block clean pocket rate for QBs/WRs (PFF Rank 1-32).">
           <strong style="background: rgba(251, 113, 133, 0.18); border: 1px solid rgba(251, 113, 133, 0.35); padding: 1px 5px; border-radius: 3px; font-weight: 800;">OL</strong> Offensive Line Unit (Rank 1-32)
         </span>
-        <span style="color: #a3e635; display: inline-flex; align-items: center; gap: 0.3rem;" title="Championship equity: Strength of schedule and combined projected points specifically across fantasy playoffs (Weeks 15-17).">
+        <span style="color: #a3e635; display: inline-flex; align-items: center; gap: 0.25rem;" title="Championship equity: Strength of schedule and combined projected points specifically across fantasy playoffs (Weeks 15-17).">
           <strong style="background: rgba(163, 230, 53, 0.18); border: 1px solid rgba(163, 230, 53, 0.35); padding: 1px 5px; border-radius: 3px; font-weight: 800;">SoS</strong> Playoff SoS (Weeks 15-17 Pts)
         </span>
       </div>
