@@ -261,6 +261,16 @@ export const api = {
     }
   },
 
+  async getBridgeHeartbeat() {
+    try {
+      const res = await fetch('/api/draft/heartbeat');
+      if (!res.ok) throw new Error('Heartbeat check failed');
+      return await res.json();
+    } catch (e) {
+      return { success: false, connected: false };
+    }
+  },
+
   async getBoardYaml() {
     try {
       const res = await fetch('/api/board/yaml', { credentials: 'include' });

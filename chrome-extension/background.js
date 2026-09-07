@@ -15,6 +15,15 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Relay picks to local backend
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'HEARTBEAT') {
+    handleHeartbeat(request.payload).then(res => {
+      sendResponse(res);
+    }).catch(err => {
+      sendResponse({ success: false, error: err.message });
+    });
+    return true;
+  }
+
   if (request.type === 'DRAFT_PICK') {
     handleDraftPick(request.payload).then(res => {
       sendResponse(res);
@@ -31,6 +40,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 });
+
+async function handleHeartbeat(payload) {
+  const config = await new Promise(resolve => chrome.storage.local.get(DEFAULT_CONFIG, resolve));
+  const endpoint = `${config.serverUrl.replace(/\/+$/, '')}/api/draft/heartbeat`;
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
 
 async function handleDraftPick(pickData) {
   const config = await new Promise(resolve => chrome.storage.local.get(DEFAULT_CONFIG, resolve));

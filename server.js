@@ -24,6 +24,14 @@ if (!currentCommitHash) {
   }
 }
 
+// Track active Chrome Extension bridge heartbeats
+let lastBridgeHeartbeat = {
+  platform: null,
+  leagueId: null,
+  url: '',
+  timestamp: 0
+};
+
 let cachedLatestCommit = null;
 let lastCommitCheckTime = 0;
 
@@ -240,7 +248,9 @@ const server = http.createServer(async (req, res) => {
     { method: 'POST', path: '/api/auth/logout' },
     { method: 'GET', path: '/api/deploy-status' },
     { method: 'POST', path: '/api/draft/sync-pick' },
-    { method: 'GET', path: '/api/draft/sessions' }
+    { method: 'GET', path: '/api/draft/sessions' },
+    { method: 'GET', path: '/api/draft/heartbeat' },
+    { method: 'POST', path: '/api/draft/heartbeat' }
   ];
 
   const isPublicApi = publicApiRoutes.some(r => r.method === method && r.path === pathname);
@@ -580,6 +590,32 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, { success: true, deletedSessionId: sid });
       }
       return sendJson(res, { success: false, error: 'Missing sessionId' }, 400);
+    } catch (err) {
+      return sendJson(res, { success: false, error: err.message }, 500);
+    }
+  }
+
+  // GET /api/draft/heartbeat
+  if (method === 'GET' && pathname === '/api/draft/heartbeat') {
+    const isRecent = (Date.now() - lastBridgeHeartbeat.timestamp) < 15000;
+    return sendJson(res, {
+      success: true,
+      connected: isRecent,
+      ...lastBridgeHeartbeat
+    });
+  }
+
+  // POST /api/draft/heartbeat (Chrome Extension Heartbeat)
+  if (method === 'POST' && pathname === '/api/draft/heartbeat') {
+    try {
+      const body = await parseRequestBody(req);
+      lastBridgeHeartbeat = {
+        platform: body.platform || 'yahoo',
+        leagueId: body.leagueId || null,
+        url: body.url || '',
+        timestamp: Date.now()
+      };
+      return sendJson(res, { success: true, connected: true });
     } catch (err) {
       return sendJson(res, { success: false, error: err.message }, 500);
     }

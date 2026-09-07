@@ -109,12 +109,14 @@ export function renderLiveDraftView() {
           </button>
         </div>
 
-        <!-- Group 2: Thin Dotted Box for Real-Time Chrome Extension Bridge -->
-        <div style="display: flex; align-items: center; gap: 0.45rem; padding: 0.25rem 0.5rem; border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: var(--radius-sm); background: rgba(56, 189, 248, 0.04);">
+        <!-- Group 2: Real-Time Chrome Extension Bridge Status -->
+        <div style="display: flex; align-items: center; gap: 0.45rem; padding: 0.25rem 0.5rem; border: 1px dashed ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.6)' : 'rgba(251, 191, 36, 0.5)'}; border-radius: var(--radius-sm); background: ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.08)' : 'rgba(251, 191, 36, 0.05)'};">
           <div style="display: flex; align-items: center; gap: 0.35rem;">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; animation: pulse 2s infinite;"></span>
-            <span style="font-size: 0.74rem; font-weight: 700; color: #fff;">
-              ${getPlatformIcon(currentSession?.platform)} ${currentSession?.platform?.toUpperCase() || 'LIVE'}${currentSession?.leagueId || (currentSession?.id === 'yahoo-1' ? ' #1548819' : '')}: Pick #${currentPick}
+            <span style="width: 9px; height: 9px; border-radius: 50%; background: ${state.bridgeConnected ? '#34d399' : '#fbbf24'}; box-shadow: 0 0 8px ${state.bridgeConnected ? '#34d399' : '#fbbf24'}; animation: pulse 1.5s infinite;"></span>
+            <span style="font-size: 0.74rem; font-weight: 700; color: ${state.bridgeConnected ? '#34d399' : '#fde68a'};">
+              ${state.bridgeConnected 
+                ? `🟢 Yahoo Connected (${state.bridgeLeagueId ? '#' + state.bridgeLeagueId : currentSession?.leagueId ? '#' + currentSession.leagueId : '#1548819'}) • Live Sync Active`
+                : `🟡 Yahoo Bridge Waiting... (Open Draft Tab)`}
             </span>
           </div>
           <button class="btn-secondary" id="btn-extension-guide" style="padding: 0.24rem 0.55rem; font-size: 0.72rem; font-weight: 700; color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1);">
@@ -648,6 +650,7 @@ function openExtensionHelpModal(currentSession) {
   const existing = document.getElementById('modal-ext-help');
   if (existing) existing.remove();
 
+  const state = store.getState();
   const linkedId = currentSession?.leagueId || (currentSession?.id?.includes('1548819') ? '1548819' : '1548819');
   const draftRoomUrl = `https://football.fantasysports.yahoo.com/f1/${linkedId}/draftclient`;
 
@@ -668,6 +671,20 @@ function openExtensionHelpModal(currentSession) {
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.82rem; color: var(--text-color); line-height: 1.5;">
+        <!-- Live Connection Status Alert -->
+        <div style="padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); background: ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.12)' : 'rgba(251, 191, 36, 0.1)'}; border: 1px solid ${state.bridgeConnected ? 'rgba(52, 211, 153, 0.4)' : 'rgba(251, 191, 36, 0.3)'}; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: ${state.bridgeConnected ? '#34d399' : '#fbbf24'}; box-shadow: 0 0 8px ${state.bridgeConnected ? '#34d399' : '#fbbf24'};"></span>
+            <div>
+              <strong style="color: #fff; font-size: 0.85rem;">Bridge Status: </strong>
+              <span style="color: ${state.bridgeConnected ? '#34d399' : '#fbbf24'}; font-weight: 700;">
+                ${state.bridgeConnected ? `CONNECTED (Yahoo League #${state.bridgeLeagueId || linkedId})` : 'WAITING FOR YAHOO DRAFT TAB'}
+              </span>
+            </div>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--text-dim);">Live Heartbeat: Every 2s</span>
+        </div>
+
         <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
             <div>
@@ -687,17 +704,18 @@ function openExtensionHelpModal(currentSession) {
         
         <ol style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
           <li>Open <strong>Google Chrome</strong> and navigate to <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #38bdf8;">chrome://extensions</code>.</li>
-          <li>Turn ON <strong>"Developer mode"</strong> (toggle in top right corner), then click <strong>"Load unpacked"</strong>.</li>
+          <li>Turn ON <strong>"Developer mode"</strong> (toggle in top right corner), then click <strong>"Load unpacked"</strong>. <em>(If already loaded earlier, click the 🔄 reload icon on the card!)</em></li>
           <li>Select the <code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; color: #34d399;">chrome-extension</code> folder from your project:
             <div style="margin-top: 4px; padding: 5px 8px; background: rgba(0,0,0,0.35); border-radius: 4px; font-family: monospace; font-size: 0.75rem; color: #fbbf24; word-break: break-all;">
               /Users/kumaran/Documents/FantasyFootball/chrome-extension
             </div>
           </li>
+          <li>Refresh your Yahoo draft tab! Look for the floating badge <strong>"🟣 Cameron Bridge: Yahoo Draft Sync Active"</strong> in the bottom-right corner of the Yahoo page.</li>
         </ol>
 
         <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); padding: 0.75rem;">
           <strong style="color: #34d399; display: block; margin-bottom: 0.25rem;">⚡ How Live Sync Works:</strong>
-          Keep your Yahoo draft room (<code style="color: #38bdf8;">football.fantasysports.yahoo.com</code>) open in one tab, and this Live Draft War Room open in another. When you are on Yahoo, a floating badge <strong>"🟣 Cameron Bridge: Yahoo Draft Sync Active"</strong> will appear in the bottom-right corner. Every time a pick occurs, it is instantly crossed off your board with zero manual work!
+          Keep your Yahoo draft room (<code style="color: #38bdf8;">football.fantasysports.yahoo.com</code>) open in one tab, and this Live Draft War Room open in another. Every time a pick occurs, it is instantly crossed off your board with zero manual work!
         </div>
 
         <div style="display: flex; justify-content: flex-end; margin-top: 0.25rem;">

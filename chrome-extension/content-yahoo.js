@@ -154,6 +154,22 @@
   });
   observer.observe(document.body, { childList: true, subtree: true });
 
+  // Heartbeat to notify Live War Room that Yahoo tab is open and linked
+  function sendHeartbeat() {
+    chrome.runtime.sendMessage({
+      type: 'HEARTBEAT',
+      payload: {
+        platform: 'yahoo',
+        leagueId: leagueId || '1548819',
+        url: window.location.href,
+        isDraftClient
+      }
+    }, () => {});
+  }
+
+  sendHeartbeat();
+  setInterval(sendHeartbeat, 4000);
+
   // Initial scan and regular periodic poll every 2s
   scanDraftTable();
   setInterval(scanDraftTable, 2000);

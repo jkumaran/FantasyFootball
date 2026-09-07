@@ -192,6 +192,9 @@ class Store {
           players: playerList,
           draftPicks: [],
           currentPick: 1,
+          bridgeConnected: false,
+          bridgeLeagueId: null,
+          bridgeLastSeen: null,
           weeklyStrategy: 'CONSERVATIVE',
           userRoster: ['rb-904', 'wr-902', 'qb-774', 'te-899'],
           opponentRoster: [],
@@ -216,6 +219,9 @@ class Store {
         players: INITIAL_PLAYERS,
         draftPicks: [],
         currentPick: 1,
+        bridgeConnected: false,
+        bridgeLeagueId: null,
+        bridgeLastSeen: null,
         activeDraftSessionId: 'yahoo-1',
         draftSessions: [],
         weeklyStrategy: 'CONSERVATIVE',
@@ -305,6 +311,17 @@ class Store {
     } catch (e) {
       console.warn('Draft sessions sync error:', e);
     }
+
+    // Sync chrome extension bridge heartbeat
+    try {
+      const hbRes = await api.getBridgeHeartbeat();
+      if (hbRes && hbRes.success) {
+        this.state.bridgeConnected = hbRes.connected;
+        this.state.bridgeLeagueId = hbRes.leagueId;
+        this.state.bridgeLastSeen = hbRes.lastSeen;
+        this.notify();
+      }
+    } catch (e) {}
   }
 
   loadFromYaml(yamlText, skipBackendSave = false, isUserEdit = false) {
@@ -985,6 +1002,17 @@ class Store {
       const sessionRes = await api.getDraftSessions();
       if (sessionRes && sessionRes.success) {
         this.state.draftSessions = sessionRes.sessions || [];
+      }
+      // Check extension bridge heartbeat
+      const hbRes = await api.getBridgeHeartbeat();
+      if (hbRes && hbRes.success) {
+        const changed = (this.state.bridgeConnected !== hbRes.connected) || (this.state.bridgeLeagueId !== hbRes.leagueId);
+        this.state.bridgeConnected = hbRes.connected;
+        this.state.bridgeLeagueId = hbRes.leagueId;
+        this.state.bridgeLastSeen = hbRes.lastSeen;
+        if (changed) {
+          this.notify();
+        }
       }
     } catch (e) {}
   }
