@@ -4,15 +4,17 @@ import { api } from './api.js';
 const STORAGE_KEY = 'fantasy_suite_state_v1';
 const BOARD_YAML_KEY = 'fantasy_active_board_yaml_v1';
 const BOARD_CUSTOM_FLAG = 'fantasy_board_customized_v1';
+const BOARD_BASELINE_KEY = 'fantasy_board_baseline_version';
+const CURRENT_BASELINE_VERSION = 'v2_golden_jody';
 const AUTOSAVE_KEY = 'fantasy_autosave_enabled_v1';
 
 export const DEFAULT_TIER_GAPS = {
-  RB: { 1: 0, 2: 30 },
-  WR: { 1: 45 },
-  TE: { 1: 180 },
-  QB: { 1: 240 },
-  DST: { 1: 450 },
-  K: { 1: 500 }
+  RB: { 1: 0, 2: 365, 3: 168, 4: 759, 5: 374, 6: 425, 7: 1627, 8: 1293, 9: 30 },
+  WR: { 1: 0, 2: 30, 3: 591, 4: 30, 5: 271, 6: 323, 7: 220, 8: 30, 9: 833, 10: 117, 11: 1666 },
+  TE: { 1: 808, 2: 2371, 3: 30, 4: 652, 5: 1832, 6: 30, 7: 1060, 8: 1410 },
+  QB: { 1: 1230, 2: 30, 3: 1089, 4: 323, 5: 833, 6: 4043, 7: 1767 },
+  DST: { 1: 0, 2: 30, 3: 30, 4: 30, 5: 30 },
+  K: { 1: 0, 2: 30, 3: 30, 4: 30, 5: 30 }
 };
 
 export function normalizePlayerName(str) {
@@ -234,6 +236,16 @@ class Store {
       return;
     }
 
+    // Check version migration to ensure stale pre-Golden-Jody cache is cleared
+    const localVersion = localStorage.getItem(BOARD_BASELINE_KEY);
+    if (localVersion !== CURRENT_BASELINE_VERSION) {
+      try {
+        localStorage.removeItem(BOARD_CUSTOM_FLAG);
+        localStorage.removeItem(BOARD_YAML_KEY);
+        localStorage.setItem(BOARD_BASELINE_KEY, CURRENT_BASELINE_VERSION);
+      } catch (e) {}
+    }
+
     const hasCustomBoard = localStorage.getItem(BOARD_CUSTOM_FLAG) === 'true';
 
     try {
@@ -273,15 +285,15 @@ class Store {
     const parsed = parseBoardYaml(yamlText);
     if (!parsed) return false;
 
-    // 1. Apply tier gaps if present (deep-merge by position)
-    if (parsed.tierGaps && typeof parsed.tierGaps === 'object') {
-      if (!this.state.tierGaps) this.state.tierGaps = {};
+    // 1. Apply tier gaps if present (clean replacement so presets don't leak gaps)
+    if (parsed.tierGaps && typeof parsed.tierGaps === 'object' && Object.keys(parsed.tierGaps).length > 0) {
+      const cleanGaps = {};
       Object.keys(parsed.tierGaps).forEach(pos => {
-        this.state.tierGaps[pos] = {
-          ...(this.state.tierGaps[pos] || {}),
-          ...parsed.tierGaps[pos]
-        };
+        cleanGaps[pos] = { ...parsed.tierGaps[pos] };
       });
+      this.state.tierGaps = cleanGaps;
+    } else {
+      this.state.tierGaps = JSON.parse(JSON.stringify(DEFAULT_TIER_GAPS));
     }
 
     // 2. Apply player tiers, positions, custom ranks, and draft statuses in YAML sequence
@@ -644,22 +656,11 @@ class Store {
     }
 
     if (res && res.success && res.yaml) {
-      try {
-        localStorage.setItem(BOARD_CUSTOM_FLAG, 'true');
-        localStorage.setItem(BOARD_YAML_KEY, res.yaml);
-      } catch (e) {}
-
-      // Load into client state (skipBackendSave = true initially)
+      // NOTE: Presets are READ-ONLY views.
+      // Do NOT save to server or overwrite active board in backend DB!
+      // Load into client state (skipBackendSave = true)
       this.loadFromYaml(res.yaml, true, false);
-
-      // If autosave is enabled and user is authenticated, save directly to server
-      if (this.isAutosaveEnabled && this.state.isAuthenticated) {
-        await api.saveBoardYaml(res.yaml);
-        this.hasUnsavedChanges = false;
-      } else {
-        this.hasUnsavedChanges = true;
-      }
-
+      this.hasUnsavedChanges = true;
       this.notify();
       return true;
     }

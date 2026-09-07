@@ -116,6 +116,54 @@ async function initDb() {
       await addUserRosterPlayer(pid);
     }
   }
+
+  // Seed Golden Jody baseline into active_board if not seeded yet
+  try {
+    const seedCheck = await db.execute("SELECT yaml FROM board_state WHERE key = 'golden_jody_v2_seeded'");
+    if (!seedCheck.rows || seedCheck.rows.length === 0) {
+      const candidates = [
+        path.join(__dirname, '..', 'data', 'golden_jody_tier_board.yaml'),
+        path.join(__dirname, '..', 'data', 'tier_board.yaml'),
+        path.join(__dirname, '..', 'tier_board.yaml')
+      ];
+      let jodyYaml = null;
+      for (const cp of candidates) {
+        if (fs.existsSync(cp)) {
+          jodyYaml = fs.readFileSync(cp, 'utf8');
+          break;
+        }
+      }
+      if (jodyYaml) {
+        const now = new Date().toISOString();
+        const userSavedCheck = await db.execute("SELECT yaml FROM board_state WHERE key = 'user_custom_saved'");
+        const hasExplicitUserSave = userSavedCheck.rows && userSavedCheck.rows.length > 0 && userSavedCheck.rows[0].yaml === 'true';
+
+        if (!hasExplicitUserSave) {
+          await db.execute({
+            sql: `
+              INSERT INTO board_state (key, yaml, updated_at)
+              VALUES ('active_board', ?, ?)
+              ON CONFLICT(key) DO UPDATE SET
+                yaml = excluded.yaml,
+                updated_at = excluded.updated_at
+            `,
+            args: [jodyYaml, now]
+          });
+        }
+
+        await db.execute({
+          sql: `
+            INSERT INTO board_state (key, yaml, updated_at)
+            VALUES ('golden_jody_v2_seeded', 'true', ?)
+            ON CONFLICT(key) DO UPDATE SET updated_at = excluded.updated_at
+          `,
+          args: [now]
+        });
+      }
+    }
+  } catch (seedErr) {
+    console.warn('Seed golden jody error in initDb:', seedErr);
+  }
 }
 
 // Call initDb
@@ -301,7 +349,7 @@ async function logNewsSync(query, articlesCount, status = 'success') {
   });
 }
 
-async function saveBoardYaml(yaml) {
+async function saveBoardYaml(yaml, isUserCustom = true) {
   const now = new Date().toISOString();
   await db.execute({
     sql: `
@@ -312,6 +360,43 @@ async function saveBoardYaml(yaml) {
         updated_at = excluded.updated_at
     `,
     args: [yaml, now]
+  });
+
+  if (isUserCustom) {
+    await db.execute({
+      sql: `
+        INSERT INTO board_state (key, yaml, updated_at)
+        VALUES ('user_custom_saved', 'true', ?)
+        ON CONFLICT(key) DO UPDATE SET
+          yaml = excluded.yaml,
+          updated_at = excluded.updated_at
+      `,
+      args: [now]
+    });
+  }
+}
+
+async function resetBoardYamlToDefault(defaultYaml) {
+  const now = new Date().toISOString();
+  await db.execute({
+    sql: `
+      INSERT INTO board_state (key, yaml, updated_at)
+      VALUES ('active_board', ?, ?)
+      ON CONFLICT(key) DO UPDATE SET
+        yaml = excluded.yaml,
+        updated_at = excluded.updated_at
+    `,
+    args: [defaultYaml, now]
+  });
+  await db.execute({
+    sql: `
+      INSERT INTO board_state (key, yaml, updated_at)
+      VALUES ('user_custom_saved', 'false', ?)
+      ON CONFLICT(key) DO UPDATE SET
+        yaml = excluded.yaml,
+        updated_at = excluded.updated_at
+    `,
+    args: [now]
   });
 }
 
@@ -344,5 +429,6 @@ module.exports = {
   saveLeagueSettings,
   logNewsSync,
   saveBoardYaml,
-  getBoardYaml
+  getBoardYaml,
+  resetBoardYamlToDefault
 };

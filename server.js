@@ -464,7 +464,11 @@ const server = http.createServer(async (req, res) => {
 
       // Overwrite DB active board
       try {
-        await db.saveBoardYaml(defaultYaml);
+        if (db.resetBoardYamlToDefault) {
+          await db.resetBoardYamlToDefault(defaultYaml);
+        } else {
+          await db.saveBoardYaml(defaultYaml, false);
+        }
       } catch (dbErr) {
         console.warn('DB reset saveBoardYaml error:', dbErr);
       }
