@@ -232,11 +232,10 @@ class Store {
     try {
       // If the user already has custom board edits in their browser:
       // Render rebuilds must NOT reset their custom board.
-      // Instead, we ensure the backend has their custom board.
       if (hasCustomBoard) {
-        const localYaml = localStorage.getItem(BOARD_YAML_KEY) || this.exportYaml();
+        const localYaml = localStorage.getItem(BOARD_YAML_KEY);
         if (localYaml) {
-          api.saveBoardYaml(localYaml).catch(() => {});
+          this.loadFromYaml(localYaml, true);
         }
         return;
       }
@@ -600,6 +599,10 @@ class Store {
     try {
       const res = await api.getBoardYaml();
       if (res && res.success && res.yaml) {
+        try {
+          localStorage.setItem(BOARD_CUSTOM_FLAG, 'true');
+          localStorage.setItem(BOARD_YAML_KEY, res.yaml);
+        } catch (e) {}
         this.loadFromYaml(res.yaml, true, false);
         this.hasUnsavedChanges = false;
         this.notify();
@@ -627,6 +630,7 @@ class Store {
     if (res && res.success && res.yaml) {
       try {
         localStorage.setItem(BOARD_CUSTOM_FLAG, 'true');
+        localStorage.setItem(BOARD_YAML_KEY, res.yaml);
       } catch (e) {}
 
       // Load into client state (skipBackendSave = true initially)

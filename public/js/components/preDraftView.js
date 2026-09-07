@@ -142,50 +142,57 @@ export function renderPreDraftView() {
   container.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
       <!-- Control Bar -->
-      <div class="glass-card" style="padding: 1rem 1.25rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div class="glass-card" style="padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
           <div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff;">🏆 Positional Tier Board</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">
-              Check boxes to mark players drafted. Drag players to reorder within a tier. Adjust vertical gaps using <strong>↕ Gap Handles</strong>. Click <strong>💾 Save Board</strong> or toggle <strong>Autosave</strong> to persist your board to server YAML.
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">🏆 Positional Tier Board</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">
+              Check boxes to mark players drafted. Drag players to reorder within a tier. Adjust vertical gaps using <strong>↕ Gap Handles</strong>. Click <strong>💾 Save Current</strong> or toggle <strong>Autosave</strong> to persist your board to server YAML.
             </p>
           </div>
+        </div>
 
-          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-            <input type="text" class="search-input" id="board-search" placeholder="🔍 Search player..." value="${searchQuery}">
-            
-            <button class="btn-secondary" id="btn-load-sharplineup" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Load SharpLineup Market Implied Top 300 rankings">
-              🏈 Load SharpLineup
-            </button>
+        <!-- Row 1: Load Current, Save Current, Autosave, Load Jody/Koerner, Load SharpLineup -->
+        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn-secondary" id="btn-load-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="Load active tier_board.yaml from server">
+            📂 Load Current
+          </button>
 
-            <button class="btn-secondary" id="btn-load-jody-koerner" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Load Jody Smith & Sean Koerner consensus expert rankings">
-              📊 Load Jody/Koerner
-            </button>
+          <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
+            💾 Save Current ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
+          </button>
 
-            <button class="btn-secondary" id="btn-load-board" style="padding: 0.45rem 0.8rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #cbd5e1;" title="Load active tier_board.yaml from server">
-              📂 Load Board
-            </button>
+          <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.65rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
+            <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
+            <span>Autosave</span>
+          </label>
 
-            <button class="${store.getHasUnsavedChanges() ? 'btn-primary' : 'btn-secondary'}" id="btn-save-board-yaml" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; ${store.getHasUnsavedChanges() ? 'background: #f59e0b; border-color: #d97706; color: #000; font-weight: 700;' : ''}" title="${store.getHasUnsavedChanges() ? 'You have unsaved changes! Click to save to in-use tier_board.yaml' : 'All changes saved to in-use YAML'}">
-              💾 Save Board ${store.getHasUnsavedChanges() ? '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-left:2px;"></span>' : ''}
-            </button>
+          <button class="btn-secondary" id="btn-load-jody-koerner" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Load Jody Smith & Sean Koerner consensus expert rankings">
+            📊 Load Jody/Koerner
+          </button>
 
-            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #cbd5e1; cursor: pointer; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 6px; user-select: none;" title="Toggle automatic saving to server YAML file">
-              <input type="checkbox" id="chk-autosave" ${store.isAutosave() ? 'checked' : ''} style="cursor: pointer; accent-color: var(--accent-primary);">
-              <span>Autosave</span>
-            </label>
+          <button class="btn-secondary" id="btn-load-sharplineup" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Load SharpLineup Market Implied Top 300 rankings">
+            🏈 Load SharpLineup
+          </button>
+        </div>
 
-            <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Jump down to DST & K tiers">
-              🛡️ DST & K ↓
-            </button>
-            <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
-            <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Load tier board from a local YAML file">
-              📥 Import File
-            </button>
-            <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
-              📥 Export YAML
-            </button>
-          </div>
+        <!-- Row 2: Import YAML, Export YAML -->
+        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <input type="file" id="file-import-yaml" accept=".yaml,.yml,.txt" style="display: none;">
+          <button class="btn-secondary" id="btn-import-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Load tier board from a local YAML file">
+            📥 Import YAML
+          </button>
+          <button class="btn-secondary" id="btn-export-board" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Export board with visual tier alignment to a local YAML file">
+            📤 Export YAML
+          </button>
+        </div>
+
+        <!-- Row 3: Search player, DST & K link -->
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <input type="text" class="search-input" id="board-search" placeholder="🔍 Search player..." value="${searchQuery}" style="max-width: 280px;">
+          <button class="btn-secondary" id="btn-jump-dst-k" style="padding: 0.45rem 0.85rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;" title="Jump down to DST & K tiers">
+            🛡️ DST & K ↓
+          </button>
         </div>
       </div>
 
@@ -295,11 +302,6 @@ export function renderPreDraftView() {
         renderAuthModal();
         return;
       }
-      const confirmed = confirm(
-        'Load SharpLineup Top 300 rankings into your tier board?\n\nThis will update your board with the SharpLineup market-implied dataset.'
-      );
-      if (!confirmed) return;
-
       btnLoadSL.disabled = true;
       btnLoadSL.innerHTML = '⏳ Loading...';
       const ok = await store.loadPreset('sharplineup');
@@ -325,11 +327,6 @@ export function renderPreDraftView() {
         renderAuthModal();
         return;
       }
-      const confirmed = confirm(
-        'Load Jody Smith & Sean Koerner consensus rankings into your tier board?\n\nThis will update your board with the Jody/Koerner tier dataset.'
-      );
-      if (!confirmed) return;
-
       btnLoadJK.disabled = true;
       btnLoadJK.innerHTML = '⏳ Loading...';
       const ok = await store.loadPreset('jody_koerner');
@@ -347,19 +344,13 @@ export function renderPreDraftView() {
     });
   }
 
-  // Load Board Button (Loads server in-use tier_board.yaml)
+  // Load Current Button (Loads server in-use tier_board.yaml)
   const btnLoadBoard = container.querySelector('#btn-load-board');
   if (btnLoadBoard) {
     btnLoadBoard.addEventListener('click', async () => {
       if (!store.getState().isAuthenticated) {
         renderAuthModal();
         return;
-      }
-      if (store.getHasUnsavedChanges()) {
-        const confirmed = confirm(
-          'Load saved board from server?\\n\\nThis will reload tier_board.yaml and discard any unsaved changes in your browser.'
-        );
-        if (!confirmed) return;
       }
       btnLoadBoard.disabled = true;
       btnLoadBoard.innerHTML = '⏳ Loading...';

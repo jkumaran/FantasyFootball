@@ -9,7 +9,7 @@ export function renderAuthGate() {
       <div class="glass-card auth-gate-card">
         <div class="auth-gate-header">
           <div class="auth-gate-icon">🏈</div>
-          <h1 class="auth-gate-title">Gridiron Strategy Suite</h1>
+          <h1 class="auth-gate-title">Cameron's Fantasy Football</h1>
           <div class="auth-gate-badge">🔒 Private War Room • Passcode Required</div>
         </div>
 

@@ -3,202 +3,193 @@
 # ========================================================================================================================
 # Source: Jody Smith & Sean Koerner 2026 Consensus Positional Tier Rankings (FantasyPros)
 # Format: Half-PPR Snake Draft (12 Teams: 2RB / 2WR / 1TE / 1QB / 1FLEX / 1K / 1DST)
-# Exported: 2026-09-06T23:40:00.000Z
+# Exported: 2026-09-07T00:00:00.000Z
 # Column Order: RB -> WR -> TE -> QB -> DST -> K
 # Note: Positional tiers start at Tier 1 for all positions (4 in RB T1, 4 in WR T1, 4 in TE T1, 3 in QB T1).
 #       First player in each tier determines relative vertical placement alongside other positions.
+#       TE Tier 2 (Kyle Pitts Sr., #79 overall) aligns alongside RB Tier 5 (Tony Pollard, #75 overall).
 #       DST and K have independent positional tiers (T1-T5) in the dedicated specialists section.
 # Legend: [ ] = Available, [X] = Drafted
 # ------------------------------------------------------------------------------------------------------------------------
 # VISUAL TIER BOARD MATRIX (Vertical Spacing & Alignment by Pixel Offsets)
 # ------------------------------------------------------------------------------------------------------------------------
-# RB (T1 Gap:0px)          | WR (T1 Gap:0px)          | TE (T1 Gap:520px)        | QB (T1 Gap:750px)        | DST (T1 Gap:0px)         | K (T1 Gap:0px)          
+# RB (T1 Gap:0px)          | WR (T1 Gap:0px)          | TE (T1 Gap:238px)        | QB (T1 Gap:518px)        | DST (T1 Gap:0px)         | K (T1 Gap:0px)          
 # -------------------------+--------------------------+--------------------------+--------------------------+--------------------------+-------------------------
 # === TIER 1 ===           | === TIER 1 ===           |                          |                          | === TIER 1 ===           | === TIER 1 ===          
 # [ ] J. Gibbs (DET)       | [ ] J. Chase (CIN)       |                          |                          | [ ] H. Texans (HOU)      | [ ] B. Aubrey (DAL)     
 # [ ] B. Robinson (ATL)    | [ ] P. Nacua (LAR)       |                          |                          | [ ] S. Seahawks (SEA)    | [ ] C. Dicker (LAC)     
 # [ ] C. McCaffrey (SF)    | [ ] A. St. Brown (DET)   |                          |                          | [ ] L. Angeles Rams (LA… | [ ] K. Fairbairn (HOU)  
 # [ ] J. Taylor (IND)      | [ ] J. Smith-Njigba (SE… |                          |                          | [ ] D. Broncos (DEN)     |                         
-#                          |                          |                          |                          |                          |                         
 #                          |                          |                          |                          |                          | === TIER 2 ===          
-# === TIER 2 ===           | === TIER 2 ===           |                          |                          | === TIER 2 ===           | [ ] C. Little (JAC)     
-# [ ] J. Cook III (BUF)    | [ ] C. Lamb (DAL)        |                          |                          | [ ] P. Eagles (PHI)      | [ ] J. Myers (SEA)      
-# [ ] S. Barkley (PHI)     | [ ] J. Jefferson (MIN)   |                          |                          | [ ] P. Steelers (PIT)    | [ ] C. McLaughlin (TB)  
-# [ ] D. Henry (BAL)       | [ ] D. London (ATL)      |                          |                          | [ ] L. Angeles Chargers… | [ ] W. Reichard (MIN)   
-# [ ] A. Jeanty (LV)       | [ ] A. Brown (NE)        |                          |                          |                          |                         
-# [ ] C. Brown (CIN)       | [ ] N. Collins (HOU)     |                          |                          |                          |                         
-#                          |                          |                          |                          | === TIER 3 ===           | === TIER 3 ===          
+# === TIER 2 ===           | === TIER 2 ===           | === TIER 1 ===           |                          | === TIER 2 ===           | [ ] C. Little (JAC)     
+# [ ] J. Cook III (BUF)    | [ ] C. Lamb (DAL)        | [ ] B. Bowers (LV)       |                          | [ ] P. Eagles (PHI)      | [ ] J. Myers (SEA)      
+# [ ] S. Barkley (PHI)     | [ ] J. Jefferson (MIN)   | [ ] T. McBride (ARI)     |                          | [ ] P. Steelers (PIT)    | [ ] C. McLaughlin (TB)  
+# [ ] D. Henry (BAL)       | [ ] D. London (ATL)      | [ ] C. Loveland (CHI)    |                          | [ ] L. Angeles Chargers… | [ ] W. Reichard (MIN)   
+# [ ] A. Jeanty (LV)       | [ ] A. Brown (NE)        | [ ] T. Warren (IND)      |                          |                          |                         
+# [ ] C. Brown (CIN)       | [ ] N. Collins (HOU)     |                          |                          | === TIER 3 ===           | === TIER 3 ===          
 #                          |                          |                          |                          | [ ] B. Ravens (BAL)      | [ ] E. Pineiro (SF)     
-# === TIER 3 ===           | === TIER 3 ===           |                          |                          | [ ] G. Bay Packers (GB)  | [ ] J. Bates (DET)      
-# [ ] D. Achane (MIA)      | [ ] G. Pickens (DAL)     |                          |                          | [ ] N. England Patriots… | [ ] C. Boswell (PIT)    
-# [ ] O. Hampton (LAC)     | [ ] C. Olave (NO)        |                          |                          | [ ] D. Lions (DET)       | [ ] H. Butker (KC)      
-# [ ] K. Walker III (KC)   | [ ] D. Smith (PHI)       |                          |                          | [ ] M. Vikings (MIN)     | [ ] H. Mevis (LAR)      
-# [ ] K. Williams (LAR)    | [ ] M. Nabers (NYG)      | === TIER 1 ===           |                          | [ ] J. Jaguars (JAC)     | [ ] T. Loop (BAL)       
-# [ ] J. Williams (DAL)    | [ ] Z. Flowers (BAL)     | [ ] B. Bowers (LV)       |                          | [ ] C. Bears (CHI)       | [ ] T. Smack (GB)       
-# [ ] J. Love (ARI)        | [ ] R. Rice (KC)         | [ ] T. McBride (ARI)     |                          | [ ] K. City Chiefs (KC)  | [ ] W. Lutz (DEN)       
-# [ ] B. Hall (NYJ)        | [ ] T. Higgins (CIN)     | [ ] C. Loveland (CHI)    |                          |                          | [ ] E. McPherson (CIN)  
-#                          |                          | [ ] T. Warren (IND)      |                          |                          | [ ] C. Santos (CHI)     
-#                          |                          |                          |                          | === TIER 4 ===           |                         
-# === TIER 4 ===           | === TIER 4 ===           |                          |                          | [ ] B. Bills (BUF)       |                         
-# [ ] T. Etienne Jr. (NO)  | [ ] D. Adams (LAR)       | === TIER 2 ===           |                          | [ ] C. Browns (CLE)      | === TIER 4 ===          
-# [ ] D. Swift (CHI)       | [ ] E. Egbuka (TB)       | [ ] K. Pitts Sr. (ATL)   | === TIER 1 ===           | [ ] N. Orleans Saints (… | [ ] A. Borregales (NE)  
-# [ ] C. Skattebo (NYG)    | [ ] T. McMillan (CAR)    | [ ] H. Fannin Jr. (CLE)  | [ ] J. Allen (BUF)       | [ ] I. Colts (IND)       | [ ] J. Slye (TEN)       
-# [ ] B. Irving (TB)       | [ ] J. Waddle (DEN)      | [ ] S. LaPorta (DET)     | [ ] D. Maye (NE)         | [ ] A. Falcons (ATL)     | [ ] J. Elliott (PHI)    
-# [ ] D. Montgomery (HOU)  | [ ] G. Wilson (NYJ)      | [ ] G. Kittle (SF)       | [ ] L. Jackson (BAL)     | [ ] T. Bay Buccaneers (… | [ ] T. Bass (BUF)       
-# [ ] Q. Judkins (CLE)     | [ ] L. McConkey (LAC)    | [ ] T. Kelce (KC)        |                          |                          | [ ] N. Folk (ATL)       
-# [ ] T. Henderson (NE)    | [ ] J. Williams (DET)    |                          |                          |                          | [ ] M. Gay (LV)         
-# [ ] J. Warren (PIT)      | [ ] L. Burden III (CHI)  |                          | === TIER 2 ===           | === TIER 5 ===           | [ ] R. Fitzgerald (CAR) 
-# [ ] J. Price (SEA)       | [ ] T. McLaurin (WAS)    | === TIER 3 ===           | [ ] J. Burrow (CIN)      | [ ] S. Francisco 49ers … |                         
-# [ ] R. Stevenson (NE)    | [ ] C. Watson (GB)       | [ ] T. Kraft (GB)        | [ ] J. Daniels (WAS)     | [ ] D. Cowboys (DAL)     |                         
-# [ ] B. Tuten (JAC)       | [ ] R. Odunze (CHI)      | [ ] D. Kincaid (BUF)     | [ ] J. Hurts (PHI)       | [ ] N. York Giants (NYG) | === TIER 5 ===          
-# [ ] R. Dowdle (PIT)      |                          | [ ] M. Andrews (BAL)     | [ ] T. Lawrence (JAC)    | [ ] C. Bengals (CIN)     | [ ] B. Grupe (NYJ)      
-#                          |                          | [ ] D. Goedert (PHI)     | [ ] C. Williams (CHI)    | [ ] T. Titans (TEN)      | [ ] C. Ryland (ARI)     
-#                          | === TIER 5 ===           | [ ] J. Ferguson (DAL)    |                          | [ ] C. Panthers (CAR)    | [ ] D. Stevens (WAS)    
-# === TIER 5 ===           | [ ] D. Moore (BUF)       | [ ] I. Likely (NYG)      |                          | [ ] L. Vegas Raiders (L… | [ ] D. Carlson (NO)     
-# [ ] T. Pollard (TEN)     | [ ] M. Evans (SF)        | [ ] J. Johnson (NO)      | === TIER 3 ===           | [ ] W. Commanders (WAS)  | [ ] S. Shrader (IND)    
-# [ ] B. Corum (LAR)       | [ ] D. Metcalf (PIT)     |                          | [ ] B. Purdy (SF)        | [ ] M. Dolphins (MIA)    | [ ] D. Zvada (NYG)      
-# [ ] J. Brooks (CAR)      | [ ] P. Washington (JAC)  |                          | [ ] J. Herbert (LAC)     | [ ] N. York Jets (NYJ)   | [ ] R. Patterson (MIA)  
-# [ ] J. Dobbins (DEN)     | [ ] M. Harrison Jr. (AR… | === TIER 4 ===           | [ ] B. Nix (DEN)         | [ ] A. Cardinals (ARI)   | [ ] A. Szmyt (CLE)      
-# [ ] C. Hubbard (CAR)     | [ ] C. Sutton (DEN)      | [ ] H. Henry (NE)        | [ ] D. Prescott (DAL)    |                          | [ ] J. Sanders (FA)     
-# [ ] R. Harvey (DEN)      | [ ] C. Tate (TEN)        | [ ] D. Schultz (HOU)     | [ ] J. Dart (NYG)        |                          | [ ] C. York (FA)        
-# [ ] J. Mason (MIN)       | [ ] Q. Johnston (LAC)    | [ ] B. Strange (JAC)     | [ ] P. Mahomes II (KC)   |                          |                         
-# [ ] K. Monangai (CHI)    | [ ] M. Pittman Jr. (PIT) | [ ] C. Okonkwo (WAS)     | [ ] K. Murray (MIN)      |                          |                         
-# [ ] J. Jacobs (GB)       | [ ] J. Reed (GB)         | [ ] T. Hockenson (MIN)   |                          |                          |                         
-# [ ] R. White (WAS)       | [ ] S. Diggs (WAS)       | [ ] A. Barner (SEA)      |                          |                          |                         
-# [ ] M. Lloyd (GB)        | [ ] B. Thomas Jr. (JAC)  | [ ] K. Sadiq (NYJ)       | === TIER 4 ===           |                          |                         
-# [ ] K. Gainwell (TB)     | [ ] C. Godwin Jr. (TB)   | [ ] P. Freiermuth (PIT)  | [ ] J. Goff (DET)        |                          |                         
-# [ ] J. Croskey-Merritt … |                          | [ ] T. Ferguson (LAR)    | [ ] M. Stafford (LAR)    |                          |                         
-#                          |                          | [ ] C. Otton (TB)        | [ ] J. Love (GB)         |                          |                         
-#                          | === TIER 6 ===           |                          | [ ] T. Shough (NO)       |                          |                         
-# === TIER 6 ===           | [ ] J. Downs (IND)       |                          | [ ] M. Willis (MIA)      |                          |                         
-# [ ] A. Jones Sr. (MIN)   | [ ] A. Pierce (IND)      | === TIER 5 ===           | [ ] B. Mayfield (TB)     |                          |                         
-# [ ] K. Mitchell (LAC)    | [ ] D. Samuel Sr. (SF)   | [ ] O. Gadsden II (LAC)  |                          |                          |                         
-# [ ] W. Marks (HOU)       | [ ] J. Addison (MIN)     | [ ] G. Helm (TEN)        |                          |                          |                         
-# [ ] T. Spears (TEN)      | [ ] D. Stribling (SF)    | [ ] G. Dulcich (MIA)     | === TIER 5 ===           |                          |                         
-# [ ] J. Coleman (DEN)     | [ ] J. Meyers (JAC)      | [ ] D. Waller (CAR)      | [ ] S. Darnold (SEA)     |                          |                         
-# [ ] C. Rodriguez Jr. (J… | [ ] R. Doubs (NE)        | [ ] D. Njoku (LAC)       | [ ] C. Stroud (HOU)      |                          |                         
-# [ ] T. Allgeier (ARI)    | [ ] M. Wilson (ARI)      | [ ] E. Engram (DEN)      | [ ] D. Jones (IND)       |                          |                         
-# [ ] Z. Charbonnet (SEA)  | [ ] W. Robinson (TEN)    | [ ] M. Gesicki (CIN)     | [ ] C. Ward (TEN)        |                          |                         
-# [ ] D. Sampson (CLE)     | [ ] X. Worthy (KC)       | [ ] C. Parkinson (LAR)   | [ ] A. Rodgers (PIT)     |                          |                         
-# [ ] B. Robinson Jr. (AT… | [ ] M. Golden (GB)       | [ ] C. Kolar (LAC)       | [ ] B. Young (CAR)       |                          |                         
-# [ ] A. Kamara (NO)       | [ ] K. Shakir (BUF)      | [ ] M. Mayer (LV)        | [ ] J. Brissett (ARI)    |                          |                         
-# [ ] M. Washington Jr. (… | [ ] K. Concepcion (CLE)  | [ ] E. Stowers (PHI)     | [ ] G. Smith (NYJ)       |                          |                         
-# [ ] T. Bigsby (PHI)      | [ ] M. Lemon (PHI)       | [ ] E. Arroyo (SEA)      | [ ] F. Mendoza (LV)      |                          |                         
-# [ ] B. Allen (NYJ)       | [ ] J. Coker (CAR)       |                          | [ ] M. Penix Jr. (ATL)   |                          |                         
-# [ ] T. Tracy Jr. (NYG)   | [ ] J. Tyson (NO)        |                          | [ ] D. Watson (CLE)      |                          |                         
-#                          |                          | === TIER 6 ===           |                          |                          |                         
-#                          |                          | [ ] D. Washington (PIT)  |                          |                          |                         
-# === TIER 7 ===           | === TIER 7 ===           | [ ] E. Raridon (NE)      | === TIER 6 ===           |                          |                         
-# [ ] N. Singleton (TEN)   | [ ] T. Tucker (LV)       | [ ] M. Taylor (NYJ)      | [ ] K. Cousins (LV)      |                          |                         
-# [ ] E. Johnson (KC)      | [ ] R. Shaheed (SEA)     | [ ] T. Johnson (NYG)     | [ ] S. Sanders (CLE)     |                          |                         
-# [ ] I. Pacheco (DET)     | [ ] J. McMillan (TB)     | [ ] T. Higbee (LAR)      | [ ] T. Tagovailoa (ATL)  |                          |                         
-# [ ] J. Hill (BAL)        | [ ] D. Boston (CLE)      | [ ] D. Knox (BUF)        | [ ] C. Beck (ARI)        |                          |                         
-# [ ] K. Vidal (LAC)       | [ ] C. Douglas (MIA)     | [ ] M. Hibner (BAL)      | [ ] J. Fields (KC)       |                          |                         
-# [ ] R. Davis (BUF)       | [ ] D. Wicks (PHI)       | [ ] O. Delp (NO)         | [ ] J. McCarthy (MIN)    |                          |                         
-# [ ] K. Black (SF)        | [ ] K. Allen (IND)       | [ ] C. Kmet (CHI)        | [ ] M. Jones (SF)        |                          |                         
-# [ ] C. Brooks (GB)       | [ ] K. Boutte (HOU)      |                          |                          |                          |                         
-# [ ] S. Tucker (TB)       | [ ] A. Mitchell (NYJ)    |                          |                          |                          |                         
-# [ ] E. Wilson (SEA)      | [ ] J. Nailor (LV)       | === TIER 7 ===           | === TIER 7 ===           |                          |                         
-# [ ] N. Harris (NYG)      | [ ] J. Jeudy (CLE)       | [ ] J. Tonges (SF)       | [ ] T. Simpson (LAR)     |                          |                         
-# [ ] S. Perine (CIN)      | [ ] T. Harris (LAC)      | [ ] E. All Jr. (CIN)     | [ ] A. Richardson Sr. (… |                          |                         
-# [ ] K. Allen (WAS)       | [ ] O. Cooper Jr. (NYJ)  | [ ] Z. Ertz (FA)         | [ ] J. Winston (NYG)     |                          |                         
-# [ ] G. Holani (SEA)      | [ ] R. Flournoy (DAL)    | [ ] T. Tremble (CAR)     | [ ] J. Flacco (CIN)      |                          |                         
-# [ ] J. Wright (MIA)      | [ ] T. Hunter (JAC)      | [ ] B. Sinnott (WAS)     | [ ] M. Mariota (WAS)     |                          |                         
-# [ ] D. Claiborne (MIN)   | [ ] J. Jennings (MIN)    |                          | [ ] C. Klubnik (NYJ)     |                          |                         
-#                          | [ ] C. Ridley (TEN)      |                          | [ ] T. Taylor (GB)       |                          |                         
-#                          | [ ] J. Lane (BAL)        | === TIER 8 ===           | [ ] D. Mills (HOU)       |                          |                         
-# === TIER 8 ===           | [ ] P. Bryant (DEN)      | [ ] N. Gray (KC)         | [ ] G. Minshew II (ARI)  |                          |                         
-# [ ] J. James (SF)        |                          | [ ] M. Klare (LAR)       | [ ] T. Green (CLE)       |                          |                         
-# [ ] K. Miller (NO)       |                          | [ ] J. Sanders (CAR)     | [ ] Q. Ewers (JAC)       |                          |                         
-# [ ] J. Blue (PHI)        | === TIER 8 ===           | [ ] N. Fant (NO)         | [ ] T. Bagent (CHI)      |                          |                         
-# [ ] K. Johnson (GB)      | [ ] C. Allen (KC)        | [ ] J. Smith (GB)        | [ ] T. Huntley (BAL)     |                          |                         
-# [ ] S. McGowan (IND)     | [ ] M. Washington (MIA)  | [ ] M. Evans (CAR)       | [ ] J. Milroe (SEA)      |                          |                         
-# [ ] M. Davis (DAL)       | [ ] C. Kupp (SEA)        | [ ] A. Hooper (ATL)      | [ ] S. Rattler (NO)      |                          |                         
-# [ ] T. Johnson (BUF)     | [ ] M. Fields (NYG)      | [ ] D. Bellinger (TEN)   | [ ] T. Lance (LAC)       |                          |                         
-# [ ] J. Conner (ARI)      | [ ] R. Bateman (BAL)     | [ ] M. Klein (HOU)       | [ ] C. Wentz (MIN)       |                          |                         
-# [ ] O. Gordon II (MIA)   | [ ] Z. Branch (ATL)      | [ ] E. Higgins (ARI)     | [ ] J. Strand (ATL)      |                          |                         
-# [ ] A. Randall (BAL)     | [ ] I. TeSlaa (DET)      | [ ] J. Bates (WAS)       | [ ] J. Stidham (DEN)     |                          |                         
-# [ ] I. Davis (NYJ)       | [ ] X. Legette (CAR)     | [ ] J. Hawes (BUF)       | [ ] S. Howell (DAL)      |                          |                         
-# [ ] B. Smith (KC)        | [ ] J. Noel (HOU)        | [ ] T. Koziol (JAC)      | [ ] A. Dalton (PHI)      |                          |                         
-# [ ] J. Hunter (FA)       | [ ] D. Vele (NO)         | [ ] J. Oliver (MIN)      | [ ] K. Pickett (CAR)     |                          |                         
-# [ ] L. Allen Jr. (JAC)   | [ ] A. Williams (WAS)    | [ ] N. Boerkircher (JAC) |                          |                          |                         
-# [ ] D. Giddens (IND)     | [ ] D. Mooney (NYG)      | [ ] A. Trautman (DEN)    |                          |                          |                         
-# [ ] D. Singletary (NYG)  | [ ] T. Hurst III (TB)    | [ ] W. Kacmarek (MIA)    |                          |                          |                         
-# [ ] I. Guerendo (SF)     | [ ] C. Bell (MIA)        | [ ] L. Musgrave (GB)     |                          |                          |                         
-# [ ] E. Demercado (DAL)   | [ ] G. Bernard (PIT)     | [ ] L. Schoonmaker (DAL) |                          |                          |                         
-# [ ] T. Benson (ARI)      | [ ] T. Dell (HOU)        | [ ] J. Endries (CIN)     |                          |                          |                         
-# [ ] D. Neal (FA)         | [ ] K. Coleman (BUF)     | [ ] S. Roush (CHI)       |                          |                          |                         
-# [ ] K. Juszczyk (SF)     | [ ] J. Bech (LV)         | [ ] B. Wright (DET)      |                          |                          |                         
-# [ ] J. Mixon (FA)        | [ ] T. Thornton (KC)     | [ ] F. Moreau (HOU)      |                          |                          |                         
-#                          | [ ] A. Iosivas (CIN)     | [ ] D. Sample (CIN)      |                          |                          |                         
-#                          | [ ] J. Dotson (ATL)      | [ ] D. Smythe (BAL)      |                          |                          |                         
-# === TIER 9 ===           | [ ] T. Franklin (DEN)    | [ ] M. Alie-Cox (IND)    |                          |                          |                         
-# [ ] T. Etienne (CAR)     |                          | [ ] S. Traore (MIA)      |                          |                          |                         
-# [ ] A. Estime (NO)       |                          | [ ] J. Ruckert (NYJ)     |                          |                          |                         
-# [ ] J. McLaughlin (CLE)  | === TIER 9 ===           | [ ] T. Hudson (CIN)      |                          |                          |                         
-# [ ] T. Brooks (CIN)      | [ ] D. Slayton (NYG)     | [ ] J. Woods (NYJ)       |                          |                          |                         
-# [ ] B. Knight (ARI)      | [ ] K. Turpin (DAL)      | [ ] J. Whyle (GB)        |                          |                          |                         
-# [ ] J. Ford (WAS)        | [ ] J. Tolbert (MIA)     | [ ] C. Stover (HOU)      |                          |                          |                         
-# [ ] K. Hunt (FA)         | [ ] T. Horton (SEA)      | [ ] B. Sharp (TB)        |                          |                          |                         
-# [ ] W. Shipley (PHI)     | [ ] D. Douglas (NE)      | [ ] J. Joly (MIA)        |                          |                          |                         
-# [ ] J. Saylors (DET)     | [ ] B. Lance (NO)        | [ ] J. Royer (CLE)       |                          |                          |                         
-# [ ] E. Heidenreich (PIT) | [ ] K. Bourne (ARI)      | [ ] N. Adkins (DEN)      |                          |                          |                         
-# [ ] R. Johnson (CHI)     | [ ] K. Williams (NE)     | [ ] C. Woerner (ATL)     |                          |                          |                         
-# [ ] R. Sanders (CLE)     | [ ] R. Wilson (PIT)      | [ ] T. Conklin (DET)     |                          |                          |                         
-# [ ] R. Ali (BAL)         | [ ] M. Benson (LV)       | [ ] J. Cuevas (BAL)      |                          |                          |                         
-# [ ] M. Carter (TEN)      | [ ] E. Sarratt (BAL)     | [ ] D. Allen (LAR)       |                          |                          |                         
-# [ ] S. Vaki (DET)        | [ ] M. Mims Jr. (DEN)    | [ ] P. Durham (TB)       |                          |                          |                         
-# [ ] D. Laube (LV)        | [ ] H. Brown (PHI)       | [ ] L. Farrell (SF)      |                          |                          |                         
-# [ ] R. Rivers (LAR)      | [ ] B. Thompson (LAC)    | [ ] B. Spann-Ford (DAL)  |                          |                          |                         
-# [ ] J. McNichols (WAS)   | [ ] E. Ayomanor (TEN)    | [ ] J. Mundt (PHI)       |                          |                          |                         
-# [ ] H. Luepke (DAL)      | [ ] M. Hollins (NE)      | [ ] J. Wiley (KC)        |                          |                          |                         
-# [ ] C. Kiner (NE)        | [ ] Z. Thomas (CHI)      | [ ] E. Saubert (SEA)     |                          |                          |                         
-# [ ] A. Dillon (CAR)      | [ ] X. Hutchinson (HOU)  | [ ] G. Calcaterra (PHI)  |                          |                          |                         
-# [ ] T. Badie (DEN)       | [ ] O. Beckham Jr. (NYG) | [ ] I. Thomas (LV)       |                          |                          |                         
-# [ ] A. Abdullah (JAC)    | [ ] C. Kirk (SF)         | [ ] K. Granson (TEN)     |                          |                          |                         
-# [ ] J. Chestnut (TEN)    | [ ] C. Dike (TEN)        | [ ] D. Ogletree (IND)    |                          |                          |                         
-# [ ] R. Gilliam (NE)      | [ ] K. Raymond (CHI)     | [ ] B. Whiteheart (CLE)  |                          |                          |                         
-# [ ] M. Bredeson (MIN)    | [ ] O. Zaccheaus (ATL)   | [ ] T. Reiman (ARI)      |                          |                          |                         
-# [ ] K. Nwangwu (NYJ)     | [ ] B. Aiyuk (SF)        | [ ] B. Yurosek (MIN)     |                          |                          |                         
-# [ ] P. Ricard (NYG)      | [ ] I. Williams (NYJ)    | [ ] B. Jordan (HOU)      |                          |                          |                         
-# [ ] A. Ingold (LAC)      |                          | [ ] C. Manhertz (NYG)    |                          |                          |                         
-#                          |                          | [ ] C. Heyward (LV)      |                          |                          |                         
-#                          | === TIER 10 ===          | [ ] H. Long (ARI)        |                          |                          |                         
-#                          | [ ] C. Young (CIN)       | [ ] R. Tonyan (PIT)      |                          |                          |                         
-#                          | [ ] I. Bond (CLE)        | [ ] C. Ryan (CLE)        |                          |                          |                         
-#                          | [ ] C. Daniels (LAR)     | [ ] T. Fidone II (NYG)   |                          |                          |                         
-#                          | [ ] S. Bell (BUF)        | [ ] C. Yankoff (WAS)     |                          |                          |                         
-#                          | [ ] T. Hill (FA)         | [ ] K. Latu (BUF)        |                          |                          |                         
-#                          | [ ] T. Burks (WAS)       | [ ] H. Large (CHI)       |                          |                          |                         
-#                          | [ ] T. Johnson (TB)      | [ ] B. Russell (SEA)     |                          |                          |                         
-#                          | [ ] J. Royals (KC)       |                          |                          |                          |                         
-#                          | [ ] K. Mumpfield (LAR)   |                          |                          |                          |                         
-#                          | [ ] L. McCaffrey (WAS)   |                          |                          |                          |                         
-#                          | [ ] C. Brazzell II (CAR) |                          |                          |                          |                         
-#                          | [ ] J. Palmer (BUF)      |                          |                          |                          |                         
-#                          | [ ] C. Tillman (NO)      |                          |                          |                          |                         
+# === TIER 3 ===           | === TIER 3 ===           |                          | === TIER 1 ===           | [ ] G. Bay Packers (GB)  | [ ] J. Bates (DET)      
+# [ ] D. Achane (MIA)      | [ ] G. Pickens (DAL)     |                          | [ ] J. Allen (BUF)       | [ ] N. England Patriots… | [ ] C. Boswell (PIT)    
+# [ ] O. Hampton (LAC)     | [ ] C. Olave (NO)        |                          | [ ] D. Maye (NE)         | [ ] D. Lions (DET)       | [ ] H. Butker (KC)      
+# [ ] K. Walker III (KC)   | [ ] D. Smith (PHI)       |                          | [ ] L. Jackson (BAL)     | [ ] M. Vikings (MIN)     | [ ] H. Mevis (LAR)      
+# [ ] K. Williams (LAR)    | [ ] M. Nabers (NYG)      |                          |                          | [ ] J. Jaguars (JAC)     | [ ] T. Loop (BAL)       
+# [ ] J. Williams (DAL)    | [ ] Z. Flowers (BAL)     |                          | === TIER 2 ===           | [ ] C. Bears (CHI)       | [ ] T. Smack (GB)       
+# [ ] J. Love (ARI)        | [ ] R. Rice (KC)         |                          | [ ] J. Burrow (CIN)      | [ ] K. City Chiefs (KC)  | [ ] W. Lutz (DEN)       
+# [ ] B. Hall (NYJ)        | [ ] T. Higgins (CIN)     |                          | [ ] J. Daniels (WAS)     |                          | [ ] E. McPherson (CIN)  
+#                          |                          |                          | [ ] J. Hurts (PHI)       | === TIER 4 ===           | [ ] C. Santos (CHI)     
+# === TIER 4 ===           | === TIER 4 ===           |                          | [ ] T. Lawrence (JAC)    | [ ] B. Bills (BUF)       |                         
+# [ ] T. Etienne Jr. (NO)  | [ ] D. Adams (LAR)       |                          | [ ] C. Williams (CHI)    | [ ] C. Browns (CLE)      | === TIER 4 ===          
+# [ ] D. Swift (CHI)       | [ ] E. Egbuka (TB)       |                          |                          | [ ] N. Orleans Saints (… | [ ] A. Borregales (NE)  
+# [ ] C. Skattebo (NYG)    | [ ] T. McMillan (CAR)    |                          | === TIER 3 ===           | [ ] I. Colts (IND)       | [ ] J. Slye (TEN)       
+# [ ] B. Irving (TB)       | [ ] J. Waddle (DEN)      |                          | [ ] B. Purdy (SF)        | [ ] A. Falcons (ATL)     | [ ] J. Elliott (PHI)    
+# [ ] D. Montgomery (HOU)  | [ ] G. Wilson (NYJ)      |                          | [ ] J. Herbert (LAC)     | [ ] T. Bay Buccaneers (… | [ ] T. Bass (BUF)       
+# [ ] Q. Judkins (CLE)     | [ ] L. McConkey (LAC)    |                          | [ ] B. Nix (DEN)         |                          | [ ] N. Folk (ATL)       
+# [ ] T. Henderson (NE)    | [ ] J. Williams (DET)    |                          | [ ] D. Prescott (DAL)    | === TIER 5 ===           | [ ] M. Gay (LV)         
+# [ ] J. Warren (PIT)      | [ ] L. Burden III (CHI)  |                          | [ ] J. Dart (NYG)        | [ ] S. Francisco 49ers … | [ ] R. Fitzgerald (CAR) 
+# [ ] J. Price (SEA)       | [ ] T. McLaurin (WAS)    |                          | [ ] P. Mahomes II (KC)   | [ ] D. Cowboys (DAL)     |                         
+# [ ] R. Stevenson (NE)    | [ ] C. Watson (GB)       |                          | [ ] K. Murray (MIN)      | [ ] N. York Giants (NYG) | === TIER 5 ===          
+# [ ] B. Tuten (JAC)       | [ ] R. Odunze (CHI)      |                          |                          | [ ] C. Bengals (CIN)     | [ ] B. Grupe (NYJ)      
+# [ ] R. Dowdle (PIT)      |                          |                          |                          | [ ] T. Titans (TEN)      | [ ] C. Ryland (ARI)     
+#                          | === TIER 5 ===           |                          |                          | [ ] C. Panthers (CAR)    | [ ] D. Stevens (WAS)    
+# === TIER 5 ===           | [ ] D. Moore (BUF)       | === TIER 2 ===           | === TIER 4 ===           | [ ] L. Vegas Raiders (L… | [ ] D. Carlson (NO)     
+# [ ] T. Pollard (TEN)     | [ ] M. Evans (SF)        | [ ] K. Pitts Sr. (ATL)   | [ ] J. Goff (DET)        | [ ] W. Commanders (WAS)  | [ ] S. Shrader (IND)    
+# [ ] B. Corum (LAR)       | [ ] D. Metcalf (PIT)     | [ ] H. Fannin Jr. (CLE)  | [ ] M. Stafford (LAR)    | [ ] M. Dolphins (MIA)    | [ ] D. Zvada (NYG)      
+# [ ] J. Brooks (CAR)      | [ ] P. Washington (JAC)  | [ ] S. LaPorta (DET)     | [ ] J. Love (GB)         | [ ] N. York Jets (NYJ)   | [ ] R. Patterson (MIA)  
+# [ ] J. Dobbins (DEN)     | [ ] M. Harrison Jr. (AR… | [ ] G. Kittle (SF)       | [ ] T. Shough (NO)       | [ ] A. Cardinals (ARI)   | [ ] A. Szmyt (CLE)      
+# [ ] C. Hubbard (CAR)     | [ ] C. Sutton (DEN)      | [ ] T. Kelce (KC)        | [ ] M. Willis (MIA)      |                          | [ ] J. Sanders (FA)     
+# [ ] R. Harvey (DEN)      | [ ] C. Tate (TEN)        |                          | [ ] B. Mayfield (TB)     |                          | [ ] C. York (FA)        
+# [ ] J. Mason (MIN)       | [ ] Q. Johnston (LAC)    | === TIER 3 ===           |                          |                          |                         
+# [ ] K. Monangai (CHI)    | [ ] M. Pittman Jr. (PIT) | [ ] T. Kraft (GB)        |                          |                          |                         
+# [ ] J. Jacobs (GB)       | [ ] J. Reed (GB)         | [ ] D. Kincaid (BUF)     |                          |                          |                         
+# [ ] R. White (WAS)       | [ ] S. Diggs (WAS)       | [ ] M. Andrews (BAL)     |                          |                          |                         
+# [ ] M. Lloyd (GB)        | [ ] B. Thomas Jr. (JAC)  | [ ] D. Goedert (PHI)     |                          |                          |                         
+# [ ] K. Gainwell (TB)     | [ ] C. Godwin Jr. (TB)   | [ ] J. Ferguson (DAL)    |                          |                          |                         
+# [ ] J. Croskey-Merritt … |                          | [ ] I. Likely (NYG)      |                          |                          |                         
+#                          | === TIER 6 ===           | [ ] J. Johnson (NO)      |                          |                          |                         
+# === TIER 6 ===           | [ ] J. Downs (IND)       |                          | === TIER 5 ===           |                          |                         
+# [ ] A. Jones Sr. (MIN)   | [ ] A. Pierce (IND)      | === TIER 4 ===           | [ ] S. Darnold (SEA)     |                          |                         
+# [ ] K. Mitchell (LAC)    | [ ] D. Samuel Sr. (SF)   | [ ] H. Henry (NE)        | [ ] C. Stroud (HOU)      |                          |                         
+# [ ] W. Marks (HOU)       | [ ] J. Addison (MIN)     | [ ] D. Schultz (HOU)     | [ ] D. Jones (IND)       |                          |                         
+# [ ] T. Spears (TEN)      | [ ] D. Stribling (SF)    | [ ] B. Strange (JAC)     | [ ] C. Ward (TEN)        |                          |                         
+# [ ] J. Coleman (DEN)     | [ ] J. Meyers (JAC)      | [ ] C. Okonkwo (WAS)     | [ ] A. Rodgers (PIT)     |                          |                         
+# [ ] C. Rodriguez Jr. (J… | [ ] R. Doubs (NE)        | [ ] T. Hockenson (MIN)   | [ ] B. Young (CAR)       |                          |                         
+# [ ] T. Allgeier (ARI)    | [ ] M. Wilson (ARI)      | [ ] A. Barner (SEA)      | [ ] J. Brissett (ARI)    |                          |                         
+# [ ] Z. Charbonnet (SEA)  | [ ] W. Robinson (TEN)    | [ ] K. Sadiq (NYJ)       | [ ] G. Smith (NYJ)       |                          |                         
+# [ ] D. Sampson (CLE)     | [ ] X. Worthy (KC)       | [ ] P. Freiermuth (PIT)  | [ ] F. Mendoza (LV)      |                          |                         
+# [ ] B. Robinson Jr. (AT… | [ ] M. Golden (GB)       | [ ] T. Ferguson (LAR)    | [ ] M. Penix Jr. (ATL)   |                          |                         
+# [ ] A. Kamara (NO)       | [ ] K. Shakir (BUF)      | [ ] C. Otton (TB)        | [ ] D. Watson (CLE)      |                          |                         
+# [ ] M. Washington Jr. (… | [ ] K. Concepcion (CLE)  |                          |                          |                          |                         
+# [ ] T. Bigsby (PHI)      | [ ] M. Lemon (PHI)       |                          |                          |                          |                         
+# [ ] B. Allen (NYJ)       | [ ] J. Coker (CAR)       |                          |                          |                          |                         
+# [ ] T. Tracy Jr. (NYG)   | [ ] J. Tyson (NO)        |                          |                          |                          |                         
 #                          |                          |                          |                          |                          |                         
-#                          |                          |                          |                          |                          |                         
-#                          | === TIER 11 ===          |                          |                          |                          |                         
-#                          | [ ] K. Coleman Jr. (MIA) |                          |                          |                          |                         
-#                          | [ ] S. Williams (GB)     |                          |                          |                          |                         
-#                          | [ ] J. Lane (WAS)        |                          |                          |                          |                         
-#                          | [ ] A. Dulin (IND)       |                          |                          |                          |                         
-#                          | [ ] T. Atwell (LAR)      |                          |                          |                          |                         
-#                          | [ ] D. Thornton Jr. (LV) |                          |                          |                          |                         
-#                          | [ ] J. Metchie III (CAR) |                          |                          |                          |                         
-#                          | [ ] D. Robinson (SF)     |                          |                          |                          |                         
-#                          | [ ] J. Whittington (LAR) |                          |                          |                          |                         
-#                          | [ ] D. Walker (BAL)      |                          |                          |                          |                         
-#                          | [ ] B. Brown (NO)        |                          |                          |                          |                         
-#                          | [ ] D. Burks (IND)       |                          |                          |                          |                         
-#                          | [ ] D. Brown (WAS)       |                          |                          |                          |                         
-#                          | [ ] T. Felton (MIN)      |                          |                          |                          |                         
-#                          | [ ] J. Walker (CHI)      |                          |                          |                          |                         
-#                          | [ ] R. Virgil (ARI)      |                          |                          |                          |                         
-#                          | [ ] E. Moore (PHI)       |                          |                          |                          |                         
-#                          | [ ] X. Smith (LAR)       |                          |                          |                          |                         
-#                          | [ ] K. Lambert-Smith (L… |                          |                          |                          |                         
+# === TIER 7 ===           | === TIER 7 ===           | === TIER 5 ===           |                          |                          |                         
+# [ ] N. Singleton (TEN)   | [ ] T. Tucker (LV)       | [ ] O. Gadsden II (LAC)  |                          |                          |                         
+# [ ] E. Johnson (KC)      | [ ] R. Shaheed (SEA)     | [ ] G. Helm (TEN)        |                          |                          |                         
+# [ ] I. Pacheco (DET)     | [ ] J. McMillan (TB)     | [ ] G. Dulcich (MIA)     |                          |                          |                         
+# [ ] J. Hill (BAL)        | [ ] D. Boston (CLE)      | [ ] D. Waller (CAR)      |                          |                          |                         
+# [ ] K. Vidal (LAC)       | [ ] C. Douglas (MIA)     | [ ] D. Njoku (LAC)       |                          |                          |                         
+# [ ] R. Davis (BUF)       | [ ] D. Wicks (PHI)       | [ ] E. Engram (DEN)      |                          |                          |                         
+# [ ] K. Black (SF)        | [ ] K. Allen (IND)       | [ ] M. Gesicki (CIN)     |                          |                          |                         
+# [ ] C. Brooks (GB)       | [ ] K. Boutte (HOU)      | [ ] C. Parkinson (LAR)   |                          |                          |                         
+# [ ] S. Tucker (TB)       | [ ] A. Mitchell (NYJ)    | [ ] C. Kolar (LAC)       |                          |                          |                         
+# [ ] E. Wilson (SEA)      | [ ] J. Nailor (LV)       | [ ] M. Mayer (LV)        |                          |                          |                         
+# [ ] N. Harris (NYG)      | [ ] J. Jeudy (CLE)       | [ ] E. Stowers (PHI)     |                          |                          |                         
+# [ ] S. Perine (CIN)      | [ ] T. Harris (LAC)      | [ ] E. Arroyo (SEA)      |                          |                          |                         
+# [ ] K. Allen (WAS)       | [ ] O. Cooper Jr. (NYJ)  |                          |                          |                          |                         
+# [ ] G. Holani (SEA)      | [ ] R. Flournoy (DAL)    | === TIER 6 ===           |                          |                          |                         
+# [ ] J. Wright (MIA)      | [ ] T. Hunter (JAC)      | [ ] D. Washington (PIT)  |                          |                          |                         
+# [ ] D. Claiborne (MIN)   | [ ] J. Jennings (MIN)    | [ ] E. Raridon (NE)      |                          |                          |                         
+#                          | [ ] C. Ridley (TEN)      | [ ] M. Taylor (NYJ)      |                          |                          |                         
+# === TIER 8 ===           | [ ] J. Lane (BAL)        | [ ] T. Johnson (NYG)     | === TIER 6 ===           |                          |                         
+# [ ] J. James (SF)        | [ ] P. Bryant (DEN)      | [ ] T. Higbee (LAR)      | [ ] K. Cousins (LV)      |                          |                         
+# [ ] K. Miller (NO)       |                          | [ ] D. Knox (BUF)        | [ ] S. Sanders (CLE)     |                          |                         
+# [ ] J. Blue (PHI)        | === TIER 8 ===           | [ ] M. Hibner (BAL)      | [ ] T. Tagovailoa (ATL)  |                          |                         
+# [ ] K. Johnson (GB)      | [ ] C. Allen (KC)        | [ ] O. Delp (NO)         | [ ] C. Beck (ARI)        |                          |                         
+# [ ] S. McGowan (IND)     | [ ] M. Washington (MIA)  | [ ] C. Kmet (CHI)        | [ ] J. Fields (KC)       |                          |                         
+# [ ] M. Davis (DAL)       | [ ] C. Kupp (SEA)        |                          | [ ] J. McCarthy (MIN)    |                          |                         
+# [ ] T. Johnson (BUF)     | [ ] M. Fields (NYG)      | === TIER 7 ===           | [ ] M. Jones (SF)        |                          |                         
+# [ ] J. Conner (ARI)      | [ ] R. Bateman (BAL)     | [ ] J. Tonges (SF)       |                          |                          |                         
+# [ ] O. Gordon II (MIA)   | [ ] Z. Branch (ATL)      | [ ] E. All Jr. (CIN)     |                          |                          |                         
+# [ ] A. Randall (BAL)     | [ ] I. TeSlaa (DET)      | [ ] Z. Ertz (FA)         |                          |                          |                         
+# [ ] I. Davis (NYJ)       | [ ] X. Legette (CAR)     | [ ] T. Tremble (CAR)     |                          |                          |                         
+# [ ] B. Smith (KC)        | [ ] J. Noel (HOU)        | [ ] B. Sinnott (WAS)     |                          |                          |                         
+# [ ] J. Hunter (FA)       | [ ] D. Vele (NO)         |                          |                          |                          |                         
+# [ ] L. Allen Jr. (JAC)   | [ ] A. Williams (WAS)    |                          |                          |                          |                         
+# [ ] D. Giddens (IND)     | [ ] D. Mooney (NYG)      |                          |                          |                          |                         
+# [ ] D. Singletary (NYG)  | [ ] T. Hurst III (TB)    |                          |                          |                          |                         
+# [ ] I. Guerendo (SF)     | [ ] C. Bell (MIA)        |                          |                          |                          |                         
+# [ ] E. Demercado (DAL)   | [ ] G. Bernard (PIT)     |                          |                          |                          |                         
+# [ ] T. Benson (ARI)      | [ ] T. Dell (HOU)        |                          |                          |                          |                         
+# [ ] D. Neal (FA)         | [ ] K. Coleman (BUF)     |                          |                          |                          |                         
+# [ ] K. Juszczyk (SF)     | [ ] J. Bech (LV)         |                          |                          |                          |                         
+# [ ] J. Mixon (FA)        | [ ] T. Thornton (KC)     |                          |                          |                          |                         
+#                          | [ ] A. Iosivas (CIN)     |                          |                          |                          |                         
+# === TIER 9 ===           | [ ] J. Dotson (ATL)      | === TIER 8 ===           | === TIER 7 ===           |                          |                         
+# [ ] T. Etienne (CAR)     | [ ] T. Franklin (DEN)    | [ ] N. Gray (KC)         | [ ] T. Simpson (LAR)     |                          |                         
+# [ ] A. Estime (NO)       |                          | [ ] M. Klare (LAR)       | [ ] A. Richardson Sr. (… |                          |                         
+# [ ] J. McLaughlin (CLE)  | === TIER 9 ===           | [ ] J. Sanders (CAR)     | [ ] J. Winston (NYG)     |                          |                         
+# [ ] T. Brooks (CIN)      | [ ] D. Slayton (NYG)     | [ ] N. Fant (NO)         | [ ] J. Flacco (CIN)      |                          |                         
+# [ ] B. Knight (ARI)      | [ ] K. Turpin (DAL)      | [ ] J. Smith (GB)        | [ ] M. Mariota (WAS)     |                          |                         
+# [ ] J. Ford (WAS)        | [ ] J. Tolbert (MIA)     | [ ] M. Evans (CAR)       | [ ] C. Klubnik (NYJ)     |                          |                         
+# [ ] K. Hunt (FA)         | [ ] T. Horton (SEA)      | [ ] A. Hooper (ATL)      | [ ] T. Taylor (GB)       |                          |                         
+# [ ] W. Shipley (PHI)     | [ ] D. Douglas (NE)      | [ ] D. Bellinger (TEN)   | [ ] D. Mills (HOU)       |                          |                         
+# [ ] J. Saylors (DET)     | [ ] B. Lance (NO)        | [ ] M. Klein (HOU)       | [ ] G. Minshew II (ARI)  |                          |                         
+# [ ] E. Heidenreich (PIT) | [ ] K. Bourne (ARI)      | [ ] E. Higgins (ARI)     | [ ] T. Green (CLE)       |                          |                         
+# [ ] R. Johnson (CHI)     | [ ] K. Williams (NE)     | [ ] J. Bates (WAS)       | [ ] Q. Ewers (JAC)       |                          |                         
+# [ ] R. Sanders (CLE)     | [ ] R. Wilson (PIT)      | [ ] J. Hawes (BUF)       | [ ] T. Bagent (CHI)      |                          |                         
+# [ ] R. Ali (BAL)         | [ ] M. Benson (LV)       | [ ] T. Koziol (JAC)      | [ ] T. Huntley (BAL)     |                          |                         
+# [ ] M. Carter (TEN)      | [ ] E. Sarratt (BAL)     | [ ] J. Oliver (MIN)      | [ ] J. Milroe (SEA)      |                          |                         
+# [ ] S. Vaki (DET)        | [ ] M. Mims Jr. (DEN)    | [ ] N. Boerkircher (JAC) | [ ] S. Rattler (NO)      |                          |                         
+# [ ] D. Laube (LV)        | [ ] H. Brown (PHI)       | [ ] A. Trautman (DEN)    | [ ] T. Lance (LAC)       |                          |                         
+# [ ] R. Rivers (LAR)      | [ ] B. Thompson (LAC)    | [ ] W. Kacmarek (MIA)    | [ ] C. Wentz (MIN)       |                          |                         
+# [ ] J. McNichols (WAS)   | [ ] E. Ayomanor (TEN)    | [ ] L. Musgrave (GB)     | [ ] J. Strand (ATL)      |                          |                         
+# [ ] H. Luepke (DAL)      | [ ] M. Hollins (NE)      | [ ] L. Schoonmaker (DAL) | [ ] J. Stidham (DEN)     |                          |                         
+# [ ] C. Kiner (NE)        | [ ] Z. Thomas (CHI)      | [ ] J. Endries (CIN)     | [ ] S. Howell (DAL)      |                          |                         
+# [ ] A. Dillon (CAR)      | [ ] X. Hutchinson (HOU)  | [ ] S. Roush (CHI)       | [ ] A. Dalton (PHI)      |                          |                         
+# [ ] T. Badie (DEN)       | [ ] O. Beckham Jr. (NYG) | [ ] B. Wright (DET)      | [ ] K. Pickett (CAR)     |                          |                         
+# [ ] A. Abdullah (JAC)    | [ ] C. Kirk (SF)         | [ ] F. Moreau (HOU)      |                          |                          |                         
+# [ ] J. Chestnut (TEN)    | [ ] C. Dike (TEN)        | [ ] D. Sample (CIN)      |                          |                          |                         
+# [ ] R. Gilliam (NE)      | [ ] K. Raymond (CHI)     | [ ] D. Smythe (BAL)      |                          |                          |                         
+# [ ] M. Bredeson (MIN)    | [ ] O. Zaccheaus (ATL)   | [ ] M. Alie-Cox (IND)    |                          |                          |                         
+# [ ] K. Nwangwu (NYJ)     | [ ] B. Aiyuk (SF)        | [ ] S. Traore (MIA)      |                          |                          |                         
+# [ ] P. Ricard (NYG)      | [ ] I. Williams (NYJ)    | [ ] J. Ruckert (NYJ)     |                          |                          |                         
+# [ ] A. Ingold (LAC)      |                          | [ ] T. Hudson (CIN)      |                          |                          |                         
+#                          | === TIER 10 ===          | [ ] J. Woods (NYJ)       |                          |                          |                         
+#                          | [ ] C. Young (CIN)       | [ ] J. Whyle (GB)        |                          |                          |                         
+#                          | [ ] I. Bond (CLE)        | [ ] C. Stover (HOU)      |                          |                          |                         
+#                          | [ ] C. Daniels (LAR)     | [ ] B. Sharp (TB)        |                          |                          |                         
+#                          | [ ] S. Bell (BUF)        | [ ] J. Joly (MIA)        |                          |                          |                         
+#                          | [ ] T. Hill (FA)         | [ ] J. Royer (CLE)       |                          |                          |                         
+#                          | [ ] T. Burks (WAS)       | [ ] N. Adkins (DEN)      |                          |                          |                         
+#                          | [ ] T. Johnson (TB)      | [ ] C. Woerner (ATL)     |                          |                          |                         
+#                          | [ ] J. Royals (KC)       | [ ] T. Conklin (DET)     |                          |                          |                         
+#                          | [ ] K. Mumpfield (LAR)   | [ ] J. Cuevas (BAL)      |                          |                          |                         
+#                          | [ ] L. McCaffrey (WAS)   | [ ] D. Allen (LAR)       |                          |                          |                         
+#                          | [ ] C. Brazzell II (CAR) | [ ] P. Durham (TB)       |                          |                          |                         
+#                          | [ ] J. Palmer (BUF)      | [ ] L. Farrell (SF)      |                          |                          |                         
+#                          | [ ] C. Tillman (NO)      | [ ] B. Spann-Ford (DAL)  |                          |                          |                         
+#                          |                          | [ ] J. Mundt (PHI)       |                          |                          |                         
+#                          | === TIER 11 ===          | [ ] J. Wiley (KC)        |                          |                          |                         
+#                          | [ ] K. Coleman Jr. (MIA) | [ ] E. Saubert (SEA)     |                          |                          |                         
+#                          | [ ] S. Williams (GB)     | [ ] G. Calcaterra (PHI)  |                          |                          |                         
+#                          | [ ] J. Lane (WAS)        | [ ] I. Thomas (LV)       |                          |                          |                         
+#                          | [ ] A. Dulin (IND)       | [ ] K. Granson (TEN)     |                          |                          |                         
+#                          | [ ] T. Atwell (LAR)      | [ ] D. Ogletree (IND)    |                          |                          |                         
+#                          | [ ] D. Thornton Jr. (LV) | [ ] B. Whiteheart (CLE)  |                          |                          |                         
+#                          | [ ] J. Metchie III (CAR) | [ ] T. Reiman (ARI)      |                          |                          |                         
+#                          | [ ] D. Robinson (SF)     | [ ] B. Yurosek (MIN)     |                          |                          |                         
+#                          | [ ] J. Whittington (LAR) | [ ] B. Jordan (HOU)      |                          |                          |                         
+#                          | [ ] D. Walker (BAL)      | [ ] C. Manhertz (NYG)    |                          |                          |                         
+#                          | [ ] B. Brown (NO)        | [ ] C. Heyward (LV)      |                          |                          |                         
+#                          | [ ] D. Burks (IND)       | [ ] H. Long (ARI)        |                          |                          |                         
+#                          | [ ] D. Brown (WAS)       | [ ] R. Tonyan (PIT)      |                          |                          |                         
+#                          | [ ] T. Felton (MIN)      | [ ] C. Ryan (CLE)        |                          |                          |                         
+#                          | [ ] J. Walker (CHI)      | [ ] T. Fidone II (NYG)   |                          |                          |                         
+#                          | [ ] R. Virgil (ARI)      | [ ] C. Yankoff (WAS)     |                          |                          |                         
+#                          | [ ] E. Moore (PHI)       | [ ] K. Latu (BUF)        |                          |                          |                         
+#                          | [ ] X. Smith (LAR)       | [ ] H. Large (CHI)       |                          |                          |                         
+#                          | [ ] K. Lambert-Smith (L… | [ ] B. Russell (SEA)     |                          |                          |                         
 #                          | [ ] J. Cowing (SF)       |                          |                          |                          |                         
 #                          | [ ] J. Horn Jr. (CAR)    |                          |                          |                          |                         
 #                          | [ ] J. Cameron (JAC)     |                          |                          |                          |                         
@@ -238,16 +229,23 @@
 #                          | [ ] C. Brown (DAL)       |                          |                          |                          |                         
 #                          | [ ] R. Miller (MIA)      |                          |                          |                          |                         
 #                          | [ ] B. Berrios (NYG)     |                          |                          |                          |                         
-#                          |                          |                          |                          |                          |                         
 # ========================================================================================================================
 
 metadata:
   version: "1.0"
   source: "Jody Smith & Sean Koerner Consensus Tiers (FantasyPros)"
-  exported_at: "2026-09-06T23:40:00.000Z"
+  exported_at: "2026-09-07T00:00:00.000Z"
   scoring_format: "Half-PPR"
   draft_type: "Snake"
   teams_count: 12
+  roster_slots:
+    qb: 1
+    rb: 2
+    wr: 2
+    te: 1
+    flex: 1
+    k: 1
+    dst: 1
   user_draft_slot: 1
   column_order:
     - RB
@@ -281,22 +279,22 @@ vertical_tier_gaps_px:
     tier_10: 30
     tier_11: 30
   TE:
-    tier_1: 520
-    tier_2: 30
+    tier_1: 238
+    tier_2: 1010
     tier_3: 30
     tier_4: 30
-    tier_5: 30
+    tier_5: 212
     tier_6: 30
     tier_7: 30
-    tier_8: 30
+    tier_8: 464
   QB:
-    tier_1: 750
+    tier_1: 518
     tier_2: 30
     tier_3: 30
-    tier_4: 30
-    tier_5: 30
-    tier_6: 30
-    tier_7: 30
+    tier_4: 128
+    tier_5: 324
+    tier_6: 940
+    tier_7: 660
   DST:
     tier_1: 0
     tier_2: 30
@@ -2607,7 +2605,7 @@ positions:
           ecr: 193
   TE:
     tier_1:
-      offset_gap_px: 520
+      offset_gap_px: 238
       player_count: 4
       players:
         - rank_in_tier: 1
@@ -2639,7 +2637,7 @@ positions:
           projected_pts: 148.8
           ecr: 48
     tier_2:
-      offset_gap_px: 30
+      offset_gap_px: 1010
       player_count: 5
       players:
         - rank_in_tier: 1
@@ -2805,7 +2803,7 @@ positions:
           projected_pts: 87.9
           ecr: 194
     tier_5:
-      offset_gap_px: 30
+      offset_gap_px: 212
       player_count: 12
       players:
         - rank_in_tier: 1
@@ -2999,7 +2997,7 @@ positions:
           projected_pts: 30.0
           ecr: 320
     tier_8:
-      offset_gap_px: 30
+      offset_gap_px: 464
       player_count: 64
       players:
         - rank_in_tier: 1
@@ -3452,7 +3450,7 @@ positions:
           ecr: 116
   QB:
     tier_1:
-      offset_gap_px: 750
+      offset_gap_px: 518
       player_count: 3
       players:
         - rank_in_tier: 1
@@ -3569,7 +3567,7 @@ positions:
           projected_pts: 253.9
           ecr: 100
     tier_4:
-      offset_gap_px: 30
+      offset_gap_px: 128
       player_count: 6
       players:
         - rank_in_tier: 1
@@ -3615,7 +3613,7 @@ positions:
           projected_pts: 270.3
           ecr: 129
     tier_5:
-      offset_gap_px: 30
+      offset_gap_px: 324
       player_count: 11
       players:
         - rank_in_tier: 1
@@ -3696,7 +3694,7 @@ positions:
           projected_pts: 146.0
           ecr: 267
     tier_6:
-      offset_gap_px: 30
+      offset_gap_px: 940
       player_count: 7
       players:
         - rank_in_tier: 1
@@ -3749,7 +3747,7 @@ positions:
           projected_pts: 97.0
           ecr: 369
     tier_7:
-      offset_gap_px: 30
+      offset_gap_px: 660
       player_count: 22
       players:
         - rank_in_tier: 1
