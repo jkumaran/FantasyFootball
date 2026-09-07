@@ -145,6 +145,7 @@ async function initDb() {
       { id: 'yahoo-1', name: 'Yahoo: League 1 (1548819)', platform: 'yahoo', league_id: '1548819', teams_count: 12, user_slot: 8 },
       { id: 'yahoo-1275807', name: 'Yahoo: League 2 (1275807)', platform: 'yahoo', league_id: '1275807', teams_count: 12, user_slot: 1 },
       { id: 'yahoo-1406672', name: 'Yahoo: League 3 (1406672)', platform: 'yahoo', league_id: '1406672', teams_count: 12, user_slot: 1 },
+      { id: 'yahoo-127299', name: 'Yahoo: League 4 (127299)', platform: 'yahoo', league_id: '127299', teams_count: 12, user_slot: 1 },
       { id: 'espn-2', name: 'ESPN: League 2', platform: 'espn', teams_count: 10, user_slot: 4 },
       { id: 'sleeper-3', name: 'Sleeper: League 3', platform: 'sleeper', teams_count: 12, user_slot: 2 },
       { id: 'mock', name: 'Manual / Mock', platform: 'manual', teams_count: 12, user_slot: 1 }
