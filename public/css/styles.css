@@ -402,6 +402,11 @@ body {
   cursor: ns-resize;
 }
 
+.tier-gap-spacer[style*="height: 0px"] {
+  min-height: 0 !important;
+  height: 0 !important;
+}
+
 .tier-gap-spacer:hover .gap-control-bar,
 .tier-gap-spacer:active .gap-control-bar {
   opacity: 1;

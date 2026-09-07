@@ -15,7 +15,7 @@
 # ------------------------------------------------------------------------------------------------------------------------
 # VISUAL TIER BOARD MATRIX (Vertical Spacing & Alignment by Pixel Offsets)
 # ------------------------------------------------------------------------------------------------------------------------
-# RB (T1 Gap:0px)          | WR (T1 Gap:0px)          | TE (T1 Gap:750px)        | QB (T1 Gap:1144px)       | DST (T1 Gap:0px)         | K (T1 Gap:0px)          
+# RB (T1 Gap:0px)          | WR (T1 Gap:0px)          | TE (T1 Gap:808px)        | QB (T1 Gap:1230px)       | DST (T1 Gap:0px)         | K (T1 Gap:0px)          
 # -------------------------+--------------------------+--------------------------+--------------------------+--------------------------+-------------------------
 # === TIER 1 ===           | === TIER 1 ===           |                          |                          | === TIER 1 ===           | === TIER 1 ===          
 # [ ] J. Gibbs (DET)       | [ ] J. Chase (CIN)       |                          |                          | [ ] H. Texans (HOU)      | [ ] B. Aubrey (DAL)     
@@ -337,43 +337,43 @@ metadata:
 vertical_tier_gaps_px:
   RB:
     tier_1: 0
-    tier_2: 339
-    tier_3: 162
-    tier_4: 706
-    tier_5: 350
-    tier_6: 397
-    tier_7: 1505
-    tier_8: 1196
+    tier_2: 365
+    tier_3: 168
+    tier_4: 759
+    tier_5: 374
+    tier_6: 425
+    tier_7: 1627
+    tier_8: 1293
     tier_9: 30
   WR:
     tier_1: 0
     tier_2: 30
-    tier_3: 556
+    tier_3: 591
     tier_4: 30
-    tier_5: 256
-    tier_6: 303
-    tier_7: 209
+    tier_5: 271
+    tier_6: 323
+    tier_7: 220
     tier_8: 30
-    tier_9: 773
-    tier_10: 115
-    tier_11: 1534
+    tier_9: 833
+    tier_10: 117
+    tier_11: 1666
   TE:
-    tier_1: 750
-    tier_2: 2199
+    tier_1: 808
+    tier_2: 2371
     tier_3: 30
-    tier_4: 605
-    tier_5: 1693
+    tier_4: 652
+    tier_5: 1832
     tier_6: 30
-    tier_7: 981
-    tier_8: 1299
+    tier_7: 1060
+    tier_8: 1410
   QB:
-    tier_1: 1144
+    tier_1: 1230
     tier_2: 30
-    tier_3: 1008
-    tier_4: 303
-    tier_5: 773
-    tier_6: 3732
-    tier_7: 1628
+    tier_3: 1089
+    tier_4: 323
+    tier_5: 833
+    tier_6: 4043
+    tier_7: 1767
   DST:
     tier_1: 0
     tier_2: 30
@@ -422,7 +422,7 @@ positions:
           projected_pts: 242.5
           ecr: 9
     tier_2:
-      offset_gap_px: 339
+      offset_gap_px: 365
       player_count: 5
       players:
         - rank_in_tier: 1
@@ -461,7 +461,7 @@ positions:
           projected_pts: 217.8
           ecr: 18
     tier_3:
-      offset_gap_px: 162
+      offset_gap_px: 168
       player_count: 7
       players:
         - rank_in_tier: 1
@@ -514,7 +514,7 @@ positions:
           projected_pts: 189.6
           ecr: 35
     tier_4:
-      offset_gap_px: 706
+      offset_gap_px: 759
       player_count: 12
       players:
         - rank_in_tier: 1
@@ -602,7 +602,7 @@ positions:
           projected_pts: 147.5
           ecr: 72
     tier_5:
-      offset_gap_px: 350
+      offset_gap_px: 374
       player_count: 13
       players:
         - rank_in_tier: 1
@@ -697,7 +697,7 @@ positions:
           projected_pts: 112.0
           ecr: 120
     tier_6:
-      offset_gap_px: 397
+      offset_gap_px: 425
       player_count: 15
       players:
         - rank_in_tier: 1
@@ -806,7 +806,7 @@ positions:
           projected_pts: 81.8
           ecr: 173
     tier_7:
-      offset_gap_px: 1505
+      offset_gap_px: 1627
       player_count: 16
       players:
         - rank_in_tier: 1
@@ -922,7 +922,7 @@ positions:
           projected_pts: 100.0
           ecr: 268
     tier_8:
-      offset_gap_px: 1196
+      offset_gap_px: 1293
       player_count: 22
       players:
         - rank_in_tier: 1
@@ -1359,7 +1359,7 @@ positions:
           projected_pts: 193.9
           ecr: 19
     tier_3:
-      offset_gap_px: 556
+      offset_gap_px: 591
       player_count: 7
       players:
         - rank_in_tier: 1
@@ -1493,7 +1493,7 @@ positions:
           projected_pts: 147.5
           ecr: 54
     tier_5:
-      offset_gap_px: 256
+      offset_gap_px: 271
       player_count: 13
       players:
         - rank_in_tier: 1
@@ -1588,7 +1588,7 @@ positions:
           projected_pts: 132.2
           ecr: 88
     tier_6:
-      offset_gap_px: 303
+      offset_gap_px: 323
       player_count: 16
       players:
         - rank_in_tier: 1
@@ -1704,7 +1704,7 @@ positions:
           projected_pts: 128.2
           ecr: 136
     tier_7:
-      offset_gap_px: 209
+      offset_gap_px: 220
       player_count: 19
       players:
         - rank_in_tier: 1
@@ -1999,7 +1999,7 @@ positions:
           projected_pts: 88.6
           ecr: 259
     tier_9:
-      offset_gap_px: 773
+      offset_gap_px: 833
       player_count: 25
       players:
         - rank_in_tier: 1
@@ -2178,7 +2178,7 @@ positions:
           projected_pts: 100.0
           ecr: 337
     tier_10:
-      offset_gap_px: 115
+      offset_gap_px: 117
       player_count: 13
       players:
         - rank_in_tier: 1
@@ -2273,7 +2273,7 @@ positions:
           projected_pts: 100.0
           ecr: 536
     tier_11:
-      offset_gap_px: 1534
+      offset_gap_px: 1666
       player_count: 58
       players:
         - rank_in_tier: 1
@@ -2684,7 +2684,7 @@ positions:
           ecr: 594
   TE:
     tier_1:
-      offset_gap_px: 750
+      offset_gap_px: 808
       player_count: 4
       players:
         - rank_in_tier: 1
@@ -2716,7 +2716,7 @@ positions:
           projected_pts: 148.8
           ecr: 48
     tier_2:
-      offset_gap_px: 2199
+      offset_gap_px: 2371
       player_count: 5
       players:
         - rank_in_tier: 1
@@ -2808,7 +2808,7 @@ positions:
           projected_pts: 113.4
           ecr: 138
     tier_4:
-      offset_gap_px: 605
+      offset_gap_px: 652
       player_count: 10
       players:
         - rank_in_tier: 1
@@ -2882,7 +2882,7 @@ positions:
           projected_pts: 87.9
           ecr: 194
     tier_5:
-      offset_gap_px: 1693
+      offset_gap_px: 1832
       player_count: 12
       players:
         - rank_in_tier: 1
@@ -3037,7 +3037,7 @@ positions:
           projected_pts: 54.3
           ecr: 345
     tier_7:
-      offset_gap_px: 981
+      offset_gap_px: 1060
       player_count: 5
       players:
         - rank_in_tier: 1
@@ -3076,7 +3076,7 @@ positions:
           projected_pts: 100.0
           ecr: 320
     tier_8:
-      offset_gap_px: 1299
+      offset_gap_px: 1410
       player_count: 64
       players:
         - rank_in_tier: 1
@@ -3529,7 +3529,7 @@ positions:
           ecr: 517
   QB:
     tier_1:
-      offset_gap_px: 1144
+      offset_gap_px: 1230
       player_count: 3
       players:
         - rank_in_tier: 1
@@ -3593,7 +3593,7 @@ positions:
           projected_pts: 277.4
           ecr: 63
     tier_3:
-      offset_gap_px: 1008
+      offset_gap_px: 1089
       player_count: 7
       players:
         - rank_in_tier: 1
@@ -3646,7 +3646,7 @@ positions:
           projected_pts: 253.9
           ecr: 100
     tier_4:
-      offset_gap_px: 303
+      offset_gap_px: 323
       player_count: 6
       players:
         - rank_in_tier: 1
@@ -3692,7 +3692,7 @@ positions:
           projected_pts: 270.3
           ecr: 129
     tier_5:
-      offset_gap_px: 773
+      offset_gap_px: 833
       player_count: 11
       players:
         - rank_in_tier: 1
@@ -3773,7 +3773,7 @@ positions:
           projected_pts: 100.0
           ecr: 267
     tier_6:
-      offset_gap_px: 3732
+      offset_gap_px: 4043
       player_count: 7
       players:
         - rank_in_tier: 1
@@ -3826,7 +3826,7 @@ positions:
           projected_pts: 100.0
           ecr: 369
     tier_7:
-      offset_gap_px: 1628
+      offset_gap_px: 1767
       player_count: 22
       players:
         - rank_in_tier: 1
